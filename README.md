@@ -50,7 +50,7 @@ string c_identifier = method.c_identifier;
 var cls = method.parent as Gir.Class;
 
 // Check if the method returns something
-boolean is_void = method.return_value.type.name == "void";
+bool is_void = method.return_value.type.name == "void";
 ```
 
 ## Contributing
