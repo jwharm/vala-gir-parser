@@ -47,7 +47,7 @@ var method = repository.namespace.classes[2].methods[0];
 string c_identifier = method.c_identifier;
 
 // Access the parent node
-var cls = method.parent as Class;
+var cls = method.parent as Gir.Class;
 
 // Check if the method returns something
 boolean is_void = method.return_value.type.name == "void";
