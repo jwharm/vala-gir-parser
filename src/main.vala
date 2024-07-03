@@ -33,7 +33,7 @@ public static int main (string[] args) {
 	ensure_initialized ();
 
 	var parser = new Gir.Parser ();
-	var repository = parser.parse (args[1]) as Gir.Repository;
+	var repository = parser.parse (args[1]);
 
 	if (repository == null) {
 		printerr ("Invalid gir file\n");

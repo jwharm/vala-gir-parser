@@ -38,7 +38,7 @@ using Gir;
 ...
 
 var parser = new Gir.Parser ();
-var repository = parser.parse ("Adw-1.gir") as Gir.Repository;
+var repository = parser.parse ("Adw-1.gir");
 
 // Get the first method of the third class
 var method = repository.namespace.classes[2].methods[0];

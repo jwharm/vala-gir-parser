@@ -24,7 +24,7 @@ public class Gir.Parser {
 	/**
 	 * Parse the provided Gir file into a tree of Gir Nodes.
 	 */
-	public Node? parse (string filename) {
+	public Repository? parse (string filename) {
 		var reader = new MarkupReader (filename);
 		SourceLocation begin;
 		SourceLocation end;
@@ -32,7 +32,7 @@ public class Gir.Parser {
 		while (true) {
 			var token_type = reader.read_token (out begin, out end);
 			if (token_type == START_ELEMENT) {
-				return parse_element (reader);
+				return parse_element (reader) as Repository;
 			} else if (token_type == EOF) {
 				critical ("No repository found");
 				return null;
