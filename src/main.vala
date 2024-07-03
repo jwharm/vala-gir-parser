@@ -43,8 +43,11 @@ public static int main (string[] args) {
 	/* Print some fun facts */
 	print (@"Parsed repository '$(repository.namespace.name)'\n");
 
-	var method = repository.namespace.classes[0].methods[0].to_string ();
-	print (@"The first method of first class is:\n$method\n");
+	var method = repository.namespace.classes[0].methods[0];
+	print (@"The first method of the first class is: $(method.name)\n");
+
+	var ip = method.parameters.instance_parameter;
+	print (@"The instance parameter is:\n$(ip.to_string ())\n");
 
 	return 0;
 }

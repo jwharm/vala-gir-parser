@@ -25,5 +25,11 @@ public class Gir.Parameters : Node {
 			return (Gee.List<Parameter>) all_of (typeof (Parameter));
 		}
 	}
+
+	public InstanceParameter? instance_parameter {
+		owned get {
+			return (InstanceParameter?) any_of (typeof (InstanceParameter));
+		}
+	}
 }
 
