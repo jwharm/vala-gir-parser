@@ -37,11 +37,10 @@ public class Gir.Node : Object {
 		}
 	}
 
-	public string to_string () {
-		return to_string_indented (0);
-	}
-
-	private string to_string_indented (int indent) {
+	/**
+	 * Return a tree representation of this node and its children.
+	 */
+	public string to_string (int indent = 0) {
 		StringBuilder builder = new StringBuilder ();
 		builder.append (string.nfill (indent, ' '))
 			   .append (get_type ().name ().substring ("Gir".length));
@@ -52,7 +51,7 @@ public class Gir.Node : Object {
 
 		foreach (var child in children) {
 			builder.append ("\n")
-				   .append (child.to_string_indented (indent + 2));
+				   .append (child.to_string (indent + 2));
 		}
 
 		return builder.str;
@@ -68,12 +67,16 @@ public class Gir.Node : Object {
 		return list;
 	}
 
-	/* Get a child node with the requested gtype, or ``null`` if not found. */
+	/**
+	 * Get a child node with the requested gtype, or ``null`` if not found.
+	 */
 	internal Node? any_of (Type gtype) {
 		return children.first_match ((e) => e.get_type ().is_a (gtype));
 	}
 
-	/* Get the boolean value of this key ("1" is true, "0" is false) */
+	/**
+	 * Get the boolean value of this key ("1" is true, "0" is false)
+	 */
 	internal bool attr_bool (string key, bool if_not_set = false) {
 		if (attrs.has_key (key)) {
 			return "1" == attrs[key];
@@ -82,7 +85,9 @@ public class Gir.Node : Object {
 		}
 	}
 
-	/* Get the int value of this key. */
+	/**
+	 * Get the int value of this key.
+	 */
 	internal int attr_int (string key, int if_not_set = -1) {
 		if (attrs.has_key (key)) {
 			return int.parse (attrs[key]);

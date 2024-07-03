@@ -70,21 +70,21 @@ public class Gir.Parser {
 						   content: content.str.strip ()) as Node;
 	}
 
-	/* Convert "type-name" to "TypeName" */
+	/**
+	 * Convert "type-name" to "GirTypeName".
+	 * "type" and "glib:signal" are special cases; all others are converted
+	 * from kebab case to camel case.
+	 */
 	private static string element_to_type_name (string element) {
-		/* Special cases */
 		if (element == "type") {
 			return "GirTypeRef";
-		}
-
-		if (element == "glib:signal") {
+		} else if (element == "glib:signal") {
 			return "GirSignal";
 		}
 
 		var builder = new StringBuilder ("Gir");
 		foreach (string part in element.replace (":", "-").split ("-")) {
-			string capitalized = part.substring(0, 1).up () + part.substring(1);
-			builder.append (capitalized);
+			builder.append (part.substring (0, 1).up () + part.substring (1));
 		}
 
 		return builder.str;

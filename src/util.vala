@@ -20,7 +20,9 @@
 using Vala;
 using Gee;
 
-/* Convert a Vala.Map (returned by Vala.MarkupReader) into a regular Gee.Map */
+/**
+ * Convert a Vala.Map (returned by Vala.MarkupReader) into a regular Gee.Map.
+ */
 internal static Gee.Map<string, string> to_gee (Vala.Map<string, string> map) {
 	var gee_map = new Gee.HashMap<string, string> ();
 	var iter = map.map_iterator ();
