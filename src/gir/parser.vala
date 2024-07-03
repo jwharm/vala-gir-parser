@@ -21,10 +21,10 @@ using Vala;
 using Gee;
 
 public class Gir.Parser {
-    /**
-     * Parse the provided Gir file into a tree of Gir Nodes.
-     */
-    public Node? parse (string filename) {
+	/**
+	 * Parse the provided Gir file into a tree of Gir Nodes.
+	 */
+	public Node? parse (string filename) {
 		var reader = new MarkupReader (filename);
 		SourceLocation begin;
 		SourceLocation end;
@@ -38,34 +38,34 @@ public class Gir.Parser {
 				return null;
 			}
 		}
-    }
-    
-    /* Parse one XML element (recursively), and return a new Gir Node */
-    private Node parse_element (MarkupReader reader) {
-        var element = reader.name;
-        var children = new Gee.ArrayList<Node> ();
-        var attrs =  to_gee (reader.get_attributes ());
-        var content = new StringBuilder ();
+	}
+
+	/* Parse one XML element (recursively), and return a new Gir Node */
+	private Node parse_element (MarkupReader reader) {
+		var element = reader.name;
+		var children = new Gee.ArrayList<Node> ();
+		var attrs =  to_gee (reader.get_attributes ());
+		var content = new StringBuilder ();
 		SourceLocation begin;
 		SourceLocation end;
-        
-        /* Keep parsing XML until an END_ELEMENT or EOF token is reached */
-        while (true) {
-            var token = reader.read_token (out begin, out end);
-            if (token == MarkupTokenType.START_ELEMENT) {
-                /* Recursively create a child node and add it to the list */
-                Node node = parse_element (reader);
-                children.add (node);
-            } else if (token == MarkupTokenType.TEXT) {
-                content.append (reader.content);
-            } else {
-                break;
-            }
-        }
-        
-        /* Create and return a new Gir Node. */
-        return create(element, attrs, children, content.str.strip());
-    }
+
+		/* Keep parsing XML until an END_ELEMENT or EOF token is reached */
+		while (true) {
+			var token = reader.read_token (out begin, out end);
+			if (token == MarkupTokenType.START_ELEMENT) {
+				/* Recursively create a child node and add it to the list */
+				Node node = parse_element (reader);
+				children.add (node);
+			} else if (token == MarkupTokenType.TEXT) {
+				content.append (reader.content);
+			} else {
+				break;
+			}
+		}
+
+		/* Create and return a new Gir Node. */
+		return create(element, attrs, children, content.str.strip());
+	}
 
 	/* The following method is very ugly. I'd prefer to create Gir nodes
 	 * dynamically (the XML element name can easily be converted to the GType
@@ -73,10 +73,10 @@ public class Gir.Parser {
 	 * ``Object.new (gtype, attrs: at, children: ch, content: co)``, but that
 	 * didn't work because the classes aren't loaded.
 	 */
-    private static Node create(string element,
-    						   Gee.Map<string, string> at,
-    						   Gee.List<Node> ch,
-    						   string co) {
+	private static Node create(string element,
+							   Gee.Map<string, string> at,
+							   Gee.List<Node> ch,
+							   string co) {
 		switch (element) {
 		case "namespace":
 			return new Namespace () {attrs = at, children = ch, content = co};

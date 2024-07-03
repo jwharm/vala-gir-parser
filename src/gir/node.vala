@@ -24,57 +24,57 @@ using Gee;
  * nodes, and a parent node. The parent node of the root node is ``null``.
  */
 public class Gir.Node : Object {
-    public Node? parent_node { get; private set; default = null; }
-    public string? content { get; internal set; }
-    public Gee.Map<string, string> attrs { get; internal set; }
-    public Gee.List<Node> children { get; internal set; }
+	public Node? parent_node { get; private set; default = null; }
+	public string? content { get; internal set; }
+	public Gee.Map<string, string> attrs { get; internal set; }
+	public Gee.List<Node> children { get; internal set; }
 
-    construct {
+	construct {
 		if (children != null) {
-		    foreach (Node n in children) {
-		        n.parent_node = this;
-		    }
+			foreach (Node n in children) {
+				n.parent_node = this;
+			}
 		}
 	}
 
-    public string to_string () {
+	public string to_string () {
 		return to_string_indented (0);
 	}
 
 	private string to_string_indented (int indent) {
 		StringBuilder builder = new StringBuilder ();
-		builder.append (string.nfill (indent, ' '));
-		builder.append (get_type ().name ().substring ("Gir".length));
+		builder.append (string.nfill (indent, ' '))
+			   .append (get_type ().name ().substring ("Gir".length));
 
 		foreach (var entry in attrs) {
 			builder.append (@" $(entry.key)=\"$(entry.value)\"");
 		}
 
 		foreach (var child in children) {
-			builder.append ("\n").append (
-					child.to_string_indented (indent + 2));
+			builder.append ("\n")
+				   .append (child.to_string_indented (indent + 2));
 		}
 
 		return builder.str;
 	}
 
-    /**
-     * Iterate through the child nodes of the requested gtype.
-     */
-    internal Gee.List<Node> all_of (Type gtype) {
-        var iter = children.filter ((e) => e.get_type ().is_a (gtype));
+	/**
+	 * Iterate through the child nodes of the requested gtype.
+	 */
+	internal Gee.List<Node> all_of (Type gtype) {
+		var iter = children.filter ((e) => e.get_type ().is_a (gtype));
  		var list = new Gee.ArrayList<Node> ();
-		list.add_all_iterator(iter);
+		list.add_all_iterator (iter);
 		return list;
-    }
+	}
 
-    /* Get a child node with the requested gtype, or ``null`` if not found. */
-    internal Node? any_of (Type gtype) {
+	/* Get a child node with the requested gtype, or ``null`` if not found. */
+	internal Node? any_of (Type gtype) {
 		return children.first_match ((e) => e.get_type ().is_a (gtype));
-    }
+	}
 
-    /* Get the boolean value of this key ("1" is true, "0" is false) */
-    internal bool attr_bool (string key, bool if_not_set = false) {
+	/* Get the boolean value of this key ("1" is true, "0" is false) */
+	internal bool attr_bool (string key, bool if_not_set = false) {
 		if (attrs.has_key (key)) {
 			return "1" == attrs[key];
 		} else {
@@ -82,10 +82,10 @@ public class Gir.Node : Object {
 		}
 	}
 
-    /* Get the int value of this key. */
+	/* Get the int value of this key. */
 	internal int attr_int (string key, int if_not_set = -1) {
 		if (attrs.has_key (key)) {
-			return int.parse(attrs[key]);
+			return int.parse (attrs[key]);
 		} else {
 			return if_not_set;
 		}
