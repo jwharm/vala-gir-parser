@@ -20,21 +20,21 @@
 public static int main (string[] args) {
 	/* Check if a filename was specified */
 	if (args.length != 2) {
-		print ("Usage: gir-parser filename.gir\n");
+		printerr ("Usage: gir-parser filename.gir\n");
 		return 1;
 	}
 
 	/* Check if the file exists */
 	if (! File.new_for_path (args[1]).query_exists ()) {
-		print ("File does not exist\n");
+		printerr ("File does not exist\n");
 		return 1;
 	}
 
-	var parser = new Gir.Parser();
+	var parser = new Gir.Parser ();
 	var repository = parser.parse (args[1]) as Gir.Repository;
 
 	if (repository == null) {
-		print ("Invalid gir file\n");
+		printerr ("Invalid gir file\n");
 		return 1;
 	}
 
