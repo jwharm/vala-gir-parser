@@ -30,6 +30,8 @@ public static int main (string[] args) {
 		return 1;
 	}
 
+	ensure_initialized ();
+
 	var parser = new Gir.Parser ();
 	var repository = parser.parse (args[1]) as Gir.Repository;
 
@@ -45,5 +47,55 @@ public static int main (string[] args) {
 	print (@"The first method of first class is:\n$method\n");
 
 	return 0;
+}
+
+private static void ensure_initialized () {
+	typeof (Gir.Alias).ensure ();
+	typeof (Gir.AnyType).ensure ();
+	typeof (Gir.Array).ensure ();
+	typeof (Gir.Attribute).ensure ();
+	typeof (Gir.Bitfield).ensure ();
+	typeof (Gir.Boxed).ensure ();
+	typeof (Gir.CallableAttrs).ensure ();
+	typeof (Gir.Callback).ensure ();
+	typeof (Gir.CInclude).ensure ();
+	typeof (Gir.Class).ensure ();
+	typeof (Gir.Constant).ensure ();
+	typeof (Gir.Constructor).ensure ();
+	typeof (Gir.DocDeprecated).ensure ();
+	typeof (Gir.Docsection).ensure ();
+	typeof (Gir.DocStability).ensure ();
+	typeof (Gir.Doc).ensure ();
+	typeof (Gir.DocVersion).ensure ();
+	typeof (Gir.Enumeration).ensure ();
+	typeof (Gir.Field).ensure ();
+	typeof (Gir.FunctionInline).ensure ();
+	typeof (Gir.FunctionMacro).ensure ();
+	typeof (Gir.Function).ensure ();
+	typeof (Gir.Implements).ensure ();
+	typeof (Gir.Include).ensure ();
+	typeof (Gir.InfoAttrs).ensure ();
+	typeof (Gir.InfoElements).ensure ();
+	typeof (Gir.InstanceParameter).ensure ();
+	typeof (Gir.Interface).ensure ();
+	typeof (Gir.Member).ensure ();
+	typeof (Gir.MethodInline).ensure ();
+	typeof (Gir.Method).ensure ();
+	typeof (Gir.Namespace).ensure ();
+	typeof (Gir.Node).ensure ();
+	typeof (Gir.Package).ensure ();
+	typeof (Gir.Parameters).ensure ();
+	typeof (Gir.Parameter).ensure ();
+	typeof (Gir.Prerequisite).ensure ();
+	typeof (Gir.Property).ensure ();
+	typeof (Gir.Record).ensure ();
+	typeof (Gir.Repository).ensure ();
+	typeof (Gir.ReturnValue).ensure ();
+	typeof (Gir.Signal).ensure ();
+	typeof (Gir.SourcePosition).ensure ();
+	typeof (Gir.TypeRef).ensure ();
+	typeof (Gir.Union).ensure ();
+	typeof (Gir.Varargs).ensure ();
+	typeof (Gir.VirtualMethod).ensure ();
 }
 

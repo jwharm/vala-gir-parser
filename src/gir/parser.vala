@@ -64,108 +64,30 @@ public class Gir.Parser {
 		}
 
 		/* Create and return a new Gir Node. */
-		return create(element, attrs, children, content.str.strip());
+		return Object.new (Type.from_name (element_to_type_name(element)),
+						   attrs: attrs,
+						   children: children,
+						   content: content.str.strip ()) as Node;
 	}
 
-	/* The following method is very ugly. I'd prefer to create Gir nodes
-	 * dynamically (the XML element name can easily be converted to the GType
-	 * of the corresponding class), and then call
-	 * ``Object.new (gtype, attrs: at, children: ch, content: co)``, but that
-	 * didn't work because the classes aren't loaded.
-	 */
-	private static Node create(string element,
-							   Gee.Map<string, string> at,
-							   Gee.List<Node> ch,
-							   string co) {
-		switch (element) {
-		case "namespace":
-			return new Namespace () {attrs = at, children = ch, content = co};
-		case "repository":
-			return new Repository () {attrs = at, children = ch, content = co};
-		case "attribute":
-			return new Attribute () {attrs = at, children = ch, content = co};
-		case "c:include":
-			return new CInclude () {attrs = at, children = ch, content = co};
-		case "include":
-			return new Include () {attrs = at, children = ch, content = co};
-		case "package":
-			return new Package () {attrs = at, children = ch, content = co};
-		case "alias":
-			return new Alias () {attrs = at, children = ch, content = co};
-		case "interface":
-			return new Interface () {attrs = at, children = ch, content = co};
-		case "class":
-			return new Class () {attrs = at, children = ch, content = co};
-		case "glib:boxed":
-			return new Boxed () {attrs = at, children = ch, content = co};
-		case "record":
-			return new Record () {attrs = at, children = ch, content = co};
-		case "doc-version":
-			return new DocVersion () {attrs = at, children = ch, content = co};
-		case "doc-stability":
-			return new DocStability () {attrs = at, children = ch, content = co};
-		case "doc":
-			return new Doc () {attrs = at, children = ch, content = co};
-		case "doc-deprecated":
-			return new DocDeprecated () {attrs = at, children = ch, content = co};
-		case "source-position":
-			return new SourcePosition () {attrs = at, children = ch, content = co};
-		case "constant":
-			return new Constant () {attrs = at, children = ch, content = co};
-		case "property":
-			return new Property () {attrs = at, children = ch, content = co};
-		case "glib:signal":
-			return new Signal () {attrs = at, children = ch, content = co};
-		case "field":
-			return new Field () {attrs = at, children = ch, content = co};
-		case "callback":
-			return new Callback () {attrs = at, children = ch, content = co};
-		case "implements":
-			return new Implements () {attrs = at, children = ch, content = co};
-		case "prerequisite":
-			return new Prerequisite () {attrs = at, children = ch, content = co};
-		case "type":
-			return new TypeRef () {attrs = at, children = ch, content = co};
-		case "array":
-			return new Array () {attrs = at, children = ch, content = co};
-		case "constructor":
-			return new Constructor () {attrs = at, children = ch, content = co};
-		case "varargs":
-			return new Varargs () {attrs = at, children = ch, content = co};
-		case "parameters":
-			return new Parameters () {attrs = at, children = ch, content = co};
-		case "parameter":
-			return new Parameter () {attrs = at, children = ch, content = co};
-		case "instance-parameter":
-			return new InstanceParameter () {attrs = at, children = ch, content = co};
-		case "return-value":
-			return new ReturnValue () {attrs = at, children = ch, content = co};
-		case "function":
-			return new Function () {attrs = at, children = ch, content = co};
-		case "function-inline":
-			return new FunctionInline () {attrs = at, children = ch, content = co};
-		case "function-macro":
-			return new FunctionMacro () {attrs = at, children = ch, content = co};
-		case "method":
-			return new Method () {attrs = at, children = ch, content = co};
-		case "method-inline":
-			return new MethodInline () {attrs = at, children = ch, content = co};
-		case "virtual-method":
-			return new VirtualMethod () {attrs = at, children = ch, content = co};
-		case "union":
-			return new Union () {attrs = at, children = ch, content = co};
-		case "bitfield":
-			return new Bitfield () {attrs = at, children = ch, content = co};
-		case "enumeration":
-			return new Enumeration () {attrs = at, children = ch, content = co};
-		case "member":
-			return new Member () {attrs = at, children = ch, content = co};
-		case "docsection":
-			return new Docsection () {attrs = at, children = ch, content = co};
-		default:
-			warning ("Unsupported element %s", element);
-			return new Node () {attrs = at, children = ch, content = co};
+	/* Convert "type-name" to "TypeName" */
+	private static string element_to_type_name (string element) {
+		/* Special cases */
+		if (element == "type") {
+			return "GirTypeRef";
 		}
+
+		if (element == "glib:signal") {
+			return "GirSignal";
+		}
+
+		var builder = new StringBuilder ("Gir");
+		foreach (string part in element.replace (":", "-").split ("-")) {
+			string capitalized = part.substring(0, 1).up () + part.substring(1);
+			builder.append (capitalized);
+		}
+
+		return builder.str;
 	}
 }
 
