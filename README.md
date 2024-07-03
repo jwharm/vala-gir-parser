@@ -21,11 +21,39 @@ _build/gir-parser filename.gir
 
 ## Design
 
-The parser is in `src/gir/parser.vala`. It uses the `MarkupReader` XML parser from libvala. It builds a tree of `Gir.Node` objects (see `src/gir/node.vala`) with the following properties:
+The parser is in `src/gir/parser.vala`. It uses the `MarkupReader` XML parser from libvala to build a tree of `Gir.Node` objects (see `src/gir/node.vala`) with the following properties:
 
 - A parent Node
 - A `Map<string, string>` of attributes (`name`, `c:type`, etc)
 - A `List<Node>` of child nodes
 - The contents of the XML element (for example in a `Gir.Doc` node)
 
-Use the properties of the Node subclasses to access the data.
+Use the properties of the Node subclasses to access the data. For example, the `Class` node contains properties `name`, `parent`, `glib_type_struct`, `methods`, `functions`, `vitual_methods` and so on. This very closely follows the [gir schema](https://gitlab.gnome.org/GNOME/gobject-introspection/-/blob/main/docs/gir-1.2.rnc).
+
+To use the Gir repository after parsing, simply access the nodes and their children. The following examples demonstrate this, but be aware that all checks for `null` and array sizes were omitted here:
+
+```vala
+using Gir;
+
+...
+
+var parser = new Gir.Parser ();
+var repository = parser.parse ("Adw-1.gir") as Gir.Repository;
+
+// Get the first method of the third class
+var method = repository.namespace.classes[2].methods[0];
+
+// The name of the method in C
+string c_identifier = method.c_identifier;
+
+// Access the parent node
+var cls = method.parent as Class;
+
+// Check if the method returns something
+boolean is_void = method.return_value.type.name == "void";
+```
+
+## Contributing
+
+Contributions are welcome. The code is LGPL-licensed. Please post issues and changes on [GitHub](https://github.com/jwharm/vala-gir-parser/).
+
