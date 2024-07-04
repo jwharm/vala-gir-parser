@@ -33,10 +33,6 @@ Use the properties of the Node subclasses to access the data. For example, the `
 To use the Gir repository after parsing, simply access the nodes and their children. The following examples demonstrate this, but be aware that all checks for `null` and array sizes were omitted here:
 
 ```vala
-using Gir;
-
-...
-
 var parser = new Gir.Parser ();
 var repository = parser.parse ("Adw-1.gir");
 
