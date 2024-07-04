@@ -52,13 +52,13 @@ public class Gir.Field : Node, InfoAttrs, DocElements, InfoElements {
 	
 	public Callback? callback {
 		owned get {
-			return (Callback?) any_of (typeof (Callback));
+			return any_of (typeof (Callback));
 		}
 	}
 	
 	public AnyType? anytype {
 		owned get {
-			return (AnyType?) any_of (typeof (AnyType));
+			return any_of (typeof (AnyType));
 		}
 	}
 }

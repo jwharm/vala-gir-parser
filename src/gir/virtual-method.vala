@@ -20,7 +20,7 @@
 using Gee;
 
 public class Gir.VirtualMethod : Node, DocElements, InfoElements, InfoAttrs,
-							CallableAttrs {
+								 CallableAttrs {
 	public string? invoker {
 		owned get {
 			return attrs["invoker"];
@@ -29,13 +29,13 @@ public class Gir.VirtualMethod : Node, DocElements, InfoElements, InfoAttrs,
 	
 	public Parameters? parameters {
 		owned get {
-			return (Parameters?) any_of (typeof (Parameters));
+			return any_of (typeof (Parameters));
 		}
 	}
 	
 	public ReturnValue? return_value {
 		owned get {
-			return (ReturnValue?) any_of (typeof (ReturnValue));
+			return any_of (typeof (ReturnValue));
 		}
 	}
 }

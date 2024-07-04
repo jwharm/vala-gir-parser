@@ -22,13 +22,13 @@ using Gee;
 public interface Gir.InfoAttrs : Node {
 	public bool introspectable {
 		get {
-			return attr_bool("introspectable", true);
+			return attr_bool ("introspectable", true);
 		}
 	}
 	
 	public bool deprecated {
 		get {
-			return attr_bool("deprecated", false);
+			return attr_bool ("deprecated", false);
 		}
 	}
 	
@@ -52,31 +52,31 @@ public interface Gir.InfoAttrs : Node {
 public interface Gir.DocElements : Node {
 	public DocVersion? doc_version {
 		owned get {
-			return (DocVersion) any_of (typeof (DocVersion));
+			return any_of (typeof (DocVersion));
 		}
 	}
 	
 	public DocStability? doc_stability {
 		owned get {
-			return (DocStability?) any_of (typeof (DocStability));
+			return any_of (typeof (DocStability));
 		}
 	}
 	
 	public Doc? doc {
 		owned get {
-			return (Doc?) any_of (typeof (Doc));
+			return any_of (typeof (Doc));
 		}
 	}
 	
 	public DocDeprecated? doc_deprecated {
 		owned get {
-			return (DocDeprecated?) any_of (typeof (DocDeprecated));
+			return any_of (typeof (DocDeprecated));
 		}
 	}
 	
 	public SourcePosition? SourcePosition {
 		owned get {
-			return (SourcePosition?) any_of (typeof (SourcePosition));
+			return any_of (typeof (SourcePosition));
 		}
 	}
 }

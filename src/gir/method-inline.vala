@@ -20,16 +20,16 @@
 using Gee;
 
 public class Gir.MethodInline : Node, DocElements, InfoElements, InfoAttrs,
-							CallableAttrs {
+								CallableAttrs {
 	public Parameters? parameters {
 		owned get {
-			return (Parameters?) any_of (typeof (Parameters));
+			return any_of (typeof (Parameters));
 		}
 	}
 	
 	public ReturnValue? return_value {
 		owned get {
-			return (ReturnValue?) any_of (typeof (ReturnValue));
+			return any_of (typeof (ReturnValue));
 		}
 	}
 }

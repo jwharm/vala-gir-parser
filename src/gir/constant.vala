@@ -46,7 +46,7 @@ public class Gir.Constant : Node, InfoAttrs, DocElements, InfoElements {
 	
 	public AnyType? anytype {
 		owned get {
-			return (AnyType) any_of (typeof (AnyType));
+			return any_of (typeof (AnyType));
 		}
 	}
 }

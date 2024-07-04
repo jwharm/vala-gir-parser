@@ -40,19 +40,19 @@ public class Gir.Repository : Node {
 	
 	public Gee.List<Include> includes {
 		owned get {
-			return (Gee.List<Include>) all_of (typeof (Include));
+			return all_of (typeof (Include));
 		}
 	}
 	
 	public Gee.List<CInclude> c_includes {
 		owned get {
-			return (Gee.List<CInclude>) all_of (typeof (CInclude));
+			return all_of (typeof (CInclude));
 		}
 	}
 	
 	public Package? package {
 		owned get {
-			return (Package?) any_of (typeof (Package));
+			return any_of (typeof (Package));
 		}
 	}
 	
@@ -63,7 +63,7 @@ public class Gir.Repository : Node {
 	 */
     public Namespace @namespace {
 		owned get {
-			return (Namespace) any_of (typeof (Namespace));
+			return any_of (typeof (Namespace));
 		}
 	}
 }

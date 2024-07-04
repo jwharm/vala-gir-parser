@@ -22,13 +22,13 @@ using Gee;
 public class Gir.Parameters : Node {
 	public Gee.List<Parameter> parameters {
 		owned get {
-			return (Gee.List<Parameter>) all_of (typeof (Parameter));
+			return all_of (typeof (Parameter));
 		}
 	}
 
 	public InstanceParameter? instance_parameter {
 		owned get {
-			return (InstanceParameter?) any_of (typeof (InstanceParameter));
+			return any_of (typeof (InstanceParameter));
 		}
 	}
 }

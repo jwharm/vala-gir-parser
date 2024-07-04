@@ -54,7 +54,7 @@ public class Gir.InstanceParameter : Node, DocElements {
 	
 	public TypeRef type_ref {
 		owned get {
-			return (TypeRef?) any_of (typeof (TypeRef));
+			return any_of (typeof (TypeRef));
 		}
 	}
 }

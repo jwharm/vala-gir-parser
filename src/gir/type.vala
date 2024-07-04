@@ -40,7 +40,7 @@ public class Gir.TypeRef : Node, AnyType, DocElements {
 	
 	public Gee.List<AnyType> anytype {
 		owned get {
-			return (Gee.List<AnyType>) all_of (typeof (AnyType));
+			return all_of (typeof (AnyType));
 		}
 	}
 }

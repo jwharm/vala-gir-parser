@@ -88,19 +88,19 @@ public class Gir.Parameter : Node, DocElements {
 	
 	public AnyType? anytype {
 		owned get {
-			return (AnyType?) any_of (typeof (AnyType));
+			return any_of (typeof (AnyType));
 		}
 	}
 	
 	public Varargs? varargs {
 		owned get {
-			return (Varargs?) any_of (typeof (Varargs));
+			return any_of (typeof (Varargs));
 		}
 	}
 	
 	public Gee.List<Attribute> attributes {
 		owned get {
-			return (Gee.List<Attribute>) all_of (typeof (Attribute));
+			return all_of (typeof (Attribute));
 		}
 	}
 }

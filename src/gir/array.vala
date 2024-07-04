@@ -58,7 +58,7 @@ public class Gir.Array : Node, AnyType {
 	
 	public AnyType anytype {
 		owned get {
-			return (AnyType) any_of (typeof (AnyType));
+			return any_of (typeof (AnyType));
 		}
 	}
 }

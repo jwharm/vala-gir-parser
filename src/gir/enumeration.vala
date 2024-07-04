@@ -52,19 +52,19 @@ public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements {
 	
 	public Gee.List<Member> members {
 		owned get {
-			return (Gee.List<Member>) all_of (typeof (Member));
+			return all_of (typeof (Member));
 		}
 	}
 	
 	public Gee.List<Function> functions {
 		owned get {
-			return (Gee.List<Function>) all_of (typeof (Function));
+			return all_of (typeof (Function));
 		}
 	}
 	
 	public Gee.List<FunctionInline> function_inlines {
 		owned get {
-			return (Gee.List<FunctionInline>) all_of (typeof (FunctionInline));
+			return all_of (typeof (FunctionInline));
 		}
 	}
 }

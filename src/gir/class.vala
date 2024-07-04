@@ -88,103 +88,103 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements {
 	
 	public bool @abstract {
 		get {
-			return attr_bool("abstract", false);
+			return attr_bool ("abstract", false);
 		}
 	}
 	
 	public bool fundamental {
 		get {
-			return attr_bool("fundamental", false);
+			return attr_bool ("fundamental", false);
 		}
 	}
 	
 	public bool final {
 		get {
-			return attr_bool("final", false);
+			return attr_bool ("final", false);
 		}
 	}
 	
 	public Gee.List<Implements> implements {
 		owned get {
-			return (Gee.List<Implements>) all_of (typeof (Implements));
+			return all_of (typeof (Implements));
 		}
 	}
 	
 	public Gee.List<Constructor> constructors {
 		owned get {
-			return (Gee.List<Constructor>) all_of (typeof (Constructor));
+			return all_of (typeof (Constructor));
 		}
 	}
 
 	public Gee.List<Method> methods {
 		owned get {
-			return (Gee.List<Method>) all_of (typeof (Method));
+			return all_of (typeof (Method));
 		}
 	}
 	
 	public Gee.List<MethodInline> method_inlines {
 		owned get {
-			return (Gee.List<MethodInline>) all_of (typeof (MethodInline));
+			return all_of (typeof (MethodInline));
 		}
 	}
 	
 	public Gee.List<Function> functions {
 		owned get {
-			return (Gee.List<Function>) all_of (typeof (Function));
+			return all_of (typeof (Function));
 		}
 	}
 	
 	public Gee.List<FunctionInline> function_inlines {
 		owned get {
-			return (Gee.List<FunctionInline>) all_of (typeof (FunctionInline));
+			return all_of (typeof (FunctionInline));
 		}
 	}
 	
 	public Gee.List<VirtualMethod> virtual_methods {
 		owned get {
-			return (Gee.List<VirtualMethod>) all_of (typeof (VirtualMethod));
+			return all_of (typeof (VirtualMethod));
 		}
 	}
 	
 	public Gee.List<Field> fields {
 		owned get {
-			return (Gee.List<Field>) all_of (typeof (Field));
+			return all_of (typeof (Field));
 		}
 	}
 	
 	public Gee.List<Property> properties {
 		owned get {
-			return (Gee.List<Property>) all_of (typeof (Property));
+			return all_of (typeof (Property));
 		}
 	}
 	
 	public Gee.List<Signal> signals {
 		owned get {
-			return (Gee.List<Signal>) all_of (typeof (Signal));
+			return all_of (typeof (Signal));
 		}
 	}
 	
 	public Gee.List<Union> unions {
 		owned get {
-			return (Gee.List<Union>) all_of (typeof (Union));
+			return all_of (typeof (Union));
 		}
 	}
 	
 	public Gee.List<Constant> constants {
 		owned get {
-			return (Gee.List<Constant>) all_of (typeof (Constant));
+			return all_of (typeof (Constant));
 		}
 	}
 	
 	public Gee.List<Record> records {
 		owned get {
-			return (Gee.List<Record>) all_of (typeof (Record));
+			return all_of (typeof (Record));
 		}
 	}
 	
 	public Gee.List<Callback> callbacks {
 		owned get {
-			return (Gee.List<Callback>) all_of (typeof (Callback));
+			return all_of (typeof (Callback));
 		}
 	}
 }

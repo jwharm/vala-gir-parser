@@ -58,91 +58,91 @@ public class Gir.Namespace : Node {
 	
 	public Gee.List<Alias> aliases {
 		owned get {
-			return (Gee.List<Alias>) all_of (typeof (Alias));
+			return all_of (typeof (Alias));
 		}
 	}
 	
 	public Gee.List<Class> classes {
 		owned get {
-			return (Gee.List<Class>) all_of (typeof (Class));
+			return all_of (typeof (Class));
 		}
 	}
 	
 	public Gee.List<Interface> interfaces {
 		owned get {
-			return (Gee.List<Interface>) all_of (typeof (Interface));
+			return all_of (typeof (Interface));
 		}
 	}
 	
 	public Gee.List<Record> records {
 		owned get {
-			return (Gee.List<Record>) all_of (typeof (Record));
+			return all_of (typeof (Record));
 		}
 	}
 	
 	public Gee.List<Enumeration> enumerations {
 		owned get {
-			return (Gee.List<Enumeration>) all_of (typeof (Enumeration));
+			return all_of (typeof (Enumeration));
 		}
 	}
 	
 	public Gee.List<Function> functions {
 		owned get {
-			return (Gee.List<Function>) all_of (typeof (Function));
+			return all_of (typeof (Function));
 		}
 	}
 	
 	public Gee.List<FunctionInline> function_inlines {
 		owned get {
-			return (Gee.List<FunctionInline>) all_of (typeof (FunctionInline));
+			return all_of (typeof (FunctionInline));
 		}
 	}
 	
 	public Gee.List<FunctionMacro> function_macros {
 		owned get {
-			return (Gee.List<FunctionMacro>) all_of (typeof (FunctionMacro));
+			return all_of (typeof (FunctionMacro));
 		}
 	}
 	
 	public Gee.List<Union> unions {
 		owned get {
-			return (Gee.List<Union>) all_of (typeof (Union));
+			return all_of (typeof (Union));
 		}
 	}
 	
 	public Gee.List<Bitfield> bitfields {
 		owned get {
-			return (Gee.List<Bitfield>) all_of (typeof (Bitfield));
+			return all_of (typeof (Bitfield));
 		}
 	}
 	
 	public Gee.List<Callback> callbacks {
 		owned get {
-			return (Gee.List<Callback>) all_of (typeof (Callback));
+			return all_of (typeof (Callback));
 		}
 	}
 	
 	public Gee.List<Constant> constants {
 		owned get {
-			return (Gee.List<Constant>) all_of (typeof (Constant));
+			return all_of (typeof (Constant));
 		}
 	}
 	
 	public Gee.List<Attribute> attributes {
 		owned get {
-			return (Gee.List<Attribute>) all_of (typeof (Attribute));
+			return all_of (typeof (Attribute));
 		}
 	}
 	
 	public Gee.List<Boxed> boxeds {
 		owned get {
-			return (Gee.List<Boxed>) all_of (typeof (Boxed));
+			return all_of (typeof (Boxed));
 		}
 	}
 	
 	public Gee.List<Docsection> docsections {
 		owned get {
-			return (Gee.List<Docsection>) all_of (typeof (Docsection));
+			return all_of (typeof (Docsection));
 		}
 	}
 }

@@ -23,7 +23,7 @@ public class Gir.FunctionMacro : Node, DocElements, InfoElements, InfoAttrs,
 								 CallableAttrs {
 	public Parameters? parameters {
 		owned get {
-			return (Parameters?) any_of (typeof (Parameters));
+			return any_of (typeof (Parameters));
 		}
 	}
 }

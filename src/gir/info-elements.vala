@@ -22,7 +22,7 @@ using Gee;
 public interface Gir.InfoElements : Node, DocElements {
 	public Gee.List<Attribute> attributes {
 		owned get {
-			return (Gee.List<Attribute>) all_of (typeof (Attribute));
+			return all_of (typeof (Attribute));
 		}
 	}
 }

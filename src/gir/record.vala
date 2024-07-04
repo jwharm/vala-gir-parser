@@ -94,43 +94,43 @@ public class Gir.Record : Node, InfoAttrs, DocElements, InfoElements {
 	
 	public Gee.List<Field> fields {
 		owned get {
-			return (Gee.List<Field>) all_of (typeof (Field));
+			return all_of (typeof (Field));
 		}
 	}
 	
 	public Gee.List<Function> functions {
 		owned get {
-			return (Gee.List<Function>) all_of (typeof (Function));
+			return all_of (typeof (Function));
 		}
 	}
 	
 	public Gee.List<FunctionInline> function_inlines {
 		owned get {
-			return (Gee.List<FunctionInline>) all_of (typeof (FunctionInline));
+			return all_of (typeof (FunctionInline));
 		}
 	}
 	
 	public Gee.List<Union> unions {
 		owned get {
-			return (Gee.List<Union>) all_of (typeof (Union));
+			return all_of (typeof (Union));
 		}
 	}
 	
 	public Gee.List<Method> methods {
 		owned get {
-			return (Gee.List<Method>) all_of (typeof (Method));
+			return all_of (typeof (Method));
 		}
 	}
 	
 	public Gee.List<MethodInline> method_inlines {
 		owned get {
-			return (Gee.List<MethodInline>) all_of (typeof (MethodInline));
+			return all_of (typeof (MethodInline));
 		}
 	}
 	
 	public Gee.List<Constructor> constructors {
 		owned get {
-			return (Gee.List<Constructor>) all_of (typeof (Constructor));
+			return all_of (typeof (Constructor));
 		}
 	}
 }

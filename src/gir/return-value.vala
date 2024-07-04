@@ -66,13 +66,13 @@ public class Gir.ReturnValue : Node, DocElements {
 	
 	public Gee.List<Attribute> attributes {
 		owned get {
-			return (Gee.List<Attribute>) all_of (typeof (Attribute));
+			return all_of (typeof (Attribute));
 		}
 	}
 	
 	public AnyType anytype {
 		owned get {
-			return (AnyType) any_of (typeof (AnyType));
+			return any_of (typeof (AnyType));
 		}
 	}
 }

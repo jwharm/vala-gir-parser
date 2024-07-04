@@ -60,18 +60,18 @@ public class Gir.Node : Object {
 	/**
 	 * Iterate through the child nodes of the requested gtype.
 	 */
-	internal Gee.List<Node> all_of (Type gtype) {
+	internal Gee.List<T> all_of<T> (Type gtype) {
 		var iter = children.filter ((e) => e.get_type ().is_a (gtype));
- 		var list = new Gee.ArrayList<Node> ();
+ 		var list = new Gee.ArrayList<T> ();
 		list.add_all_iterator (iter);
-		return list;
+		return (Gee.List<T>) list;
 	}
 
 	/**
 	 * Get a child node with the requested gtype, or ``null`` if not found.
 	 */
-	internal Node? any_of (Type gtype) {
-		return children.first_match ((e) => e.get_type ().is_a (gtype));
+	internal T? any_of<T> (Type gtype) {
+		return (T?) children.first_match ((e) => e.get_type ().is_a (gtype));
 	}
 
 	/**
