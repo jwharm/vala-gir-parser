@@ -56,12 +56,16 @@ public class Gir.Parameter : Node, DocElements {
 		}
 	}
 	
-	public Scope? get_scope () {
-		return Scope.from_string (attrs["scope"]);
+	public Scope scope {
+		get {
+			return Scope.from_string (attrs["scope"]);
+		}
 	}
 	
-	public Direction? get_direction () {
-		return Direction.from_string (attrs["direction"]);
+	public Direction direction {
+		get {
+			return Direction.from_string (attrs["direction"]);
+		}
 	}
 	
 	public bool caller_allocates {
@@ -82,8 +86,10 @@ public class Gir.Parameter : Node, DocElements {
 		}
 	}
 	
-	public TransferOwnership? get_transfer_ownership () {
-		return TransferOwnership.from_string (attrs["transfer-ownership"]);
+	public TransferOwnership transfer_ownership {
+		get {
+			return TransferOwnership.from_string (attrs["transfer-ownership"]);
+		}
 	}
 	
 	public AnyType? anytype {

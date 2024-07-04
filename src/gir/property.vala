@@ -68,8 +68,10 @@ public class Gir.Property : Node, InfoAttrs, DocElements, InfoElements {
 		}
 	}
 	
-	public TransferOwnership? get_transfer_ownership () {
-		return TransferOwnership.from_string (attrs["transfer-ownership"]);
+	public TransferOwnership transfer_ownership {
+		get {
+			return TransferOwnership.from_string (attrs["transfer-ownership"]);
+		}
 	}
 	
 	public AnyType anytype {

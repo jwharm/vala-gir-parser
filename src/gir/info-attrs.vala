@@ -44,8 +44,10 @@ public interface Gir.InfoAttrs : Node {
 		}
 	}
 	
-	public Stability? get_stability () {
-		return Stability.from_string (attrs["stability"]);
+	public Stability stability {
+		get {
+			return Stability.from_string (attrs["stability"]);
+		}
 	}
 }
 

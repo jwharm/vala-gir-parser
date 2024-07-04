@@ -32,8 +32,10 @@ public class Gir.Signal : Node, InfoAttrs, DocElements, InfoElements {
 		}
 	}
 	
-	public When? get_when () {
-		return When.from_string (attrs["when"]);
+	public When when {
+		get {
+			return When.from_string (attrs["when"]);
+		}
 	}
 	
 	public bool action {
