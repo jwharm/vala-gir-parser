@@ -39,14 +39,11 @@ var repository = parser.parse ("Adw-1.gir");
 // Get the first method of the third class
 var method = repository.namespace.classes[2].methods[0];
 
-// The name of the method in C
-string c_identifier = method.c_identifier;
-
 // Access the parent node
 var cls = method.parent_node as Gir.Class;
 
-// Check if the method returns something
-bool is_void = method.return_value.type.name == "void";
+// The name of the method in C
+string c_identifier = method.c_identifier;
 ```
 
 ## Contributing
