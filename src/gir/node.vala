@@ -203,6 +203,10 @@ public class Gir.Node : Object {
 		return builder.str;
 	}
 	
+	/**
+	 * Convert "GirTypeName" back to "type-name" format (reverse of the above 
+	 * ``element_to_type_name`` function).
+	 */
 	internal static string type_to_element_name (Type type) {
 		if (type == typeof (TypeRef)) {
 			return "type";
