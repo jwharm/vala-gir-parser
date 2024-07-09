@@ -38,26 +38,6 @@ public class Gir.Node : Object {
 	}
 
 	/**
-	 * Return a tree representation of this node and its children.
-	 */
-	public string to_string (int indent = 0) {
-		StringBuilder builder = new StringBuilder ();
-		builder.append (string.nfill (indent, ' '))
-			   .append (get_type ().name ().substring ("Gir".length));
-
-		foreach (var key in attrs.get_keys ()) {
-			builder.append (@" $key=\"$(attrs.get (key))\"");
-		}
-
-		foreach (var child in children) {
-			builder.append ("\n")
-				   .append (child.to_string (indent + 2));
-		}
-
-		return builder.str;
-	}
-
-	/**
 	 * Get a filtered view of all child nodes with the specified gtype.
 	 */
 	internal Gee.List<T> all_of<T> (Type gtype) {
@@ -116,6 +96,134 @@ public class Gir.Node : Object {
 	 */
 	internal void attr_set_int (string key, int val) {
 		attrs[key] = val.to_string();
+	}
+
+	/**
+	 * Return a string representation of this node and its children.
+	 */
+	public string to_string (int indent = 0) {
+		StringBuilder builder = new StringBuilder ();
+		builder.append (string.nfill (indent, ' '))
+			   .append (get_type ().name ().substring ("Gir".length));
+
+		foreach (var key in attrs.get_keys ()) {
+			builder.append (@" $key=\"$(attrs.get (key))\"");
+		}
+
+		foreach (var child in children) {
+			builder.append ("\n")
+				   .append (child.to_string (indent + 2));
+		}
+
+		return builder.str;
+	}
+	
+	/**
+	 * Return an xml representation of this node and its children.
+	 */
+	public string to_xml (int indent = 0) {
+		StringBuilder builder = new StringBuilder ();
+		
+		/* opening tag */
+		string element_name = type_to_element_name (get_type ());
+		builder.append (string.nfill (indent, ' '))
+			   .append ("<")
+			   .append (element_name);
+
+		/* attributes */
+		if (attrs.size <= 2) {
+			foreach (var key in attrs.get_keys ()) {
+				builder.append (@" $key=\"$(attrs.get (key))\"");
+			}
+		} else {
+			int attr_indent = indent + 1 + element_name.length;
+			int i = 0;
+			foreach (var key in attrs.get_keys ()) {
+				if (i++ > 0) {
+					builder.append("\n")
+						   .append (string.nfill (attr_indent, ' '));
+				}
+				
+				builder.append (@" $key=\"$(attrs.get (key))\"");
+			}
+		}
+		
+		/* empty element */
+		if (children.is_empty && content == "") {
+			builder.append ("/>");
+			return builder.str;
+		}
+		
+		builder.append (">");
+		
+		/* child elements */
+		foreach (var child in children) {
+			builder.append ("\n")
+				   .append (child.to_string (indent + 2));
+		}
+		
+		/* text content */
+		if (content != "") {
+			string escaped = content.replace ("&", "&amp;")
+									.replace ("\"", "&quot;")
+									.replace ("<", "&lt;")
+									.replace (">", "&gt;")
+									.replace ("%", "&percnt;");
+			builder.append (escaped);
+		} else {
+			builder.append ("\n")
+				   .append (string.nfill (indent, ' '));
+		}
+		
+		/* closing tag */
+		builder.append ("</")
+			   .append (element_name)
+			   .append (">");
+		
+		return builder.str;
+	}
+	
+	/**
+	 * Convert "type-name" or "glib:type-name" to "GirTypeName". "type" is a
+	 * special case (GirTypeRef), all others are converted from kebab case to
+	 * camel case.
+	 */
+	internal static string element_to_type_name (string element) {
+		if (element == "type") {
+			return "GirTypeRef";
+		}
+
+		var builder = new StringBuilder ("Gir");
+		foreach (string part in element.replace("glib:", "")
+									   .replace (":", "-")
+									   .split ("-")) {
+			builder.append (part.substring (0, 1).up () + part.substring (1));
+		}
+
+		return builder.str;
+	}
+	
+	internal static string type_to_element_name (Type type) {
+		if (type == typeof (TypeRef)) {
+			return "type";
+		} else if (type == typeof (CInclude)) {
+			return "c:include";
+		} else if (type == typeof (Boxed)) {
+			return "glib:boxed";
+		} else if (type == typeof (Signal)) {
+			return "glib:signal";
+		}
+		
+		string name = type.name ();
+		var builder = new StringBuilder ();
+		for (int i = 3; i < name.length; i++) {
+			if (i > 3 && name[i].isupper ()) {
+				builder.append_c ('-');
+			}
+			builder.append_c (name[i].tolower ());
+		}
+		
+		return builder.str;
 	}
 }
 

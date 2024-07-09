@@ -70,7 +70,7 @@ public class Gir.Parser {
 		}
 		
 		/* Determine the Node subclass */
-		Type gtype = Type.from_name (element_to_type_name (element));
+		Type gtype = Type.from_name (Node.element_to_type_name (element));
 		if (gtype == 0) {
 			warning ("Unsupported element: %s\n", element);
 			/* Fallback to generic Node type */
@@ -82,26 +82,6 @@ public class Gir.Parser {
 						   attrs: attrs,
 						   children: children,
 						   content: content.str.strip ()) as Node;
-	}
-
-	/**
-	 * Convert "type-name" or "glib:type-name" to "GirTypeName". "type" is a
-	 * special case (GirTypeRef), all others are converted from kebab case to
-	 * camel case.
-	 */
-	private static string element_to_type_name (string element) {
-		if (element == "type") {
-			return "GirTypeRef";
-		}
-
-		var builder = new StringBuilder ("Gir");
-		foreach (string part in element.replace("glib:", "")
-									   .replace (":", "-")
-									   .split ("-")) {
-			builder.append (part.substring (0, 1).up () + part.substring (1));
-		}
-
-		return builder.str;
 	}
 
 	/**
