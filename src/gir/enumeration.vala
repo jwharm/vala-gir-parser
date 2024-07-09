@@ -24,11 +24,17 @@ public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public string c_type {
 		owned get {
 			return attrs["c:type"];
+		}
+		set {
+			attrs["c:type"] = value;
 		}
 	}
 	
@@ -36,17 +42,26 @@ public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["glib:type-name"];
 		}
+		set {
+			attrs["glib:type-name"] = value;
+		}
 	}
 	
 	public string? glib_get_type {
 		owned get {
 			return attrs["glib:get-type"];
 		}
+		set {
+			attrs["glib:get-type"] = value;
+		}
 	}
 	
 	public string? glib_error_domain {
 		owned get {
 			return attrs["glib:error-domain"];
+		}
+		set {
+			attrs["glib:error-domain"] = value;
 		}
 	}
 	

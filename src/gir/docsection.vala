@@ -24,6 +24,9 @@ public class Gir.Docsection : Node, DocElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 }
 

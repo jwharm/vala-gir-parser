@@ -24,11 +24,17 @@ public class Gir.Signal : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public bool detailed {
 		get {
-			return attr_bool ("detailed", false);
+			return attr_get_bool ("detailed", false);
+		}
+		set {
+			attr_set_bool ("detailed", value);
 		}
 	}
 	
@@ -36,23 +42,39 @@ public class Gir.Signal : Node, InfoAttrs, DocElements, InfoElements {
 		get {
 			return When.from_string (attrs["when"]);
 		}
+		set {
+			if (value == When.UNDEFINED) {
+				attrs.remove ("when");
+			} else {
+				attrs["when"] = value.to_string ();
+			}
+		}
 	}
 	
 	public bool action {
 		get {
-			return attr_bool ("action", false);
+			return attr_get_bool ("action", false);
+		}
+		set {
+			attr_set_bool ("action", value);
 		}
 	}
 	
 	public bool no_hooks {
 		get {
-			return attr_bool ("no-hooks", false);
+			return attr_get_bool ("no-hooks", false);
+		}
+		set {
+			attr_set_bool ("no-hooks", value);
 		}
 	}
 	
 	public bool no_recurse {
 		get {
-			return attr_bool ("no-recurse", false);
+			return attr_get_bool ("no-recurse", false);
+		}
+		set {
+			attr_set_bool ("no-recurse", value);
 		}
 	}
 	
@@ -60,17 +82,26 @@ public class Gir.Signal : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["emitter"];
 		}
+		set {
+			attrs["emitter"] = value;
+		}
 	}
 	
 	public Parameters? parameters {
 		owned get {
 			return any_of (typeof (Parameters));
 		}
+		set {
+			remove_and_set (value);
+		}
 	}
 	
 	public ReturnValue? return_value {
 		owned get {
 			return any_of (typeof (ReturnValue));
+		}
+		set {
+			remove_and_set (value);
 		}
 	}
 }

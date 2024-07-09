@@ -31,6 +31,15 @@ public enum Gir.Stability {
 			default:         return UNDEFINED;
 		}
 	}
+	
+	public string to_string () {
+		switch (this) {
+			case STABLE:	return "Stable";
+			case UNSTABLE:	return "Unstable";
+			case PRIVATE:	return "Private";
+			default:		return "";
+		}
+	}
 }
 
 public enum Gir.TransferOwnership {
@@ -47,6 +56,15 @@ public enum Gir.TransferOwnership {
 			default:          return UNDEFINED;
 		}
 	}
+	
+	public string to_string () {
+		switch (this) {
+			case NONE:		return "none";
+			case CONTAINER:	return "container";
+			case FULL:		return "full";
+			default:		return "";
+		}
+	}
 }
 
 public enum Gir.When {
@@ -61,6 +79,15 @@ public enum Gir.When {
 			case "last":    return LAST;
 			case "cleanup": return CLEANUP;
 			default:        return UNDEFINED;
+		}
+	}
+	
+	public string to_string () {
+		switch (this) {
+			case FIRST:		return "first";
+			case LAST:		return "last";
+			case CLEANUP:	return "cleanup";
+			default:		return "";
 		}
 	}
 }
@@ -81,6 +108,16 @@ public enum Gir.Scope {
 			default:         return UNDEFINED;
 		}
 	}
+	
+	public string to_string () {
+		switch (this) {
+			case NOTIFIED:	return "notified";
+			case ASYNC:		return "async";
+			case CALL:		return "call";
+			case FOREVER:	return "forever";
+			default:		return "";
+		}
+	}
 }
 
 public enum Gir.Direction {
@@ -95,6 +132,15 @@ public enum Gir.Direction {
 			case "out":   return OUT;
 			case "inout": return INOUT;
 			default:      return UNDEFINED;
+		}
+	}
+	
+	public string to_string () {
+		switch (this) {
+			case IN:		return "in";
+			case OUT:		return "out";
+			case INOUT:		return "inout";
+			default:		return "";
 		}
 	}
 }

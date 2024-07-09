@@ -24,17 +24,26 @@ public class Gir.SourcePosition : Node {
 		owned get {
 			return attrs["filename"];
 		}
+		set {
+			attrs["filename"] = value;
+		}
 	}
 	
 	public string line {
 		owned get {
 			return attrs["line"];
 		}
+		set {
+			attrs["line"] = value;
+		}
 	}
 	
 	public string? column {
 		owned get {
 			return attrs["column"];
+		}
+		set {
+			attrs["column"] = value;
 		}
 	}
 }

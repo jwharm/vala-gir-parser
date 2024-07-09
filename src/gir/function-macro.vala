@@ -25,6 +25,9 @@ public class Gir.FunctionMacro : Node, DocElements, InfoElements, InfoAttrs,
 		owned get {
 			return any_of (typeof (Parameters));
 		}
+		set {
+			remove_and_set (value);
+		}
 	}
 }
 

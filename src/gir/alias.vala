@@ -24,17 +24,26 @@ public class Gir.Alias : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public string c_type {
 		owned get {
 			return attrs["c:type"];
 		}
+		set {
+			attrs["c:type"] = value;
+		}
 	}
 	
 	public AnyType? anytype {
 		owned get {
 			return any_of (typeof (AnyType));
+		}
+		set {
+			remove_and_set (value);
 		}
 	}
 }

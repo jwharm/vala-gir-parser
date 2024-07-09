@@ -24,6 +24,9 @@ public class Gir.Prerequisite : Node {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 }
 

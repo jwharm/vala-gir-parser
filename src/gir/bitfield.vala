@@ -24,11 +24,17 @@ public class Gir.Bitfield : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public string c_type {
 		owned get {
 			return attrs["c:type"];
+		}
+		set {
+			attrs["c:type"] = value;
 		}
 	}
 	
@@ -36,11 +42,17 @@ public class Gir.Bitfield : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["glib:type-name"];
 		}
+		set {
+			attrs["glib:type-name"] = value;
+		}
 	}
 	
 	public string? glib_get_type {
 		owned get {
 			return attrs["glib:get-type"];
+		}
+		set {
+			attrs["glib:get-type"] = value;
 		}
 	}
 	

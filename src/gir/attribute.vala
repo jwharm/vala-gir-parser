@@ -24,11 +24,17 @@ public class Gir.Attribute : Node {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public string value {
 		owned get {
 			return attrs["value"];
+		}
+		set {
+			attrs["value"] = value;
 		}
 	}
 }

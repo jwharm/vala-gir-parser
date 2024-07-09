@@ -24,35 +24,53 @@ public class Gir.Parameter : Node, DocElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public bool nullable {
 		get {
-			return attr_bool ("nullable", false);
+			return attr_get_bool ("nullable", false);
+		}
+		set {
+			attr_set_bool ("nullable", value);
 		}
 	}
 	
 	public bool allow_none {
 		get {
-			return attr_bool ("allow-none", true);
+			return attr_get_bool ("allow-none", true);
+		}
+		set {
+			attr_set_bool ("allow-none", value);
 		}
 	}
 	
 	public bool introspectable {
 		get {
-			return attr_bool ("introspectable", true);
+			return attr_get_bool ("introspectable", true);
+		}
+		set {
+			attr_set_bool ("introspectable", value);
 		}
 	}
 	
 	public int closure {
 		get {
-			return attr_int ("closure", -1);
+			return attr_get_int ("closure", -1);
+		}
+		set {
+			attr_set_int ("closure", value);
 		}
 	}
 	
 	public int destroy {
 		get {
-			return attr_int ("destroy", -1);
+			return attr_get_int ("destroy", -1);
+		}
+		set {
+			attr_set_int ("destroy", value);
 		}
 	}
 	
@@ -60,29 +78,52 @@ public class Gir.Parameter : Node, DocElements {
 		get {
 			return Scope.from_string (attrs["scope"]);
 		}
+		set {
+			if (value == Scope.UNDEFINED) {
+				attrs.remove ("scope");
+			} else {
+				attrs["scope"] = value.to_string ();
+			}
+		}
 	}
 	
 	public Direction direction {
 		get {
 			return Direction.from_string (attrs["direction"]);
 		}
+		set {
+			if (value == Direction.UNDEFINED) {
+				attrs.remove ("direction");
+			} else {
+				attrs["direction"] = value.to_string ();
+			}
+		}
 	}
 	
 	public bool caller_allocates {
 		get {
-			return attr_bool ("caller-allocates", false);
+			return attr_get_bool ("caller-allocates", false);
+		}
+		set {
+			attr_set_bool ("caller-allocates", value);
 		}
 	}
 	
 	public bool optional {
 		get {
-			return attr_bool ("optional", false);
+			return attr_get_bool ("optional", false);
+		}
+		set {
+			attr_set_bool ("optional", value);
 		}
 	}
 	
 	public bool skip {
 		get {
-			return attr_bool ("skip", false);
+			return attr_get_bool ("skip", false);
+		}
+		set {
+			attr_set_bool ("skip", true);
 		}
 	}
 	
@@ -90,17 +131,30 @@ public class Gir.Parameter : Node, DocElements {
 		get {
 			return TransferOwnership.from_string (attrs["transfer-ownership"]);
 		}
+		set {
+			if (value == TransferOwnership.UNDEFINED) {
+				attrs.remove ("transfer-ownership");
+			} else {
+				attrs["transfer-ownership"] = value.to_string ();
+			}
+		}
 	}
 	
 	public AnyType? anytype {
 		owned get {
 			return any_of (typeof (AnyType));
 		}
+		set {
+			remove_and_set (value);
+		}
 	}
 	
 	public Varargs? varargs {
 		owned get {
 			return any_of (typeof (Varargs));
+		}
+		set {
+			remove_and_set (value);
 		}
 	}
 	

@@ -24,6 +24,9 @@ public class Gir.CInclude : Node {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 }
 

@@ -24,11 +24,17 @@ public class Gir.Union : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public string? c_type {
 		owned get {
 			return attrs["c:type"];
+		}
+		set {
+			attrs["c:type"] = value;
 		}
 	}
 	
@@ -36,11 +42,17 @@ public class Gir.Union : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["c:symbol-prefix"];
 		}
+		set {
+			attrs["c:symbol-prefix"] = value;
+		}
 	}
 	
 	public string? glib_type_name {
 		owned get {
 			return attrs["glib:type-name"];
+		}
+		set {
+			attrs["glib:type-name"] = value;
 		}
 	}
 	
@@ -48,17 +60,26 @@ public class Gir.Union : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["glib:get-type"];
 		}
+		set {
+			attrs["glib:get-type"] = value;
+		}
 	}
 	
 	public string? copy_function {
 		owned get {
 			return attrs["copy-function"];
 		}
+		set {
+			attrs["copy-function"] = value;
+		}
 	}
 	
 	public string? free_function {
 		owned get {
 			return attrs["free-function"];
+		}
+		set {
+			attrs["free-function"] = value;
 		}
 	}
 	

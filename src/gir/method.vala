@@ -25,11 +25,17 @@ public class Gir.Method : Node, DocElements, InfoElements, InfoAttrs,
 		owned get {
 			return attrs["glib:set-property"];
 		}
+		set {
+			attrs["glib:set-property"] = value;
+		}
 	}
 	
 	public string? glib_get_property {
 		owned get {
 			return attrs["glib:get-property"];
+		}
+		set {
+			attrs["glib:get-property"] = value;
 		}
 	}
 	
@@ -37,11 +43,17 @@ public class Gir.Method : Node, DocElements, InfoElements, InfoAttrs,
 		owned get {
 			return any_of (typeof (Parameters));
 		}
+		set {
+			remove_and_set (value);
+		}
 	}
 	
 	public ReturnValue? return_value {
 		owned get {
 			return any_of (typeof (ReturnValue));
+		}
+		set {
+			remove_and_set (value);
 		}
 	}
 }

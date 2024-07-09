@@ -24,11 +24,17 @@ public class Gir.Constant : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public string value {
 		owned get {
 			return attrs["value"];
+		}
+		set {
+			attrs["value"] = value;
 		}
 	}
 	
@@ -36,17 +42,26 @@ public class Gir.Constant : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["c:type"];
 		}
+		set {
+			attrs["c:type"] = value;
+		}
 	}
 	
 	public string? c_identifier {
 		owned get {
 			return attrs["c:identifier"];
 		}
+		set {
+			attrs["c:identifier"] = value;
+		}
 	}
 	
 	public AnyType? anytype {
 		owned get {
 			return any_of (typeof (AnyType));
+		}
+		set {
+			remove_and_set (value);
 		}
 	}
 }

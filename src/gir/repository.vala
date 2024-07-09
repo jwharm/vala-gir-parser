@@ -24,17 +24,26 @@ public class Gir.Repository : Node {
 		owned get {
 			return attrs["version"];
 		}
+		set {
+			attrs["version"] = value;
+		}
 	}
 	
 	public string c_identifier_prefixes {
 		owned get {
 			return attrs["c:identifier-prefixes"];
 		}
+		set {
+			attrs["c:identifier-prefixes"] = value;
+		}
 	}
 	
 	public string c_symbol_prefixes {
 		owned get {
 			return attrs["c:symbol-prefixes"];
+		}
+		set {
+			attrs["c:symbol-prefixes"] = value;
 		}
 	}
 	
@@ -54,6 +63,9 @@ public class Gir.Repository : Node {
 		owned get {
 			return any_of (typeof (Package));
 		}
+		set {
+			remove_and_set (value);
+		}
 	}
 	
 	/* 
@@ -64,6 +76,9 @@ public class Gir.Repository : Node {
     public Namespace @namespace {
 		owned get {
 			return any_of (typeof (Namespace));
+		}
+		set {
+			remove_and_set (value);
 		}
 	}
 }

@@ -24,29 +24,44 @@ public class Gir.Record : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public string? c_type {
 		owned get {
 			return attrs["c:type"];
 		}
+		set {
+			attrs["c:type"] = value;
+		}
 	}
 	
 	public bool disguised {
 		get {
-			return attr_bool ("disguised", false);
+			return attr_get_bool ("disguised", false);
+		}
+		set {
+			attr_set_bool ("disguised", value);
 		}
 	}	
 	
 	public bool opaque {
 		get {
-			return attr_bool ("opaque", false);
+			return attr_get_bool ("opaque", false);
+		}
+		set {
+			attr_set_bool ("opaque", value);
 		}
 	}	
 	
 	public bool pointer {
 		get {
-			return attr_bool ("pointer", false);
+			return attr_get_bool ("pointer", false);
+		}
+		set {
+			attr_set_bool ("pointer", value);
 		}
 	}
 	
@@ -54,11 +69,17 @@ public class Gir.Record : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["glib:type-name"];
 		}
+		set {
+			attrs["glib:type-name"] = value;
+		}
 	}
 	
 	public string? glib_get_type {
 		owned get {
 			return attrs["glib:get-type"];
+		}
+		set {
+			attrs["glib:get-type"] = value;
 		}
 	}
 	
@@ -66,11 +87,17 @@ public class Gir.Record : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["c:symbol-prefix"];
 		}
+		set {
+			attrs["c:symbol-prefix"] = value;
+		}
 	}
 	
 	public bool foreign {
 		get {
-			return attr_bool ("foreign", false);
+			return attr_get_bool ("foreign", false);
+		}
+		set {
+			attr_set_bool ("foreign", value);
 		}
 	}
 	
@@ -78,17 +105,26 @@ public class Gir.Record : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["glib:is-gtype-struct-for"];
 		}
+		set {
+			attrs["glib:is-gtype-struct-for"] = value;
+		}
 	}
 	
 	public string? copy_function {
 		owned get {
 			return attrs["copy-function"];
 		}
+		set {
+			attrs["copy-function"] = value;
+		}
 	}
 	
 	public string? free_function {
 		owned get {
 			return attrs["free-function"];
+		}
+		set {
+			attrs["free-function"] = value;
 		}
 	}
 	

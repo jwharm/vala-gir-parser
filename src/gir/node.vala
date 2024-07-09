@@ -25,7 +25,7 @@ using Gee;
  */
 public class Gir.Node : Object {
 	public weak Node? parent_node { get; private set; default = null; }
-	public string? content { get; construct; }
+	public string? content { get; internal set construct; }
 	public Vala.Map<string, string> attrs { get; construct; }
 	public Gee.List<Node> children { get; construct; }
 
@@ -58,23 +58,34 @@ public class Gir.Node : Object {
 	}
 
 	/**
-	 * Get a filtered view of all child nodes with the requested gtype.
+	 * Get a filtered view of all child nodes with the specified gtype.
 	 */
 	internal Gee.List<T> all_of<T> (Type gtype) {
 		return new FilteredNodeList<T> (children, gtype);
 	}
 
 	/**
-	 * Get a child node with the requested gtype, or ``null`` if not found.
+	 * Get the child node with the specified gtype, or ``null`` if not found.
 	 */
 	internal T? any_of<T> (Type gtype) {
 		return (T?) children.first_match ((e) => e.get_type ().is_a (gtype));
 	}
 
 	/**
+	 * Add a node to the list of child nodes, removing any existing nodes with
+	 * the same gtype.
+	 */	
+	internal void remove_and_set (Node node) {
+		children.remove_all_iterator (
+			children.filter (e => e.get_type () == node.get_type ())
+		);
+		children.add (node);
+	}
+
+	/**
 	 * Get the boolean value of this key ("1" is true, "0" is false)
 	 */
-	internal bool attr_bool (string key, bool if_not_set = false) {
+	internal bool attr_get_bool (string key, bool if_not_set = false) {
 		if (key in attrs) {
 			return "1" == attrs[key];
 		} else {
@@ -83,14 +94,28 @@ public class Gir.Node : Object {
 	}
 
 	/**
+	 * Set the boolean value of this key
+	 */	
+	internal void attr_set_bool (string key, bool val) {
+		attrs[key] = (val ? "1" : "0");
+	}
+
+	/**
 	 * Get the int value of this key.
 	 */
-	internal int attr_int (string key, int if_not_set = -1) {
+	internal int attr_get_int (string key, int if_not_set = -1) {
 		if (key in attrs) {
 			return int.parse (attrs[key]);
 		} else {
 			return if_not_set;
 		}
+	}
+	
+	/**
+	 * Set the int value of this key
+	 */
+	internal void attr_set_int (string key, int val) {
+		attrs[key] = val.to_string();
 	}
 }
 

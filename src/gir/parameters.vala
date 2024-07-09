@@ -30,6 +30,9 @@ public class Gir.Parameters : Node {
 		owned get {
 			return any_of (typeof (InstanceParameter));
 		}
+		set {
+			remove_and_set (value);
+		}
 	}
 }
 

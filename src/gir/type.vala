@@ -24,17 +24,26 @@ public class Gir.TypeRef : Node, AnyType, DocElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public string c_type {
 		owned get {
 			return attrs["c:type"];
 		}
+		set {
+			attrs["c:type"] = value;
+		}
 	}
 	
 	public bool introspectable {
 		get {
-			return attr_bool ("introspectable", true);
+			return attr_get_bool ("introspectable", true);
+		}
+		set {
+			attr_set_bool ("introspectable", value);
 		}
 	}
 	

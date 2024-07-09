@@ -24,11 +24,17 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public string glib_type_name {
 		owned get {
 			return attrs["glib:type-name"];
+		}
+		set {
+			attrs["glib:type-name"] = value;
 		}
 	}
 	
@@ -36,11 +42,17 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["glib:get-type"];
 		}
+		set {
+			attrs["glib:get-type"] = value;
+		}
 	}
 	
 	public string? parent {
 		owned get {
 			return attrs["parent"];
+		}
+		set {
+			attrs["parent"] = value;
 		}
 	}
 	
@@ -48,11 +60,17 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["glib:type-struct"];
 		}
+		set {
+			attrs["glib:type-struct"] = value;
+		}
 	}
 	
 	public string? glib_ref_func {
 		owned get {
 			return attrs["glib:ref-func"];
+		}
+		set {
+			attrs["glib:ref-func"] = value;
 		}
 	}
 	
@@ -60,11 +78,17 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["glib:unref-func"];
 		}
+		set {
+			attrs["glib:unref-func"] = value;
+		}
 	}
 	
 	public string? glib_set_value_func {
 		owned get {
 			return attrs["glib:set-value-func"];
+		}
+		set {
+			attrs["glib:set-value-func"] = value;
 		}
 	}
 	
@@ -72,11 +96,17 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["glib:get-value-func"];
 		}
+		set {
+			attrs["glib:get-value-func"] = value;
+		}
 	}
 	
 	public string? c_type {
 		owned get {
 			return attrs["c:type"];
+		}
+		set {
+			attrs["c:type"] = value;
 		}
 	}
 	
@@ -84,23 +114,35 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["c:symbol-prefix"];
 		}
+		set {
+			attrs["c:symbol-prefix"] = value;
+		}
 	}
 	
 	public bool @abstract {
 		get {
-			return attr_bool ("abstract", false);
+			return attr_get_bool ("abstract", false);
+		}
+		set {
+			attr_set_bool ("abstract", value);
 		}
 	}
 	
 	public bool fundamental {
 		get {
-			return attr_bool ("fundamental", false);
+			return attr_get_bool ("fundamental", false);
+		}
+		set {
+			attr_set_bool ("fundamental", value);
 		}
 	}
 	
 	public bool final {
 		get {
-			return attr_bool ("final", false);
+			return attr_get_bool ("final", false);
+		}
+		set {
+			attr_set_bool ("final", value);
 		}
 	}
 	

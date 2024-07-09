@@ -24,37 +24,70 @@ public class Gir.InstanceParameter : Node, DocElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public bool nullable {
 		get {
-			return attr_bool ("nullable", false);
+			return attr_get_bool ("nullable", false);
+		}
+		set {
+			attr_set_bool ("nullable", value);
 		}
 	}
 	
 	public bool allow_none {
 		get {
-			return attr_bool ("allow-none", true);
+			return attr_get_bool ("allow-none", true);
+		}
+		set {
+			attr_set_bool ("allow-none", value);
 		}
 	}
 	
-	public Direction? get_direction () {
-		return Direction.from_string (attrs["direction"]);
+	public Direction direction {
+		get {
+			return Direction.from_string (attrs["direction"]);
+		}
+		set {
+			if (value == Direction.UNDEFINED) {
+				attrs.remove ("direction");
+			} else {
+				attrs["direction"] = value.to_string ();
+			}
+		}
 	}
 	
 	public bool caller_allocates {
 		get {
-			return attr_bool ("caller-allocates", false);
+			return attr_get_bool ("caller-allocates", false);
+		}
+		set {
+			attr_set_bool ("caller-allocates", value);
 		}
 	}
 	
-	public TransferOwnership? get_transfer_ownership () {
-		return TransferOwnership.from_string (attrs["transfer-ownership"]);
+	public TransferOwnership transfer_ownership {
+		get {
+			return TransferOwnership.from_string (attrs["transfer-ownership"]);
+		}
+		set {
+			if (value == TransferOwnership.UNDEFINED) {
+				attrs.remove ("transfer-ownership");
+			} else {
+				attrs["transfer-ownership"] = value.to_string ();
+			}
+		}
 	}
 	
 	public TypeRef type_ref {
 		owned get {
 			return any_of (typeof (TypeRef));
+		}
+		set {
+			remove_and_set (value);
 		}
 	}
 }

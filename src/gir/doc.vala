@@ -24,11 +24,25 @@ public class Gir.Doc : Node {
 		get {
 			return attrs["xml:space"] == "preserve";
 		}
+		set {
+			if (value) {
+				attrs["xml:space"] = "preserve";
+			} else {
+				attrs.remove ("xml:space");
+			}
+		}
 	}
 	
 	public bool xml_whitespace_preserve {
 		get {
 			return attrs["xml:whitespace"] == "preserve";
+		}
+		set {
+			if (value) {
+				attrs["xml:whitespace"] = "preserve";
+			} else {
+				attrs.remove ("xml:whitespace");
+			}
 		}
 	}
 	
@@ -36,11 +50,17 @@ public class Gir.Doc : Node {
 		owned get {
 			return attrs["filename"];
 		}
+		set {
+			attrs["filename"] = value;
+		}
 	}
 	
 	public string line {
 		owned get {
 			return attrs["line"];
+		}
+		set {
+			attrs["line"] = value;
 		}
 	}
 	
@@ -48,11 +68,17 @@ public class Gir.Doc : Node {
 		owned get {
 			return attrs["column"];
 		}
+		set {
+			attrs["column"] = value;
+		}
 	}
 	
 	public string? text {
 		owned get {
 			return content;
+		}
+		set {
+			content = value;
 		}
 	}
 }

@@ -24,11 +24,17 @@ public class Gir.Interface : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public string glib_type_name {
 		owned get {
 			return attrs["glib:type-name"];
+		}
+		set {
+			attrs["glib:type-name"] = value;
 		}
 	}
 	
@@ -36,11 +42,17 @@ public class Gir.Interface : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["glib:get-type"];
 		}
+		set {
+			attrs["glib:get-type"] = value;
+		}
 	}
 	
 	public string? c_symbol_prefix {
 		owned get {
 			return attrs["c:symbol-prefix"];
+		}
+		set {
+			attrs["c:symbol-prefix"] = value;
 		}
 	}
 	
@@ -48,11 +60,17 @@ public class Gir.Interface : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["c:type"];
 		}
+		set {
+			attrs["c:type"] = value;
+		}
 	}
 	
 	public string? glib_type_struct {
 		owned get {
 			return attrs["glib:type-struct"];
+		}
+		set {
+			attrs["glib:type-struct"] = value;
 		}
 	}
 	
@@ -83,6 +101,9 @@ public class Gir.Interface : Node, InfoAttrs, DocElements, InfoElements {
     public Constructor? constructor {
 		owned get {
 			return any_of (typeof (Constructor));
+		}
+		set {
+			remove_and_set (value);
 		}
 	}
 	

@@ -24,29 +24,44 @@ public class Gir.Field : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return attrs["name"];
 		}
+		set {
+			attrs["name"] = value;
+		}
 	}
 	
 	public bool writable {
 		get {
-			return attr_bool ("writable", false);
+			return attr_get_bool ("writable", false);
+		}
+		set {
+			attr_set_bool ("writable", value);
 		}
 	}
 	
 	public bool readable {
 		get {
-			return attr_bool ("readable", false);
+			return attr_get_bool ("readable", false);
+		}
+		set {
+			attr_set_bool ("readable", value);
 		}
 	}
 	
 	public bool @private {
 		get {
-			return attr_bool ("private", false);
+			return attr_get_bool ("private", false);
+		}
+		set {
+			attr_set_bool ("private", value);
 		}
 	}
 	
 	public int bits {
 		get {
-			return attr_int ("bits", -1);
+			return attr_get_int ("bits", -1);
+		}
+		set {
+			attr_set_int ("bits", value);
 		}
 	}
 	
@@ -54,11 +69,17 @@ public class Gir.Field : Node, InfoAttrs, DocElements, InfoElements {
 		owned get {
 			return any_of (typeof (Callback));
 		}
+		set {
+			remove_and_set (value);
+		}
 	}
 	
 	public AnyType? anytype {
 		owned get {
 			return any_of (typeof (AnyType));
+		}
+		set {
+			remove_and_set (value);
 		}
 	}
 }
