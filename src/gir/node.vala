@@ -24,10 +24,10 @@ using Gee;
  * nodes, and a parent node. The parent node of the root node is ``null``.
  */
 public class Gir.Node : Object {
-	public Node? parent_node { get; private set; default = null; }
-	public string? content { get; internal set; }
-	public Gee.Map<string, string> attrs { get; internal set; }
-	public Gee.List<Node> children { get; internal set; }
+	public weak Node? parent_node { get; private set; default = null; }
+	public string? content { get; construct; }
+	public Vala.Map<string, string> attrs { get; construct; }
+	public Gee.List<Node> children { get; construct; }
 
 	construct {
 		if (children != null) {
@@ -45,8 +45,8 @@ public class Gir.Node : Object {
 		builder.append (string.nfill (indent, ' '))
 			   .append (get_type ().name ().substring ("Gir".length));
 
-		foreach (var entry in attrs) {
-			builder.append (@" $(entry.key)=\"$(entry.value)\"");
+		foreach (var key in attrs.get_keys ()) {
+			builder.append (@" $key=\"$(attrs.get (key))\"");
 		}
 
 		foreach (var child in children) {
@@ -58,13 +58,10 @@ public class Gir.Node : Object {
 	}
 
 	/**
-	 * Iterate through the child nodes of the requested gtype.
+	 * Get a filtered view of all child nodes with the requested gtype.
 	 */
 	internal Gee.List<T> all_of<T> (Type gtype) {
-		var iter = children.filter ((e) => e.get_type ().is_a (gtype));
- 		var list = new Gee.ArrayList<T> ();
-		list.add_all_iterator (iter);
-		return (Gee.List<T>) list;
+		return new FilteredNodeList<T> (children, gtype);
 	}
 
 	/**
@@ -78,7 +75,7 @@ public class Gir.Node : Object {
 	 * Get the boolean value of this key ("1" is true, "0" is false)
 	 */
 	internal bool attr_bool (string key, bool if_not_set = false) {
-		if (attrs.has_key (key)) {
+		if (key in attrs) {
 			return "1" == attrs[key];
 		} else {
 			return if_not_set;
@@ -89,7 +86,7 @@ public class Gir.Node : Object {
 	 * Get the int value of this key.
 	 */
 	internal int attr_int (string key, int if_not_set = -1) {
-		if (attrs.has_key (key)) {
+		if (key in attrs) {
 			return int.parse (attrs[key]);
 		} else {
 			return if_not_set;

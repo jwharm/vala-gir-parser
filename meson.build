@@ -14,8 +14,8 @@ dependencies = [
     dependency('libvala-0.56'),
 ]
 
-sources = files('src/main.vala',
-		'src/util.vala',
+sources = files(
+		'src/main.vala',
 		'src/gir/alias.vala',
 		'src/gir/any-type.vala',
 		'src/gir/array.vala',
@@ -36,6 +36,7 @@ sources = files('src/main.vala',
 		'src/gir/enumeration.vala',
 		'src/gir/enums.vala',
 		'src/gir/field.vala',
+		'src/gir/filtered-node-list.vala',
 		'src/gir/function.vala',
 		'src/gir/function-inline.vala',
 		'src/gir/function-macro.vala',

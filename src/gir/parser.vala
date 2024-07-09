@@ -33,8 +33,7 @@ public class Gir.Parser {
 	 */
 	public Repository? parse (string filename) {
 		var reader = new MarkupReader (filename);
-		SourceLocation begin;
-		SourceLocation end;
+		SourceLocation begin, end;
 		
 		/* Find the first START_ELEMENT token in the XML file */
 		while (true) {
@@ -52,10 +51,9 @@ public class Gir.Parser {
 	private Node parse_element (MarkupReader reader) {
 		var element = reader.name;
 		var children = new Gee.ArrayList<Node> ();
-		var attrs =  to_gee (reader.get_attributes ());
+		var attrs = reader.get_attributes ();
 		var content = new StringBuilder ();
-		SourceLocation begin;
-		SourceLocation end;
+		SourceLocation begin, end;
 
 		/* Keep parsing XML until an END_ELEMENT or EOF token is reached */
 		while (true) {
@@ -87,19 +85,19 @@ public class Gir.Parser {
 	}
 
 	/**
-	 * Convert "type-name" to "GirTypeName".
-	 * "type" and "glib:signal" are special cases; all others are converted
-	 * from kebab case to camel case.
+	 * Convert "type-name" or "glib:type-name" to "GirTypeName". "type" is a
+	 * special case (GirTypeRef), all others are converted from kebab case to
+	 * camel case.
 	 */
 	private static string element_to_type_name (string element) {
 		if (element == "type") {
 			return "GirTypeRef";
-		} else if (element == "glib:signal") {
-			return "GirSignal";
 		}
 
 		var builder = new StringBuilder ("Gir");
-		foreach (string part in element.replace (":", "-").split ("-")) {
+		foreach (string part in element.replace("glib:", "")
+									   .replace (":", "-")
+									   .split ("-")) {
 			builder.append (part.substring (0, 1).up () + part.substring (1));
 		}
 
