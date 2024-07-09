@@ -42,8 +42,11 @@ var method = repository.namespace.classes[2].methods[0];
 // Access the parent node
 var cls = method.parent_node as Gir.Class;
 
-// The name of the method in C
-string c_identifier = method.c_identifier;
+// Change the C identifier of the method
+method.c_identifier = "my_identifier";
+
+// Generate Gir xml representation
+string xml = repository.to_xml ();
 ```
 
 ## Contributing
