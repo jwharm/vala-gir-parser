@@ -23,7 +23,7 @@ public enum Gir.Stability {
 	UNSTABLE,
 	PRIVATE;
 	
-	public static Stability from_string (string str) {
+	public static Stability from_string (string? str) {
 		switch (str) {
 			case "Stable":   return STABLE;
 			case "Unstable": return UNSTABLE;
@@ -39,7 +39,7 @@ public enum Gir.TransferOwnership {
 	CONTAINER,
 	FULL;
 	
-	public static TransferOwnership from_string (string str) {
+	public static TransferOwnership from_string (string? str) {
 		switch (str) {
 			case "none":      return NONE;
 			case "container": return CONTAINER;
@@ -55,7 +55,7 @@ public enum Gir.When {
 	LAST,
 	CLEANUP;
 	
-	public static When from_string (string str) {
+	public static When from_string (string? str) {
 		switch (str) {
 			case "first":   return FIRST;
 			case "last":    return LAST;
@@ -72,7 +72,7 @@ public enum Gir.Scope {
 	CALL,
 	FOREVER;
 	
-	public static Scope from_string (string str) {
+	public static Scope from_string (string? str) {
 		switch (str) {
 			case "notified": return NOTIFIED;
 			case "async":    return ASYNC;
@@ -89,7 +89,7 @@ public enum Gir.Direction {
 	OUT,
 	INOUT;
 	
-	public static Direction from_string (string str) {
+	public static Direction from_string (string? str) {
 		switch (str) {
 			case "in":    return IN;
 			case "out":   return OUT;
