@@ -74,4 +74,4 @@ sources = files(
 		'src/gir/union.vala',
 )
 
-executable('gir-parser', sources, dependencies: dependencies)
+executable('vapigen2', sources, dependencies: dependencies)

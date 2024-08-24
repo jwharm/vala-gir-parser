@@ -27,15 +27,18 @@ public class GirParser2 : CodeVisitor {
     }
 
     public override void visit_source_file (SourceFile source_file) {
+        if (! source_file.filename.has_suffix (".gir")) {
+            return;
+        }
+
         var context = CodeContext.get ();
         var parser = new Gir.Parser (source_file);
         var repository = parser.parse ();
 
-        if (repository == null) {
-            return;
+        
+        if (repository != null) {
+            var builder = new NamespaceBuilder (repository.namespace);
+            context.root.add_namespace( builder.build ());
         }
-
-        var builder = new NamespaceBuilder (repository.namespace);
-        context.root.add_namespace( builder.build ());
     }
 }
