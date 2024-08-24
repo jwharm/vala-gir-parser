@@ -25,15 +25,26 @@ public class Gir.Parser {
 		ensure_initialized ();
 	}
 
+	private SourceFile source_file;
+	private SourceLocation begin;
+	private SourceLocation end;
+	
+	/**
+	 * Create a Gir Parser for the provided source file.
+	 *
+	 * @param  source_file a valid Gir file
+	 */
+	public Parser (SourceFile source_file) {
+		this.source_file = source_file;
+	}
+
 	/**
 	 * Parse the provided Gir file into a tree of Gir Nodes.
 	 *
-	 * @param  filename must be a valid filename of an existing file
 	 * @return the Repository, or null in case the gir file is invalid
 	 */
-	public Repository? parse (string filename) {
-		var reader = new MarkupReader (filename);
-		SourceLocation begin, end;
+	public Repository? parse() {
+		var reader = new MarkupReader (source_file.filename);
 		
 		/* Find the first START_ELEMENT token in the XML file */
 		while (true) {
@@ -41,7 +52,8 @@ public class Gir.Parser {
 			if (token_type == START_ELEMENT) {
 				return parse_element (reader) as Repository;
 			} else if (token_type == EOF) {
-				critical ("No repository found in %s\n", filename);
+				var source = new SourceReference (source_file, begin, end);
+				Report.error (source, "No repository found");
 				return null;
 			}
 		}
@@ -53,7 +65,7 @@ public class Gir.Parser {
 		var children = new Gee.ArrayList<Node> ();
 		var attrs = reader.get_attributes ();
 		var content = new StringBuilder ();
-		SourceLocation begin, end;
+		var source = new SourceReference (source_file, begin, end);
 
 		/* Keep parsing XML until an END_ELEMENT or EOF token is reached */
 		while (true) {
@@ -72,7 +84,7 @@ public class Gir.Parser {
 		/* Determine the Node subclass */
 		Type gtype = Type.from_name (Node.element_to_type_name (element));
 		if (gtype == 0) {
-			warning ("Unsupported element: %s\n", element);
+			Report.warning (source, "Unsupported element: " + element);
 			/* Fallback to generic Node type */
 			gtype = typeof (Node);
 		}
@@ -81,7 +93,8 @@ public class Gir.Parser {
 		return Object.new (gtype,
 						   attrs: attrs,
 						   children: children,
-						   content: content.str.strip ()) as Node;
+						   content: content.str.strip (),
+						   source_reference: source) as Node;
 	}
 
 	/**

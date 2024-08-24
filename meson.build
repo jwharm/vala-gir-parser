@@ -15,7 +15,13 @@ dependencies = [
 ]
 
 sources = files(
+		'src/gir-parser.vala',
 		'src/main.vala',
+		'src/builders/class-builder.vala',
+		'src/builders/method-builder.vala',
+		'src/builders/namespace-builder.vala',
+		'src/builders/type-builder.vala',
+		'src/builders/typed-value-builder.vala',
 		'src/gir/alias.vala',
 		'src/gir/any-type.vala',
 		'src/gir/array.vala',

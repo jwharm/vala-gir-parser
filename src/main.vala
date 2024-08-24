@@ -17,35 +17,33 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+using Vala;
+
 public static int main (string[] args) {
-	/* Check if a filename was specified */
-	if (args.length != 2) {
-		printerr ("Usage: gir-parser filename.gir\n");
+	/* Check if a library and filename was specified */
+	if (args.length != 3) {
+		printerr ("Usage: gir-parser library_name filename.gir\n");
 		return 1;
 	}
 
-	/* Check if the file exists */
-	if (! File.new_for_path (args[1]).query_exists ()) {
+	/* Check if the gir file exists */
+	if (! File.new_for_path (args[2]).query_exists ()) {
 		printerr ("File does not exist\n");
 		return 1;
 	}
 
-	var parser = new Gir.Parser ();
-	var repository = parser.parse (args[1]);
+	/* Parse the gir file and create vapi AST */
+	var context = new CodeContext ();
+	var source_file = new SourceFile (context, SourceFileType.NONE, args[2]);
+	source_file.from_commandline = true;
+	context.add_source_file (source_file);
+	CodeContext.push (context);
+	new GirParser2 ().parse (context);
 
-	if (repository == null) {
-		printerr ("Invalid gir file\n");
-		return 1;
-	}
-
-	/* Print some fun facts */
-	print (@"Parsed repository '$(repository.namespace.name)'\n");
-
-	var method = repository.namespace.classes[0].methods[0];
-	print (@"The first method of the first class is: $(method.name)\n");
-
-	var ip = method.parameters.instance_parameter;
-	print (@"The instance parameter is:\n$(ip.to_string ())\n");
+	/* Write the library.vapi file */
+	var vapi_filename = "%s.vapi".printf (args[1]);
+	new CodeWriter (CodeWriterType.VAPIGEN).write_file (context, vapi_filename);
+	CodeContext.pop ();
 
 	return 0;
 }

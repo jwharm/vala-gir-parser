@@ -28,6 +28,7 @@ public class Gir.Node : Object {
 	public string? content { get; internal set construct; }
 	public Vala.Map<string, string> attrs { get; construct; }
 	public Gee.List<Node> children { get; construct; }
+	public Vala.SourceReference source_reference {get; construct; }
 
 	construct {
 		if (children != null) {
