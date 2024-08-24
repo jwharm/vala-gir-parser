@@ -39,8 +39,13 @@ public class Builders.MethodBuilder {
         /* parameters */
         if (method.parameters != null) {
             foreach (Gir.Parameter p in method.parameters.parameters) {
-                var p_type = new TypedValueBuilder (p).build ();
-                var param = new Vala.Parameter (p.name, p_type, p.source_reference);
+                Vala.Parameter param;
+                if (p.varargs != null) {
+                    param = new Vala.Parameter.with_ellipsis (p.source_reference);
+                } else {
+                    var p_type = new TypedValueBuilder (p).build ();
+                    param = new Vala.Parameter (p.name, p_type, p.source_reference);
+                }
                 vmethod.add_parameter (param);
             }
         }
