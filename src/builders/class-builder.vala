@@ -28,9 +28,14 @@ public class Builders.ClassBuilder {
     }
 
     public Vala.Class build () {
+        /* the class */
         Vala.Class vclass = new Vala.Class (cls.name, cls.source_reference);
         vclass.access = SymbolAccessibility.PUBLIC;
 
+        /* c name */
+        vclass.set_attribute_string ("CCode", "cname", cls.c_type);
+
+        /* add methods */
         foreach (var m in cls.methods) {
             var vmethod = new MethodBuilder (m).build ();
             vclass.add_method (vmethod);

@@ -22,13 +22,16 @@ using Vala;
 public class Builders.NamespaceBuilder {
 
     private Gir.Namespace ns;
+    private Gee.List<Gir.CInclude> c_includes;
 
-    public NamespaceBuilder (Gir.Namespace ns) {
+    public NamespaceBuilder (Gir.Namespace ns, Gee.List<Gir.CInclude> c_includes) {
         this.ns = ns;
+        this.c_includes = c_includes;
     }
 
     public Vala.Namespace build () {
         Vala.Namespace vns = new Vala.Namespace (ns.name, ns.source_reference);
+        vns.set_attribute_string ("CCode", "cheader_filename", get_cheader_filename ());
 
         foreach (Gir.Class cls in ns.classes) {
             ClassBuilder cb = new ClassBuilder (cls);
@@ -36,5 +39,14 @@ public class Builders.NamespaceBuilder {
         }
 
         return vns;
+    }
+
+    private string get_cheader_filename () {
+        string[] names = new string[c_includes.size];
+        for (int i = 0; i < c_includes.size; i++) {
+            names[i] = c_includes[i].name;
+        }
+
+        return string.joinv (",", names);
     }
 }

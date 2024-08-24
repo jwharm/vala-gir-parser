@@ -36,6 +36,9 @@ public class Builders.MethodBuilder {
         var vmethod = new Method (method.name, return_type, method.source_reference);
         vmethod.access = SymbolAccessibility.PUBLIC;
 
+        /* c name */
+        vmethod.set_attribute_string ("CCode", "cname", method.c_identifier);
+
         /* parameters */
         if (method.parameters != null) {
             foreach (Gir.Parameter p in method.parameters.parameters) {
@@ -48,6 +51,11 @@ public class Builders.MethodBuilder {
                 }
                 vmethod.add_parameter (param);
             }
+        }
+
+        /* throws */
+        if (method.throws) {
+            vmethod.add_error_type (new Vala.ErrorType (null, null));
         }
 
         return vmethod;
