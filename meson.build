@@ -18,6 +18,7 @@ sources = files(
 		'src/gir-parser.vala',
 		'src/vapigen.vala',
 		'src/builders/class-builder.vala',
+		'src/builders/field-builder.vala',
 		'src/builders/method-builder.vala',
 		'src/builders/namespace-builder.vala',
 		'src/builders/type-builder.vala',

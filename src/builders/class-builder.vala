@@ -66,6 +66,21 @@ public class Builders.ClassBuilder {
             vclass.add_method (vmethod);
         }
 
+        /* add fields */
+        foreach (var f in cls.fields) {
+            var vfield = new FieldBuilder (f).build ();
+            vclass.add_field (vfield);
+        }
+
+        /* always provide constructor in generated bindings
+         * to indicate that implicit Object () chainup is allowed */
+        if (cls.constructors.is_empty) {
+            var cm = new CreationMethod (null, null, cls.source_reference);
+            cm.has_construct_function = false;
+            cm.access = SymbolAccessibility.PROTECTED;
+            vclass.add_method (cm);
+        }
+
         return vclass;
     }
 }
