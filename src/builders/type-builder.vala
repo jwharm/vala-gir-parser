@@ -43,18 +43,18 @@ public class Builders.TypeBuilder {
             return new UnresolvedType.from_symbol (sym, type.source_reference);
         }
 
-        var sym = to_unresolved_symbol ();
+        var sym = to_unresolved_symbol (type.name, type.source_reference);
         return new UnresolvedType.from_symbol (sym, type.source_reference);
     }
-    
-    private UnresolvedSymbol to_unresolved_symbol () {
+
+    public static UnresolvedSymbol to_unresolved_symbol (string name, SourceReference? source = null) {
         UnresolvedSymbol? sym = null;
-        foreach (unowned string str in type.name.split (".")) {
-            sym = new UnresolvedSymbol (sym, str, type.source_reference);
+        foreach (unowned string str in name.split (".")) {
+            sym = new UnresolvedSymbol (sym, str, source);
         }
 
         if (sym == null) {
-            Report.error (type.source_reference, "a symbol must be specified");
+            Report.error (source, "a symbol must be specified");
         }
 
         return (!) sym;

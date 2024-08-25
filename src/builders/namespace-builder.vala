@@ -31,7 +31,13 @@ public class Builders.NamespaceBuilder {
 
     public Vala.Namespace build () {
         Vala.Namespace vns = new Vala.Namespace (ns.name, ns.source_reference);
+
+        /* attributes */
         vns.set_attribute_string ("CCode", "cheader_filename", get_cheader_filename ());
+        vns.set_attribute_string ("CCode", "gir_namespace", ns.name);
+        vns.set_attribute_string ("CCode", "gir_version", ns.version);
+        vns.set_attribute_string ("CCode", "cprefix", ns.c_identifier_prefixes);
+        vns.set_attribute_string ("CCode", "lower_case_cprefix", ns.c_symbol_prefixes + "_");
 
         foreach (Gir.Class cls in ns.classes) {
             ClassBuilder cb = new ClassBuilder (cls);

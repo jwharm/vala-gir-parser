@@ -31,9 +31,34 @@ public class Builders.ClassBuilder {
         /* the class */
         Vala.Class vclass = new Vala.Class (cls.name, cls.source_reference);
         vclass.access = SymbolAccessibility.PUBLIC;
+        vclass.is_abstract = cls.abstract;
+        vclass.is_sealed = cls.final;
+
+        /* parent class */
+        if (cls.parent != null) {
+            var sym = TypeBuilder.to_unresolved_symbol (cls.parent, cls.source_reference);
+            vclass.add_base_type (new UnresolvedType.from_symbol (sym, cls.source_reference));
+        }
+
+        /* implemented interfaces */
+        foreach (var imp in cls.implements) {
+            var sym = TypeBuilder.to_unresolved_symbol (imp.name, imp.source_reference);
+            vclass.add_base_type (new UnresolvedType.from_symbol (sym, imp.source_reference));
+        }
 
         /* c name */
         vclass.set_attribute_string ("CCode", "cname", cls.c_type);
+
+        /* version */
+        vclass.set_attribute_string ("Version", "since", cls.version);
+
+        /* get_type method */
+        var type_id = cls.glib_get_type;
+        if (type_id == null) {
+            vclass.set_attribute_bool ("CCode", "has_type_id", false);
+        } else {
+            vclass.set_attribute_string ("CCode", "type_id", type_id + " ()");
+        }
 
         /* add methods */
         foreach (var m in cls.methods) {

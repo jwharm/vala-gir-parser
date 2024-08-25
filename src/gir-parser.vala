@@ -37,7 +37,7 @@ public class GirParser2 : CodeVisitor {
 
         if (repository != null) {
             var builder = new NamespaceBuilder (repository.namespace, repository.c_includes);
-            context.root.add_namespace( builder.build ());
+            context.root.add_namespace (builder.build ());
         }
     }
 }
