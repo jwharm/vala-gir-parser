@@ -71,8 +71,9 @@ public class Builders.DataTypeBuilder {
     
     /* Create Vala.DataType from a string (for example "Gio.File"). */
     public static Vala.DataType from_name (string name, SourceReference? source = null) {
+        string input = check_name (name);
         UnresolvedSymbol? sym = null;
-        foreach (unowned string str in name.split (".")) {
+        foreach (unowned string str in input.split (".")) {
             sym = new UnresolvedSymbol (sym, str, source);
         }
 
@@ -81,6 +82,14 @@ public class Builders.DataTypeBuilder {
         }
 
         return new UnresolvedType.from_symbol ((!) sym, source);
+    }
+
+    private static string check_name (string name) {
+        if (name.has_prefix ("GObject.")) {
+            return name.replace ("GObject.", "GLib.");
+        } else {
+            return name;
+        }
     }
 
     private string? to_builtin_type (string name) {

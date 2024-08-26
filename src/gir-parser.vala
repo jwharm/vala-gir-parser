@@ -36,6 +36,30 @@ public class GirParser2 : CodeVisitor {
         var repository = parser.parse ();
 
         if (repository != null) {
+            /* set package name */
+            string? pkg = repository.package?.name;
+            source_file.package_name = pkg;
+            if (context.has_package (pkg)) {
+                /* package already provided elsewhere, stop parsing this GIR
+                 * if it was not passed explicitly */
+                if (! source_file.from_commandline) {
+                    return;
+                }
+            } else {
+                context.add_package (pkg);
+            }
+
+            /* add dependency packages */
+            foreach (var include in repository.includes) {
+                string dep = include.name;
+                if (include.version != null) {
+                    dep += "-" + include.version;
+                }
+
+                context.add_external_package (dep);
+            }
+
+            /* build the namespace and everything in it */
             var builder = new NamespaceBuilder (repository.namespace, repository.c_includes);
             context.root.add_namespace (builder.build ());
         }
