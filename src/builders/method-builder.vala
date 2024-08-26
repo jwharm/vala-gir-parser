@@ -30,7 +30,7 @@ public class Builders.MethodBuilder {
     public Vala.Method build () {
         /* return type */
         var return_value = method.return_value;
-        var return_type = new TypedValueBuilder (return_value).build ();
+        var return_type = new DataTypeBuilder (return_value.anytype).build ();
 
         /* the method itself */
         var vmethod = new Method (method.name, return_type, method.source_reference);
@@ -42,14 +42,14 @@ public class Builders.MethodBuilder {
         /* parameters */
         if (method.parameters != null) {
             foreach (Gir.Parameter p in method.parameters.parameters) {
-                Vala.Parameter param;
+                Vala.Parameter vpar;
                 if (p.varargs != null) {
-                    param = new Vala.Parameter.with_ellipsis (p.source_reference);
+                    vpar = new Vala.Parameter.with_ellipsis (p.source_reference);
                 } else {
-                    var p_type = new TypedValueBuilder (p).build ();
-                    param = new Vala.Parameter (p.name, p_type, p.source_reference);
+                    var p_type = new DataTypeBuilder (p.anytype).build ();
+                    vpar = new Vala.Parameter (p.name, p_type, p.source_reference);
                 }
-                vmethod.add_parameter (param);
+                vmethod.add_parameter (vpar);
             }
         }
 

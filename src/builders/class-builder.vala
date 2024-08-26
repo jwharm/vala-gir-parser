@@ -36,14 +36,14 @@ public class Builders.ClassBuilder {
 
         /* parent class */
         if (cls.parent != null) {
-            var sym = TypeBuilder.to_unresolved_symbol (cls.parent, cls.source_reference);
-            vclass.add_base_type (new UnresolvedType.from_symbol (sym, cls.source_reference));
+            var parent_type = DataTypeBuilder.from_name (cls.parent, cls.source_reference);
+            vclass.add_base_type (parent_type);
         }
 
         /* implemented interfaces */
         foreach (var imp in cls.implements) {
-            var sym = TypeBuilder.to_unresolved_symbol (imp.name, imp.source_reference);
-            vclass.add_base_type (new UnresolvedType.from_symbol (sym, imp.source_reference));
+            var imp_type = DataTypeBuilder.from_name (imp.name, imp.source_reference);
+            vclass.add_base_type (imp_type);
         }
 
         /* c name */

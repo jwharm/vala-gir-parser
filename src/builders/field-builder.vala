@@ -28,7 +28,7 @@ public class Builders.FieldBuilder {
     }
 
     public Vala.Field build () {
-        var f_type = new TypedValueBuilder (field).build ();
+        var f_type = new DataTypeBuilder (field.anytype).build ();
         var vfield = new Field (field.name, f_type, null, field.source_reference, null);
         vfield.access = SymbolAccessibility.PUBLIC;
         return vfield;
