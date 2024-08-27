@@ -51,15 +51,6 @@ public class Builders.DataTypeBuilder {
 
     /* Create Vala.DataType from a Gir <type> element. */
     private Vala.DataType build_type (Gir.TypeRef type) {
-        if (type.name == "none") {
-            return new VoidType (type.source_reference);
-        }
-
-        if (type.name == "gpointer") {
-            var void_type = new VoidType (type.source_reference);
-            return new PointerType (void_type, type.source_reference);
-        }
-
         string? builtin = to_builtin_type (type.name);
         if (builtin != null) {
             var sym = new UnresolvedSymbol (null, builtin, type.source_reference);
@@ -71,7 +62,15 @@ public class Builders.DataTypeBuilder {
     
     /* Create Vala.DataType from a string (for example "Gio.File"). */
     public static Vala.DataType from_name (string name, SourceReference? source = null) {
-        string input = check_name (name);
+        if (name == "none") {
+            return new VoidType (source);
+        }
+
+        if (name == "gpointer") {
+            return new PointerType (new VoidType (source), source);
+        }
+
+        string input = convert_name (name);
         UnresolvedSymbol? sym = null;
         foreach (unowned string str in input.split (".")) {
             sym = new UnresolvedSymbol (sym, str, source);
@@ -84,12 +83,16 @@ public class Builders.DataTypeBuilder {
         return new UnresolvedType.from_symbol ((!) sym, source);
     }
 
-    private static string check_name (string name) {
+    private static string convert_name (string name) {
+        if (name == "GType") {
+            return "GLib.Type";
+        }
+
         if (name.has_prefix ("GObject.")) {
             return name.replace ("GObject.", "GLib.");
-        } else {
-            return name;
         }
+
+        return name;
     }
 
     private string? to_builtin_type (string name) {
