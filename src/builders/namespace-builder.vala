@@ -44,6 +44,11 @@ public class Builders.NamespaceBuilder {
             vns.add_class (cb.build ());
         }
 
+        foreach (Gir.Interface ifc in ns.interfaces) {
+            InterfaceBuilder ib = new InterfaceBuilder (ifc);
+            vns.add_interface (ib.build ());
+        }
+
         return vns;
     }
 

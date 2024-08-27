@@ -19,6 +19,7 @@ sources = files(
 		'src/vapigen.vala',
 		'src/builders/class-builder.vala',
 		'src/builders/field-builder.vala',
+		'src/builders/interface-builder.vala',
 		'src/builders/method-builder.vala',
 		'src/builders/namespace-builder.vala',
 		'src/builders/datatype-builder.vala',

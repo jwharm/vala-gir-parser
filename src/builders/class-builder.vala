@@ -46,11 +46,14 @@ public class Builders.ClassBuilder {
             vclass.add_base_type (imp_type);
         }
 
-        /* c name */
+        /* c_name */
         vclass.set_attribute_string ("CCode", "cname", cls.c_type);
 
         /* version */
         vclass.set_attribute_string ("Version", "since", cls.version);
+
+        /* type_cname */
+        vclass.set_attribute_string ("CCode", "type_cname", cls.glib_type_struct);
 
         /* get_type method */
         var type_id = cls.glib_get_type;
