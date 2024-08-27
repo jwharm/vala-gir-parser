@@ -30,6 +30,7 @@ public class Builders.NamespaceBuilder {
     }
 
     public Vala.Namespace build () {
+        /* create the namespace */
         Vala.Namespace vns = new Vala.Namespace (ns.name, ns.source_reference);
 
         /* attributes */
@@ -39,14 +40,28 @@ public class Builders.NamespaceBuilder {
         vns.set_attribute_string ("CCode", "cprefix", ns.c_identifier_prefixes);
         vns.set_attribute_string ("CCode", "lower_case_cprefix", ns.c_symbol_prefixes + "_");
 
+        /* classes */
         foreach (Gir.Class cls in ns.classes) {
             ClassBuilder cb = new ClassBuilder (cls);
             vns.add_class (cb.build ());
         }
 
+        /* interfaces */
         foreach (Gir.Interface ifc in ns.interfaces) {
             InterfaceBuilder ib = new InterfaceBuilder (ifc);
             vns.add_interface (ib.build ());
+        }
+
+        /* enumerations */
+        foreach (Gir.Enumeration enm in ns.enumerations) {
+            EnumBuilder eb = new EnumBuilder (enm);
+            vns.add_enum (eb.build ());
+        }
+
+        /* bitfields */
+        foreach (Gir.Bitfield btf in ns.bitfields) {
+            EnumBuilder eb = new EnumBuilder (btf);
+            vns.add_enum (eb.build ());
         }
 
         return vns;

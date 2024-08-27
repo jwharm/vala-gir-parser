@@ -19,8 +19,8 @@
 
 using Gee;
 
-public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements {
-	public string name {
+public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements, EnumBase {
+	public override string name {
 		owned get {
 			return attrs["name"];
 		}
@@ -29,7 +29,7 @@ public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements {
 		}
 	}
 	
-	public string c_type {
+	public override string c_type {
 		owned get {
 			return attrs["c:type"];
 		}
@@ -38,7 +38,7 @@ public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements {
 		}
 	}
 	
-	public string? glib_type_name {
+	public override string? glib_type_name {
 		owned get {
 			return attrs["glib:type-name"];
 		}
@@ -47,7 +47,7 @@ public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements {
 		}
 	}
 	
-	public string? glib_get_type {
+	public override string? glib_get_type {
 		owned get {
 			return attrs["glib:get-type"];
 		}
@@ -65,19 +65,19 @@ public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements {
 		}
 	}
 	
-	public Gee.List<Member> members {
+	public override Gee.List<Member> members {
 		owned get {
 			return all_of (typeof (Member));
 		}
 	}
 	
-	public Gee.List<Function> functions {
+	public override Gee.List<Function> functions {
 		owned get {
 			return all_of (typeof (Function));
 		}
 	}
 	
-	public Gee.List<FunctionInline> function_inlines {
+	public override Gee.List<FunctionInline> function_inlines {
 		owned get {
 			return all_of (typeof (FunctionInline));
 		}

@@ -23,8 +23,8 @@ public class Builders.InterfaceBuilder {
 
     private Gir.Interface ifc;
 
-    public InterfaceBuilder (Gir.Interface cls) {
-        this.ifc = cls;
+    public InterfaceBuilder (Gir.Interface ifc) {
+        this.ifc = ifc;
     }
 
     public Vala.Interface build () {
