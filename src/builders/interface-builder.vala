@@ -60,10 +60,28 @@ public class Builders.InterfaceBuilder {
             vifc.set_attribute_string ("CCode", "type_id", type_id + " ()");
         }
 
+        /* add functions */
+        foreach (var f in ifc.functions) {
+            var builder = new MethodBuilder (f);
+            if (! builder.skip ()) {
+                vifc.add_method (builder.build_function ());
+            } 
+        }
+
         /* add methods */
         foreach (var m in ifc.methods) {
-            var vmethod = new MethodBuilder (m).build ();
-            vifc.add_method (vmethod);
+            var builder = new MethodBuilder (m);
+            if (! builder.skip ()) {
+                vifc.add_method (builder.build_method ());
+            } 
+        }
+
+        /* add virtual methods */
+        foreach (var vm in ifc.virtual_methods) {
+            var builder = new MethodBuilder (vm);
+            if (! builder.skip ()) {
+                vifc.add_method (builder.build_virtual_method ());
+            } 
         }
 
         /* add fields */

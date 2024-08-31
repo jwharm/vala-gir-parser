@@ -19,22 +19,28 @@
 
 using Vala;
 
-public class Builders.FieldBuilder {
+public class Builders.CallableBuilder {
 
-    private Gir.Field field;
+    protected Gir.Callable callable;
 
-    public FieldBuilder (Gir.Field field) {
-        this.field = field;
+    protected CallableBuilder (Gir.Callable callable) {
+        this.callable = callable;
     }
 
-    public bool skip () {
-        return field.private || field.name == "priv" || field.anytype == null;
-    }
+    protected void add_parameters (Vala.Callable vcall) {
+        if (callable.parameters == null) {
+            return;
+        }
 
-    public Vala.Field build () {
-        var f_type = new DataTypeBuilder (field.anytype).build ();
-        var vfield = new Field (field.name, f_type, null, field.source_reference, null);
-        vfield.access = SymbolAccessibility.PUBLIC;
-        return vfield;
+        foreach (Gir.Parameter p in callable.parameters.parameters) {
+            Vala.Parameter vpar;
+            if (p.varargs != null) {
+                vpar = new Vala.Parameter.with_ellipsis (p.source_reference);
+            } else {
+                var p_type = new DataTypeBuilder (p.anytype).build ();
+                vpar = new Vala.Parameter (p.name, p_type, p.source_reference);
+            }
+            vcall.add_parameter (vpar);
+        }
     }
 }

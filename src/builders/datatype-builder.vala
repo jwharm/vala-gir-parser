@@ -61,7 +61,8 @@ public class Builders.DataTypeBuilder {
     }
     
     /* Create Vala.DataType from a string (for example "Gio.File"). */
-    public static Vala.DataType from_name (string name, SourceReference? source = null) {
+    public static Vala.DataType from_name (string name,
+                                           SourceReference? source = null) {
         if (name == "none") {
             return new VoidType (source);
         }
@@ -86,6 +87,10 @@ public class Builders.DataTypeBuilder {
     private static string convert_name (string name) {
         if (name == "GType") {
             return "GLib.Type";
+        }
+
+        if (name == "GLib.String") {
+            return "GLib.StringBuilder";
         }
 
         if (name.has_prefix ("GObject.")) {

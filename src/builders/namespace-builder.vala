@@ -40,28 +40,60 @@ public class Builders.NamespaceBuilder {
         vns.set_attribute_string ("CCode", "cprefix", ns.c_identifier_prefixes);
         vns.set_attribute_string ("CCode", "lower_case_cprefix", ns.c_symbol_prefixes + "_");
 
-        /* classes */
-        foreach (Gir.Class cls in ns.classes) {
-            ClassBuilder cb = new ClassBuilder (cls);
-            vns.add_class (cb.build ());
+        /* bitfields */
+        foreach (Gir.Bitfield btf in ns.bitfields) {
+            if (btf.introspectable) {
+                EnumBuilder builder = new EnumBuilder (btf);
+                vns.add_enum (builder.build ());
+            }
         }
 
-        /* interfaces */
-        foreach (Gir.Interface ifc in ns.interfaces) {
-            InterfaceBuilder ib = new InterfaceBuilder (ifc);
-            vns.add_interface (ib.build ());
+        /* callbacks */
+        foreach (Gir.Callback cb in ns.callbacks) {
+            if (cb.introspectable) {
+                var builder = new DelegateBuilder (cb);
+                vns.add_delegate (builder.build_callback ());
+            }
+        }
+
+        /* classes */
+        foreach (Gir.Class cls in ns.classes) {
+            if (cls.introspectable) {
+                ClassBuilder builder = new ClassBuilder (cls);
+                vns.add_class (builder.build ());
+            }
         }
 
         /* enumerations */
         foreach (Gir.Enumeration enm in ns.enumerations) {
-            EnumBuilder eb = new EnumBuilder (enm);
-            vns.add_enum (eb.build ());
+            if (enm.introspectable) {
+                EnumBuilder builder = new EnumBuilder (enm);
+                vns.add_enum (builder.build ());
+            }
         }
 
-        /* bitfields */
-        foreach (Gir.Bitfield btf in ns.bitfields) {
-            EnumBuilder eb = new EnumBuilder (btf);
-            vns.add_enum (eb.build ());
+        /* functions */
+        foreach (var f in ns.functions) {
+            var builder = new MethodBuilder (f);
+            if (! builder.skip ()) {
+                vns.add_method (builder.build_function ());
+            } 
+        }
+
+        /* interfaces */
+        foreach (Gir.Interface ifc in ns.interfaces) {
+            if (ifc.introspectable) {
+                InterfaceBuilder builder = new InterfaceBuilder (ifc);
+                vns.add_interface (builder.build ());
+            }
+        }
+
+        /* records */
+        foreach (Gir.Record rec in ns.records) {
+            if (rec.introspectable) {
+                var builder = new StructBuilder (rec);
+                vns.add_struct (builder.build ());
+            }
         }
 
         return vns;

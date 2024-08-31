@@ -19,15 +19,81 @@
 
 using Vala;
 
-public class Builders.MethodBuilder {
+public class Builders.MethodBuilder : CallableBuilder {
 
-    private Gir.Method method;
-
-    public MethodBuilder (Gir.Method method) {
-        this.method = method;
+    public MethodBuilder (Gir.Callable callable) {
+        base (callable);
     }
 
-    public Vala.Method build () {
+    public Vala.CreationMethod build_constructor () {
+        var ctor = (Gir.Constructor) callable;
+
+        /* name */
+        var name = ctor.name;
+        if (name == "new") {
+            name = null;
+        } else if (name.has_prefix ("new_")) {
+            name = name.substring ("new_".length);
+        }
+
+        /* create the constructor */
+        var cr_method = new CreationMethod (null, name, ctor.source_reference);
+        cr_method.access = SymbolAccessibility.PUBLIC;
+        cr_method.has_construct_function = false;
+
+        /* c name */
+        cr_method.set_attribute_string ("CCode", "cname", ctor.c_identifier);
+
+        /* return type annotation */
+        if (ctor.parent_node is Gir.Class) {
+            var parent_type = ((Gir.Class) ctor.parent_node).c_type;
+            var return_type = ((Gir.TypeRef) ctor.return_value.anytype).c_type;
+            if (return_type != null &&
+                    (parent_type == null || return_type != parent_type + "*")) {
+                cr_method.set_attribute_string ("CCode", "type", return_type);
+            }
+        }
+
+        /* parameters */
+        add_parameters (cr_method);
+
+        /* throws */
+        if (ctor.throws) {
+            cr_method.add_error_type (new Vala.ErrorType (null, null));
+        }
+
+        return cr_method;
+    }
+
+    public Vala.Method build_function () {
+        var function = (Gir.Function) callable;
+        
+        /* return type */
+        var return_value = function.return_value;
+        var return_type = new DataTypeBuilder (return_value.anytype).build ();
+
+        /* create a static method */
+        var vmethod = new Method (function.name, return_type, function.source_reference);
+        vmethod.access = SymbolAccessibility.PUBLIC;
+        vmethod.binding = MemberBinding.STATIC;
+
+        /* c name */
+        vmethod.set_attribute_string ("CCode", "cname", function.c_identifier);
+
+        /* parameters */
+        add_parameters (vmethod);
+
+        /* throws */
+        if (function.throws) {
+            vmethod.add_error_type (new Vala.ErrorType (null, null));
+        }
+
+        return vmethod;
+    }
+
+    public Vala.Method build_method () {
+        var method = (Gir.Method) callable;
+
         /* return type */
         var return_value = method.return_value;
         var return_type = new DataTypeBuilder (return_value.anytype).build ();
@@ -40,18 +106,7 @@ public class Builders.MethodBuilder {
         vmethod.set_attribute_string ("CCode", "cname", method.c_identifier);
 
         /* parameters */
-        if (method.parameters != null) {
-            foreach (Gir.Parameter p in method.parameters.parameters) {
-                Vala.Parameter vpar;
-                if (p.varargs != null) {
-                    vpar = new Vala.Parameter.with_ellipsis (p.source_reference);
-                } else {
-                    var p_type = new DataTypeBuilder (p.anytype).build ();
-                    vpar = new Vala.Parameter (p.name, p_type, p.source_reference);
-                }
-                vmethod.add_parameter (vpar);
-            }
-        }
+        add_parameters (vmethod);
 
         /* throws */
         if (method.throws) {
@@ -59,5 +114,93 @@ public class Builders.MethodBuilder {
         }
 
         return vmethod;
+    }
+
+    public Vala.Method build_virtual_method () {
+        var method = (Gir.VirtualMethod) callable;
+
+        /* return type */
+        var return_value = method.return_value;
+        var return_type = new DataTypeBuilder (return_value.anytype).build ();
+
+        /* the method itself */
+        var vmethod = new Method (method.name, return_type, method.source_reference);
+        vmethod.access = SymbolAccessibility.PUBLIC;
+        if (method.parent_node is Interface) {
+            vmethod.is_abstract = true;
+        } else {
+            vmethod.is_virtual = true;
+        }
+
+        /* parameters */
+        add_parameters (vmethod);
+
+        /* throws */
+        if (method.throws) {
+            vmethod.add_error_type (new Vala.ErrorType (null, null));
+        }
+
+        return vmethod;
+    }
+
+    public bool skip () {
+        return (! callable.introspectable) || is_invoker_method ();
+    }
+
+    /* Find a virtual method invoked by this method. */
+    private bool is_invoker_method () {
+        if (! (callable is Gir.Method)) {
+            return false;
+        }
+
+        Gir.Method m = (Gir.Method) callable;
+        Gee.List<Gir.VirtualMethod> virtual_methods =
+                callable.parent_node.all_of (typeof (Gir.VirtualMethod));
+
+        foreach (var vm in virtual_methods) {
+            /* ideally, the invoker annotation matches */
+            if (vm.invoker == m.name) {
+                return true;
+            }
+
+            /* check if the names match, and both or neither throws */
+            if (m.name != vm.name || m.throws != vm.throws) {
+                continue;
+            }
+
+            /* if both have no parameters, it's a match */
+            if (m.parameters == null && vm.parameters == null) {
+                return true;
+            }
+
+            /* if only one has no parameters, it's not a match */
+            if (m.parameters == null || vm.parameters == null) {
+                continue;
+            }
+
+            var m_params = m.parameters.parameters;
+            var vm_params = vm.parameters.parameters;
+
+            /* both should have the same number of parameters */
+            if (m_params.size != vm_params.size) {
+                continue;
+            }
+
+            /* both should have the same parameter names */
+            bool same_param_names = true;
+            for (int i = 0; i < m_params.size; i++) {
+                if (m_params[i].name != vm_params[i].name) {
+                    same_param_names = false;
+                    break;
+                }
+            }
+
+            if (same_param_names) {
+                return true;
+            }
+        }
+
+        /* no virtual method invoked by this method */
+        return false;
     }
 }

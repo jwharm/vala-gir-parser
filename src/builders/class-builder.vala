@@ -63,16 +63,46 @@ public class Builders.ClassBuilder {
             vclass.set_attribute_string ("CCode", "type_id", type_id + " ()");
         }
 
+        /* add constructors */
+        if (! cls.abstract) {
+            foreach (var c in cls.constructors) {
+                var builder = new MethodBuilder (c);
+                if (! builder.skip ()) {
+                    vclass.add_method (builder.build_constructor ());
+                }
+            }
+        }
+
+        /* add functions */
+        foreach (var f in cls.functions) {
+            var builder = new MethodBuilder (f);
+            if (! builder.skip ()) {
+                vclass.add_method (builder.build_function ());
+            } 
+        }
+
         /* add methods */
         foreach (var m in cls.methods) {
-            var vmethod = new MethodBuilder (m).build ();
-            vclass.add_method (vmethod);
+            var builder = new MethodBuilder (m);
+            if (! builder.skip ()) {
+                vclass.add_method (builder.build_method ());
+            } 
+        }
+
+        /* add virtual methods */
+        foreach (var vm in cls.virtual_methods) {
+            var builder = new MethodBuilder (vm);
+            if (! builder.skip ()) {
+                vclass.add_method (builder.build_virtual_method ());
+            } 
         }
 
         /* add fields */
         foreach (var f in cls.fields) {
-            var vfield = new FieldBuilder (f).build ();
-            vclass.add_field (vfield);
+            var field_builder = new FieldBuilder (f);
+            if (! field_builder.skip ()) {
+                vclass.add_field (field_builder.build ());
+            }
         }
 
         /* always provide constructor in generated bindings

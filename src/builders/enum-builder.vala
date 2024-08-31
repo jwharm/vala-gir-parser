@@ -46,6 +46,14 @@ public class Builders.EnumBuilder {
             venum.set_attribute_string ("CCode", "type_id", type_id + " ()");
         }
 
+        /* add functions */
+        foreach (var f in enm.functions) {
+            var builder = new MethodBuilder (f);
+            if (! builder.skip ()) {
+                venum.add_method (builder.build_function ());
+            } 
+        }
+
         /* members */
         string? common_prefix = null;
         foreach (var member in enm.members) {
@@ -68,7 +76,6 @@ public class Builders.EnumBuilder {
         if (prefix == null) {
             prefix = cname;
             while (prefix.length > 0 && !prefix.has_suffix ("_")) {
-                // FIXME: could easily be made faster
                 prefix = prefix.substring (0, prefix.length - 1);
             }
         } else {
@@ -78,7 +85,7 @@ public class Builders.EnumBuilder {
         }
 
         while (prefix.length > 0 &&
-            (!prefix.has_suffix ("_") ||
+            (! prefix.has_suffix ("_") ||
                 (cname.get_char (prefix.length).isdigit () && (cname.length - prefix.length) <= 1))) {
             // enum values may not consist solely of digits
             prefix = prefix.substring (0, prefix.length - 1);
