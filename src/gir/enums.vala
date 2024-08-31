@@ -18,130 +18,130 @@
  */
 
 public enum Gir.Stability {
-	UNDEFINED,
-	STABLE,
-	UNSTABLE,
-	PRIVATE;
-	
-	public static Stability from_string (string? str) {
-		switch (str) {
-			case "Stable":   return STABLE;
-			case "Unstable": return UNSTABLE;
-			case "Private":  return PRIVATE;
-			default:         return UNDEFINED;
-		}
-	}
-	
-	public string to_string () {
-		switch (this) {
-			case STABLE:	return "Stable";
-			case UNSTABLE:	return "Unstable";
-			case PRIVATE:	return "Private";
-			default:		return "";
-		}
-	}
+    UNDEFINED,
+    STABLE,
+    UNSTABLE,
+    PRIVATE;
+    
+    public static Stability from_string (string? str) {
+        switch (str) {
+            case "Stable":   return STABLE;
+            case "Unstable": return UNSTABLE;
+            case "Private":  return PRIVATE;
+            default:         return UNDEFINED;
+        }
+    }
+    
+    public string to_string () {
+        switch (this) {
+            case STABLE:    return "Stable";
+            case UNSTABLE:  return "Unstable";
+            case PRIVATE:   return "Private";
+            default:        return "";
+        }
+    }
 }
 
 public enum Gir.TransferOwnership {
-	UNDEFINED,
-	NONE,
-	CONTAINER,
-	FULL;
-	
-	public static TransferOwnership from_string (string? str) {
-		switch (str) {
-			case "none":      return NONE;
-			case "container": return CONTAINER;
-			case "full":      return FULL;
-			default:          return UNDEFINED;
-		}
-	}
-	
-	public string to_string () {
-		switch (this) {
-			case NONE:		return "none";
-			case CONTAINER:	return "container";
-			case FULL:		return "full";
-			default:		return "";
-		}
-	}
+    UNDEFINED,
+    NONE,
+    CONTAINER,
+    FULL;
+    
+    public static TransferOwnership from_string (string? str) {
+        switch (str) {
+            case "none":      return NONE;
+            case "container": return CONTAINER;
+            case "full":      return FULL;
+            default:          return UNDEFINED;
+        }
+    }
+    
+    public string to_string () {
+        switch (this) {
+            case NONE:      return "none";
+            case CONTAINER: return "container";
+            case FULL:      return "full";
+            default:        return "";
+        }
+    }
 }
 
 public enum Gir.When {
-	UNDEFINED,
-	FIRST,
-	LAST,
-	CLEANUP;
-	
-	public static When from_string (string? str) {
-		switch (str) {
-			case "first":   return FIRST;
-			case "last":    return LAST;
-			case "cleanup": return CLEANUP;
-			default:        return UNDEFINED;
-		}
-	}
-	
-	public string to_string () {
-		switch (this) {
-			case FIRST:		return "first";
-			case LAST:		return "last";
-			case CLEANUP:	return "cleanup";
-			default:		return "";
-		}
-	}
+    UNDEFINED,
+    FIRST,
+    LAST,
+    CLEANUP;
+    
+    public static When from_string (string? str) {
+        switch (str) {
+            case "first":   return FIRST;
+            case "last":    return LAST;
+            case "cleanup": return CLEANUP;
+            default:        return UNDEFINED;
+        }
+    }
+    
+    public string to_string () {
+        switch (this) {
+            case FIRST:     return "first";
+            case LAST:      return "last";
+            case CLEANUP:   return "cleanup";
+            default:        return "";
+        }
+    }
 }
 
 public enum Gir.Scope {
-	UNDEFINED,
-	NOTIFIED,
-	ASYNC,
-	CALL,
-	FOREVER;
-	
-	public static Scope from_string (string? str) {
-		switch (str) {
-			case "notified": return NOTIFIED;
-			case "async":    return ASYNC;
-			case "call":     return CALL;
-			case "forever":  return FOREVER;
-			default:         return UNDEFINED;
-		}
-	}
-	
-	public string to_string () {
-		switch (this) {
-			case NOTIFIED:	return "notified";
-			case ASYNC:		return "async";
-			case CALL:		return "call";
-			case FOREVER:	return "forever";
-			default:		return "";
-		}
-	}
+    UNDEFINED,
+    NOTIFIED,
+    ASYNC,
+    CALL,
+    FOREVER;
+    
+    public static Scope from_string (string? str) {
+        switch (str) {
+            case "notified": return NOTIFIED;
+            case "async":    return ASYNC;
+            case "call":     return CALL;
+            case "forever":  return FOREVER;
+            default:         return UNDEFINED;
+        }
+    }
+    
+    public string to_string () {
+        switch (this) {
+            case NOTIFIED:  return "notified";
+            case ASYNC:     return "async";
+            case CALL:      return "call";
+            case FOREVER:   return "forever";
+            default:        return "";
+        }
+    }
 }
 
 public enum Gir.Direction {
-	UNDEFINED,
-	IN,
-	OUT,
-	INOUT;
-	
-	public static Direction from_string (string? str) {
-		switch (str) {
-			case "in":    return IN;
-			case "out":   return OUT;
-			case "inout": return INOUT;
-			default:      return UNDEFINED;
-		}
-	}
-	
-	public string to_string () {
-		switch (this) {
-			case IN:		return "in";
-			case OUT:		return "out";
-			case INOUT:		return "inout";
-			default:		return "";
-		}
-	}
+    UNDEFINED,
+    IN,
+    OUT,
+    INOUT;
+    
+    public static Direction from_string (string? str) {
+        switch (str) {
+            case "in":    return IN;
+            case "out":   return OUT;
+            case "inout": return INOUT;
+            default:      return UNDEFINED;
+        }
+    }
+    
+    public string to_string () {
+        switch (this) {
+            case IN:        return "in";
+            case OUT:       return "out";
+            case INOUT:     return "inout";
+            default:        return "";
+        }
+    }
 }
 

@@ -20,66 +20,66 @@
 using Gee;
 
 public class Gir.Repository : Node {
-	public string version {
-		owned get {
-			return attrs["version"];
-		}
-		set {
-			attrs["version"] = value;
-		}
-	}
-	
-	public string c_identifier_prefixes {
-		owned get {
-			return attrs["c:identifier-prefixes"];
-		}
-		set {
-			attrs["c:identifier-prefixes"] = value;
-		}
-	}
-	
-	public string c_symbol_prefixes {
-		owned get {
-			return attrs["c:symbol-prefixes"];
-		}
-		set {
-			attrs["c:symbol-prefixes"] = value;
-		}
-	}
-	
-	public Gee.List<Include> includes {
-		owned get {
-			return all_of (typeof (Include));
-		}
-	}
-	
-	public Gee.List<CInclude> c_includes {
-		owned get {
-			return all_of (typeof (CInclude));
-		}
-	}
-	
-	public Package? package {
-		owned get {
-			return any_of (typeof (Package));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
-	
-	/* 
-	 * The gir spec allows multiple namespaces in a gir file, but as far as I
-	 * know, there is always just one single namespace in a gir file, so to keep
-	 * things simple, we return only one namespace element.
-	 */
+    public string version {
+        owned get {
+            return attrs["version"];
+        }
+        set {
+            attrs["version"] = value;
+        }
+    }
+    
+    public string c_identifier_prefixes {
+        owned get {
+            return attrs["c:identifier-prefixes"];
+        }
+        set {
+            attrs["c:identifier-prefixes"] = value;
+        }
+    }
+    
+    public string c_symbol_prefixes {
+        owned get {
+            return attrs["c:symbol-prefixes"];
+        }
+        set {
+            attrs["c:symbol-prefixes"] = value;
+        }
+    }
+    
+    public Gee.List<Include> includes {
+        owned get {
+            return all_of (typeof (Include));
+        }
+    }
+    
+    public Gee.List<CInclude> c_includes {
+        owned get {
+            return all_of (typeof (CInclude));
+        }
+    }
+    
+    public Package? package {
+        owned get {
+            return any_of (typeof (Package));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
+    
+    /* 
+     * The gir spec allows multiple namespaces in a gir file, but as far as I
+     * know, there is always just one single namespace in a gir file, so to keep
+     * things simple, we return only one namespace element.
+     */
     public Namespace @namespace {
-		owned get {
-			return any_of (typeof (Namespace));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
+        owned get {
+            return any_of (typeof (Namespace));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
 }
 

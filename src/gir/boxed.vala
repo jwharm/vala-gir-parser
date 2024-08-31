@@ -20,52 +20,52 @@
 using Gee;
 
 public class Gir.Boxed : Node, InfoAttrs, DocElements, InfoElements {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public string c_symbol_prefix {
-		owned get {
-			return attrs["c:symbol-prefix"];
-		}
-		set {
-			attrs["c:symbol-prefix"] = value;
-		}
-	}
-	
-	public string glib_type_name {
-		owned get {
-			return attrs["glib:type-name"];
-		}
-		set {
-			attrs["glib:type-name"] = value;
-		}
-	}
-	
-	public string glib_get_type {
-		owned get {
-			return attrs["glib:get-type"];
-		}
-		set {
-			attrs["glib:get-type"] = value;
-		}
-	}
-	
-	public Gee.List<Function> functions {
-		owned get {
-			return all_of (typeof (Function));
-		}
-	}
-	
-	public Gee.List<FunctionInline> function_inlines {
-		owned get {
-			return all_of (typeof (FunctionInline));
-		}
-	}
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public string c_symbol_prefix {
+        owned get {
+            return attrs["c:symbol-prefix"];
+        }
+        set {
+            attrs["c:symbol-prefix"] = value;
+        }
+    }
+    
+    public string glib_type_name {
+        owned get {
+            return attrs["glib:type-name"];
+        }
+        set {
+            attrs["glib:type-name"] = value;
+        }
+    }
+    
+    public string glib_get_type {
+        owned get {
+            return attrs["glib:get-type"];
+        }
+        set {
+            attrs["glib:get-type"] = value;
+        }
+    }
+    
+    public Gee.List<Function> functions {
+        owned get {
+            return all_of (typeof (Function));
+        }
+    }
+    
+    public Gee.List<FunctionInline> function_inlines {
+        owned get {
+            return all_of (typeof (FunctionInline));
+        }
+    }
 }
 

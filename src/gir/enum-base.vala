@@ -17,14 +17,58 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
 public interface Gir.EnumBase : Node, InfoAttrs, DocElements, InfoElements {
-    public abstract string name { owned get; set; }
-    public abstract string c_type { owned get; set; }
-    public abstract string? glib_type_name { owned get; set; }
-    public abstract string? glib_get_type { owned get; set; }
-    public abstract Gee.List<Member> members { owned get; }
-    public abstract Gee.List<Function> functions { owned get; }
-    public abstract Gee.List<FunctionInline> function_inlines { owned get; }
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public string c_type {
+        owned get {
+            return attrs["c:type"];
+        }
+        set {
+            attrs["c:type"] = value;
+        }
+    }
+    
+    public string? glib_type_name {
+        owned get {
+            return attrs["glib:type-name"];
+        }
+        set {
+            attrs["glib:type-name"] = value;
+        }
+    }
+    
+    public string? glib_get_type {
+        owned get {
+            return attrs["glib:get-type"];
+        }
+        set {
+            attrs["glib:get-type"] = value;
+        }
+    }
+    
+    public Gee.List<Member> members {
+        owned get {
+            return all_of (typeof (Member));
+        }
+    }
+    
+    public Gee.List<Function> functions {
+        owned get {
+            return all_of (typeof (Function));
+        }
+    }
+    
+    public Gee.List<FunctionInline> function_inlines {
+        owned get {
+            return all_of (typeof (FunctionInline));
+        }
+    }
 }

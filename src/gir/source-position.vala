@@ -20,31 +20,31 @@
 using Gee;
 
 public class Gir.SourcePosition : Node {
-	public string filename {
-		owned get {
-			return attrs["filename"];
-		}
-		set {
-			attrs["filename"] = value;
-		}
-	}
-	
-	public string line {
-		owned get {
-			return attrs["line"];
-		}
-		set {
-			attrs["line"] = value;
-		}
-	}
-	
-	public string? column {
-		owned get {
-			return attrs["column"];
-		}
-		set {
-			attrs["column"] = value;
-		}
-	}
+    public string filename {
+        owned get {
+            return attrs["filename"];
+        }
+        set {
+            attrs["filename"] = value;
+        }
+    }
+    
+    public string line {
+        owned get {
+            return attrs["line"];
+        }
+        set {
+            attrs["line"] = value;
+        }
+    }
+    
+    public string? column {
+        owned get {
+            return attrs["column"];
+        }
+        set {
+            attrs["column"] = value;
+        }
+    }
 }
 

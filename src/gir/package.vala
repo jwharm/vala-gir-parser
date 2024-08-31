@@ -20,13 +20,13 @@
 using Gee;
 
 public class Gir.Package : Node {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
 }
 

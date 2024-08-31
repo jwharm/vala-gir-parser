@@ -20,22 +20,22 @@
 using Gee;
 
 public class Gir.FunctionInline : Node, DocElements, InfoAttrs, CallableAttrs {
-	public Parameters? parameters {
-		owned get {
-			return any_of (typeof (Parameters));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
-	
-	public ReturnValue? return_value {
-		owned get {
-			return any_of (typeof (ReturnValue));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
+    public Parameters? parameters {
+        owned get {
+            return any_of (typeof (Parameters));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
+    
+    public ReturnValue? return_value {
+        owned get {
+            return any_of (typeof (ReturnValue));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
 }
 

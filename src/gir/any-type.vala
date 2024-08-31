@@ -21,6 +21,6 @@ using Gee;
 
 public interface Gir.AnyType : Node {
 
-	public abstract Gee.List<AnyType> anytype { owned get; }
+    public abstract Gee.List<AnyType> anytype { owned get; }
 }
 

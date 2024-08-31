@@ -19,50 +19,15 @@
 
 using Gee;
 
-public class Gir.Callback : Node, InfoAttrs, DocElements, InfoElements {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public string c_type {
-		owned get {
-			return attrs["c:type"];
-		}
-		set {
-			attrs["c:type"] = value;
-		}
-	}
-	
-	public bool @throws {
-		get {
-			return attr_get_bool ("throws", false);
-		}
-		set {
-			attr_set_bool ("throws", value);
-		}
-	}
-	
-	public Parameters? parameters {
-		owned get {
-			return any_of (typeof (Parameters));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
-	
-	public ReturnValue? return_value {
-		owned get {
-			return any_of (typeof (ReturnValue));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
+public class Gir.Callback : Node, InfoAttrs, DocElements, InfoElements,
+                            Callable {
+    public string c_type {
+        owned get {
+            return attrs["c:type"];
+        }
+        set {
+            attrs["c:type"] = value;
+        }
+    }
+    
 }
-

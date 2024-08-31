@@ -20,75 +20,75 @@
 using Gee;
 
 public class Gir.InstanceParameter : Node, DocElements {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public bool nullable {
-		get {
-			return attr_get_bool ("nullable", false);
-		}
-		set {
-			attr_set_bool ("nullable", value);
-		}
-	}
-	
-	public bool allow_none {
-		get {
-			return attr_get_bool ("allow-none", true);
-		}
-		set {
-			attr_set_bool ("allow-none", value);
-		}
-	}
-	
-	public Direction direction {
-		get {
-			return Direction.from_string (attrs["direction"]);
-		}
-		set {
-			if (value == Direction.UNDEFINED) {
-				attrs.remove ("direction");
-			} else {
-				attrs["direction"] = value.to_string ();
-			}
-		}
-	}
-	
-	public bool caller_allocates {
-		get {
-			return attr_get_bool ("caller-allocates", false);
-		}
-		set {
-			attr_set_bool ("caller-allocates", value);
-		}
-	}
-	
-	public TransferOwnership transfer_ownership {
-		get {
-			return TransferOwnership.from_string (attrs["transfer-ownership"]);
-		}
-		set {
-			if (value == TransferOwnership.UNDEFINED) {
-				attrs.remove ("transfer-ownership");
-			} else {
-				attrs["transfer-ownership"] = value.to_string ();
-			}
-		}
-	}
-	
-	public TypeRef type_ref {
-		owned get {
-			return any_of (typeof (TypeRef));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public bool nullable {
+        get {
+            return attr_get_bool ("nullable", false);
+        }
+        set {
+            attr_set_bool ("nullable", value);
+        }
+    }
+    
+    public bool allow_none {
+        get {
+            return attr_get_bool ("allow-none", true);
+        }
+        set {
+            attr_set_bool ("allow-none", value);
+        }
+    }
+    
+    public Direction direction {
+        get {
+            return Direction.from_string (attrs["direction"]);
+        }
+        set {
+            if (value == Direction.UNDEFINED) {
+                attrs.remove ("direction");
+            } else {
+                attrs["direction"] = value.to_string ();
+            }
+        }
+    }
+    
+    public bool caller_allocates {
+        get {
+            return attr_get_bool ("caller-allocates", false);
+        }
+        set {
+            attr_set_bool ("caller-allocates", value);
+        }
+    }
+    
+    public TransferOwnership transfer_ownership {
+        get {
+            return TransferOwnership.from_string (attrs["transfer-ownership"]);
+        }
+        set {
+            if (value == TransferOwnership.UNDEFINED) {
+                attrs.remove ("transfer-ownership");
+            } else {
+                attrs["transfer-ownership"] = value.to_string ();
+            }
+        }
+    }
+    
+    public TypeRef type_ref {
+        owned get {
+            return any_of (typeof (TypeRef));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
 }
 

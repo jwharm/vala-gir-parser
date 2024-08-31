@@ -20,39 +20,39 @@
 using Gee;
 
 public class Gir.DocDeprecated : Node {
-	public bool xml_space_preserve {
-		get {
-			return attrs["xml:space"] == "preserve";
-		}
-		set {
-			if (value) {
-				attrs["xml:space"] = "preserve";
-			} else {
-				attrs.remove ("xml:space");
-			}
-		}
-	}
-	
-	public bool xml_whitespace_preserve {
-		get {
-			return attrs["xml:whitespace"] == "preserve";
-		}
-		set {
-			if (value) {
-				attrs["xml:whitespace"] = "preserve";
-			} else {
-				attrs.remove ("xml:whitespace");
-			}
-		}
-	}
-	
-	public string? text {
-		owned get {
-			return content;
-		}
-		set {
-			content = value;
-		}
-	}
+    public bool xml_space_preserve {
+        get {
+            return attrs["xml:space"] == "preserve";
+        }
+        set {
+            if (value) {
+                attrs["xml:space"] = "preserve";
+            } else {
+                attrs.remove ("xml:space");
+            }
+        }
+    }
+    
+    public bool xml_whitespace_preserve {
+        get {
+            return attrs["xml:whitespace"] == "preserve";
+        }
+        set {
+            if (value) {
+                attrs["xml:whitespace"] = "preserve";
+            } else {
+                attrs.remove ("xml:whitespace");
+            }
+        }
+    }
+    
+    public string? text {
+        owned get {
+            return content;
+        }
+        set {
+            content = value;
+        }
+    }
 }
 

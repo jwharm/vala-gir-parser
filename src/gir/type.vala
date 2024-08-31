@@ -20,37 +20,37 @@
 using Gee;
 
 public class Gir.TypeRef : Node, AnyType, DocElements {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public string c_type {
-		owned get {
-			return attrs["c:type"];
-		}
-		set {
-			attrs["c:type"] = value;
-		}
-	}
-	
-	public bool introspectable {
-		get {
-			return attr_get_bool ("introspectable", true);
-		}
-		set {
-			attr_set_bool ("introspectable", value);
-		}
-	}
-	
-	public override Gee.List<AnyType> anytype {
-		owned get {
-			return all_of (typeof (AnyType));
-		}
-	}
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public string c_type {
+        owned get {
+            return attrs["c:type"];
+        }
+        set {
+            attrs["c:type"] = value;
+        }
+    }
+    
+    public bool introspectable {
+        get {
+            return attr_get_bool ("introspectable", true);
+        }
+        set {
+            attr_set_bool ("introspectable", value);
+        }
+    }
+    
+    public override Gee.List<AnyType> anytype {
+        owned get {
+            return all_of (typeof (AnyType));
+        }
+    }
 }
 

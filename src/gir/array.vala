@@ -20,64 +20,64 @@
 using Gee;
 
 public class Gir.Array : Node, AnyType {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public bool zero_terminated {
-		get {
-			return attr_get_bool ("zero-terminated", false);
-		}
-		set {
-			attr_set_bool ("zero-terminated", value);
-		}
-	}
-	
-	public int fixed_size {
-		get {
-			return attr_get_int ("fixed-size", -1);
-		}
-		set {
-			attr_set_int ("fixed-size", value);
-		}
-	}
-	
-	public bool introspectable {
-		get {
-			return attr_get_bool ("introspectable", true);
-		}
-		set {
-			attr_set_bool ("introspectable", value);
-		}
-	}
-	
-	public int length {
-		get {
-			return attr_get_int ("length", -1);
-		}
-		set {
-			attr_set_int ("length", value);
-		}
-	}
-	
-	public string c_type {
-		owned get {
-			return attrs["c:type"];
-		}
-		set {
-			attrs["c:type"] = value;
-		}
-	}
-	
-	public override Gee.List<AnyType> anytype {
-		owned get {
-			return all_of (typeof (AnyType));
-		}
-	}
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public bool zero_terminated {
+        get {
+            return attr_get_bool ("zero-terminated", false);
+        }
+        set {
+            attr_set_bool ("zero-terminated", value);
+        }
+    }
+    
+    public int fixed_size {
+        get {
+            return attr_get_int ("fixed-size", -1);
+        }
+        set {
+            attr_set_int ("fixed-size", value);
+        }
+    }
+    
+    public bool introspectable {
+        get {
+            return attr_get_bool ("introspectable", true);
+        }
+        set {
+            attr_set_bool ("introspectable", value);
+        }
+    }
+    
+    public int length {
+        get {
+            return attr_get_int ("length", -1);
+        }
+        set {
+            attr_set_int ("length", value);
+        }
+    }
+    
+    public string c_type {
+        owned get {
+            return attrs["c:type"];
+        }
+        set {
+            attrs["c:type"] = value;
+        }
+    }
+    
+    public override Gee.List<AnyType> anytype {
+        owned get {
+            return all_of (typeof (AnyType));
+        }
+    }
 }
 

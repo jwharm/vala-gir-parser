@@ -19,59 +19,6 @@
 
 using Gee;
 
-public class Gir.Bitfield : Node, InfoAttrs, DocElements, InfoElements, EnumBase {
-	public override string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public override string c_type {
-		owned get {
-			return attrs["c:type"];
-		}
-		set {
-			attrs["c:type"] = value;
-		}
-	}
-	
-	public override string? glib_type_name {
-		owned get {
-			return attrs["glib:type-name"];
-		}
-		set {
-			attrs["glib:type-name"] = value;
-		}
-	}
-	
-	public override string? glib_get_type {
-		owned get {
-			return attrs["glib:get-type"];
-		}
-		set {
-			attrs["glib:get-type"] = value;
-		}
-	}
-	
-	public override Gee.List<Member> members {
-		owned get {
-			return all_of (typeof (Member));
-		}
-	}
-	
-	public override Gee.List<Function> functions {
-		owned get {
-			return all_of (typeof (Function));
-		}
-	}
-	
-	public override Gee.List<FunctionInline> function_inlines {
-		owned get {
-			return all_of (typeof (FunctionInline));
-		}
-	}
+public class Gir.Bitfield : Node, InfoAttrs, DocElements, InfoElements,
+                            EnumBase {
 }
-

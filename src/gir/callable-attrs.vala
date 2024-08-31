@@ -20,76 +20,75 @@
 using Gee;
 
 public interface Gir.CallableAttrs : Node, InfoAttrs {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public string? c_identifier {
-		owned get {
-			return attrs["c:identifier"];
-		}
-		set {
-			attrs["c:identifier"] = value;
-		}
-	}
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public string? c_identifier {
+        owned get {
+            return attrs["c:identifier"];
+        }
+        set {
+            attrs["c:identifier"] = value;
+        }
+    }
 
-	public string? shadowed_by {
-		owned get {
-			return attrs["shadowed-by"];
-		}
-		set {
-			attrs["shadowed-by"] = value;
-		}
-	}
+    public string? shadowed_by {
+        owned get {
+            return attrs["shadowed-by"];
+        }
+        set {
+            attrs["shadowed-by"] = value;
+        }
+    }
 
-	public string? shadows {
-		owned get {
-			return attrs["shadows"];
-		}
-		set {
-			attrs["shadows"] = value;
-		}
-	}
-	
-	public bool @throws {
-		owned get {
-			return attr_get_bool ("throws", false);
-		}
-		set {
-			attr_set_bool ("throws", value);
-		}
-	}
-	
-	public string? moved_to {
-		owned get {
-			return attrs["moved-to"];
-		}
-		set {
-			attrs["moved-to"] = value;
-		}
-	}
-	
-	public string? glib_async_func {
-		owned get {
-			return attrs["glib:async-func"];
-		}
-		set {
-			attrs["glib:async-func"] = value;
-		}
-	}
-	
-	public string? glib_finish_func {
-		owned get {
-			return attrs["glib:finish-func"];
-		}
-		set {
-			attrs["glib:finish-func"] = value;
-		}
-	}
+    public string? shadows {
+        owned get {
+            return attrs["shadows"];
+        }
+        set {
+            attrs["shadows"] = value;
+        }
+    }
+    
+    public bool @throws {
+        owned get {
+            return attr_get_bool ("throws", false);
+        }
+        set {
+            attr_set_bool ("throws", value);
+        }
+    }
+    
+    public string? moved_to {
+        owned get {
+            return attrs["moved-to"];
+        }
+        set {
+            attrs["moved-to"] = value;
+        }
+    }
+    
+    public string? glib_async_func {
+        owned get {
+            return attrs["glib:async-func"];
+        }
+        set {
+            attrs["glib:async-func"] = value;
+        }
+    }
+    
+    public string? glib_finish_func {
+        owned get {
+            return attrs["glib:finish-func"];
+        }
+        set {
+            attrs["glib:finish-func"] = value;
+        }
+    }
 }
-

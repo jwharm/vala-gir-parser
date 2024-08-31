@@ -21,133 +21,133 @@ using Vala;
 using Gee;
 
 public class Gir.Parser {
-	static construct {
-		ensure_initialized ();
-	}
+    static construct {
+        ensure_initialized ();
+    }
 
-	private SourceFile source_file;
-	private SourceLocation begin;
-	private SourceLocation end;
-	
-	/**
-	 * Create a Gir Parser for the provided source file.
-	 *
-	 * @param  source_file a valid Gir file
-	 */
-	public Parser (SourceFile source_file) {
-		this.source_file = source_file;
-	}
+    private SourceFile source_file;
+    private SourceLocation begin;
+    private SourceLocation end;
+    
+    /**
+     * Create a Gir Parser for the provided source file.
+     *
+     * @param  source_file a valid Gir file
+     */
+    public Parser (SourceFile source_file) {
+        this.source_file = source_file;
+    }
 
-	/**
-	 * Parse the provided Gir file into a tree of Gir Nodes.
-	 *
-	 * @return the Repository, or null in case the gir file is invalid
-	 */
-	public Repository? parse() {
-		var reader = new MarkupReader (source_file.filename);
-		
-		/* Find the first START_ELEMENT token in the XML file */
-		while (true) {
-			var token_type = reader.read_token (out begin, out end);
-			if (token_type == START_ELEMENT) {
-				return parse_element (reader) as Repository;
-			} else if (token_type == EOF) {
-				var source = new SourceReference (source_file, begin, end);
-				Report.error (source, "No repository found");
-				return null;
-			}
-		}
-	}
+    /**
+     * Parse the provided Gir file into a tree of Gir Nodes.
+     *
+     * @return the Repository, or null in case the gir file is invalid
+     */
+    public Repository? parse() {
+        var reader = new MarkupReader (source_file.filename);
+        
+        /* Find the first START_ELEMENT token in the XML file */
+        while (true) {
+            var token_type = reader.read_token (out begin, out end);
+            if (token_type == START_ELEMENT) {
+                return parse_element (reader) as Repository;
+            } else if (token_type == EOF) {
+                var source = new SourceReference (source_file, begin, end);
+                Report.error (source, "No repository found");
+                return null;
+            }
+        }
+    }
 
-	/* Parse one XML element (recursively), and return a new Gir Node */
-	private Node parse_element (MarkupReader reader) {
-		var element = reader.name;
-		var children = new Gee.ArrayList<Node> ();
-		var attrs = reader.get_attributes ();
-		var content = new StringBuilder ();
-		var source = new SourceReference (source_file, begin, end);
+    /* Parse one XML element (recursively), and return a new Gir Node */
+    private Node parse_element (MarkupReader reader) {
+        var element = reader.name;
+        var children = new Gee.ArrayList<Node> ();
+        var attrs = reader.get_attributes ();
+        var content = new StringBuilder ();
+        var source = new SourceReference (source_file, begin, end);
 
-		/* Keep parsing XML until an END_ELEMENT or EOF token is reached */
-		while (true) {
-			var token = reader.read_token (out begin, out end);
-			if (token == MarkupTokenType.START_ELEMENT) {
-				/* Recursively create a child node and add it to the list */
-				Node node = parse_element (reader);
-				children.add (node);
-			} else if (token == MarkupTokenType.TEXT) {
-				content.append (reader.content);
-			} else {
-				break;
-			}
-		}
-		
-		/* Determine the Node subclass */
-		Type gtype = Type.from_name (Node.element_to_type_name (element));
-		if (gtype == 0) {
-			Report.warning (source, "Unsupported element: " + element);
-			/* Fallback to generic Node type */
-			gtype = typeof (Node);
-		}
+        /* Keep parsing XML until an END_ELEMENT or EOF token is reached */
+        while (true) {
+            var token = reader.read_token (out begin, out end);
+            if (token == MarkupTokenType.START_ELEMENT) {
+                /* Recursively create a child node and add it to the list */
+                Node node = parse_element (reader);
+                children.add (node);
+            } else if (token == MarkupTokenType.TEXT) {
+                content.append (reader.content);
+            } else {
+                break;
+            }
+        }
+        
+        /* Determine the Node subclass */
+        Type gtype = Type.from_name (Node.element_to_type_name (element));
+        if (gtype == 0) {
+            Report.warning (source, "Unsupported element: " + element);
+            /* Fallback to generic Node type */
+            gtype = typeof (Node);
+        }
 
-		/* Create and return a new Gir Node */
-		return Object.new (gtype,
-						   attrs: attrs,
-						   children: children,
-						   content: content.str.strip (),
-						   source_reference: source) as Node;
-	}
+        /* Create and return a new Gir Node */
+        return Object.new (gtype,
+                           attrs: attrs,
+                           children: children,
+                           content: content.str.strip (),
+                           source_reference: source) as Node;
+    }
 
-	/**
-	 * Make sure that all Node subclasses are registered on startup.
-	 */
-	private static void ensure_initialized () {
-		typeof (Gir.Alias).ensure ();
-		typeof (Gir.AnyType).ensure ();
-		typeof (Gir.Array).ensure ();
-		typeof (Gir.Attribute).ensure ();
-		typeof (Gir.Bitfield).ensure ();
-		typeof (Gir.Boxed).ensure ();
-		typeof (Gir.CallableAttrs).ensure ();
-		typeof (Gir.Callback).ensure ();
-		typeof (Gir.CInclude).ensure ();
-		typeof (Gir.Class).ensure ();
-		typeof (Gir.Constant).ensure ();
-		typeof (Gir.Constructor).ensure ();
-		typeof (Gir.DocDeprecated).ensure ();
-		typeof (Gir.Docsection).ensure ();
-		typeof (Gir.DocStability).ensure ();
-		typeof (Gir.Doc).ensure ();
-		typeof (Gir.DocVersion).ensure ();
-		typeof (Gir.Enumeration).ensure ();
-		typeof (Gir.Field).ensure ();
-		typeof (Gir.FunctionInline).ensure ();
-		typeof (Gir.FunctionMacro).ensure ();
-		typeof (Gir.Function).ensure ();
-		typeof (Gir.Implements).ensure ();
-		typeof (Gir.Include).ensure ();
-		typeof (Gir.InfoAttrs).ensure ();
-		typeof (Gir.InfoElements).ensure ();
-		typeof (Gir.InstanceParameter).ensure ();
-		typeof (Gir.Interface).ensure ();
-		typeof (Gir.Member).ensure ();
-		typeof (Gir.MethodInline).ensure ();
-		typeof (Gir.Method).ensure ();
-		typeof (Gir.Namespace).ensure ();
-		typeof (Gir.Node).ensure ();
-		typeof (Gir.Package).ensure ();
-		typeof (Gir.Parameters).ensure ();
-		typeof (Gir.Parameter).ensure ();
-		typeof (Gir.Prerequisite).ensure ();
-		typeof (Gir.Property).ensure ();
-		typeof (Gir.Record).ensure ();
-		typeof (Gir.Repository).ensure ();
-		typeof (Gir.ReturnValue).ensure ();
-		typeof (Gir.Signal).ensure ();
-		typeof (Gir.SourcePosition).ensure ();
-		typeof (Gir.TypeRef).ensure ();
-		typeof (Gir.Union).ensure ();
-		typeof (Gir.Varargs).ensure ();
-		typeof (Gir.VirtualMethod).ensure ();
-	}
+    /**
+     * Make sure that all Node subclasses are registered on startup.
+     */
+    private static void ensure_initialized () {
+        typeof (Gir.Alias).ensure ();
+        typeof (Gir.AnyType).ensure ();
+        typeof (Gir.Array).ensure ();
+        typeof (Gir.Attribute).ensure ();
+        typeof (Gir.Bitfield).ensure ();
+        typeof (Gir.Boxed).ensure ();
+        typeof (Gir.CallableAttrs).ensure ();
+        typeof (Gir.Callback).ensure ();
+        typeof (Gir.CInclude).ensure ();
+        typeof (Gir.Class).ensure ();
+        typeof (Gir.Constant).ensure ();
+        typeof (Gir.Constructor).ensure ();
+        typeof (Gir.DocDeprecated).ensure ();
+        typeof (Gir.Docsection).ensure ();
+        typeof (Gir.DocStability).ensure ();
+        typeof (Gir.Doc).ensure ();
+        typeof (Gir.DocVersion).ensure ();
+        typeof (Gir.Enumeration).ensure ();
+        typeof (Gir.Field).ensure ();
+        typeof (Gir.FunctionInline).ensure ();
+        typeof (Gir.FunctionMacro).ensure ();
+        typeof (Gir.Function).ensure ();
+        typeof (Gir.Implements).ensure ();
+        typeof (Gir.Include).ensure ();
+        typeof (Gir.InfoAttrs).ensure ();
+        typeof (Gir.InfoElements).ensure ();
+        typeof (Gir.InstanceParameter).ensure ();
+        typeof (Gir.Interface).ensure ();
+        typeof (Gir.Member).ensure ();
+        typeof (Gir.MethodInline).ensure ();
+        typeof (Gir.Method).ensure ();
+        typeof (Gir.Namespace).ensure ();
+        typeof (Gir.Node).ensure ();
+        typeof (Gir.Package).ensure ();
+        typeof (Gir.Parameters).ensure ();
+        typeof (Gir.Parameter).ensure ();
+        typeof (Gir.Prerequisite).ensure ();
+        typeof (Gir.Property).ensure ();
+        typeof (Gir.Record).ensure ();
+        typeof (Gir.Repository).ensure ();
+        typeof (Gir.ReturnValue).ensure ();
+        typeof (Gir.Signal).ensure ();
+        typeof (Gir.SourcePosition).ensure ();
+        typeof (Gir.TypeRef).ensure ();
+        typeof (Gir.Union).ensure ();
+        typeof (Gir.Varargs).ensure ();
+        typeof (Gir.VirtualMethod).ensure ();
+    }
 }
 

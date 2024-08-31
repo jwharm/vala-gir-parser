@@ -20,22 +20,22 @@
 using Gee;
 
 public class Gir.Include : Node {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public string version {
-		owned get {
-			return attrs["version"];
-		}
-		set {
-			attrs["version"] = value;
-		}
-	}
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public string version {
+        owned get {
+            return attrs["version"];
+        }
+        set {
+            attrs["version"] = value;
+        }
+    }
 }
 

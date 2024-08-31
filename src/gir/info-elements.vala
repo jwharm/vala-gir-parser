@@ -20,10 +20,10 @@
 using Gee;
 
 public interface Gir.InfoElements : Node, DocElements {
-	public Gee.List<Attribute> attributes {
-		owned get {
-			return all_of (typeof (Attribute));
-		}
-	}
+    public Gee.List<Attribute> attributes {
+        owned get {
+            return all_of (typeof (Attribute));
+        }
+    }
 }
 

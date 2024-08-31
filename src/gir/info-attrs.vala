@@ -20,100 +20,100 @@
 using Gee;
 
 public interface Gir.InfoAttrs : Node {
-	public bool introspectable {
-		get {
-			return attr_get_bool ("introspectable", true);
-		}
-		set {
-			attr_set_bool ("introspectable", value);
-		}
-	}
-	
-	public bool deprecated {
-		get {
-			return attr_get_bool ("deprecated", false);
-		}
-		set {
-			attr_set_bool ("deprecated", value);
-		}
-	}
-	
-	public string deprecated_version {
-		owned get {
-			return attrs["deprecated-version"];
-		}
-		set {
-			attrs["deprecated-version"] = value;
-		}
-	}
-	
-	public string version {
-		owned get {
-			return attrs["version"];
-		}
-		set {
-			attrs["version"] = value;
-		}
-	}
-	
-	public Stability stability {
-		get {
-			return Stability.from_string (attrs["stability"]);
-		}
-		set {
-			if (value == Stability.UNDEFINED) {
-				attrs.remove ("stability");
-			} else {
-				attrs["stability"] = value.to_string ();
-			}
-		}
-	}
+    public bool introspectable {
+        get {
+            return attr_get_bool ("introspectable", true);
+        }
+        set {
+            attr_set_bool ("introspectable", value);
+        }
+    }
+    
+    public bool deprecated {
+        get {
+            return attr_get_bool ("deprecated", false);
+        }
+        set {
+            attr_set_bool ("deprecated", value);
+        }
+    }
+    
+    public string deprecated_version {
+        owned get {
+            return attrs["deprecated-version"];
+        }
+        set {
+            attrs["deprecated-version"] = value;
+        }
+    }
+    
+    public string version {
+        owned get {
+            return attrs["version"];
+        }
+        set {
+            attrs["version"] = value;
+        }
+    }
+    
+    public Stability stability {
+        get {
+            return Stability.from_string (attrs["stability"]);
+        }
+        set {
+            if (value == Stability.UNDEFINED) {
+                attrs.remove ("stability");
+            } else {
+                attrs["stability"] = value.to_string ();
+            }
+        }
+    }
 }
 
 public interface Gir.DocElements : Node {
-	public DocVersion? doc_version {
-		owned get {
-			return any_of (typeof (DocVersion));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
-	
-	public DocStability? doc_stability {
-		owned get {
-			return any_of (typeof (DocStability));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
-	
-	public Doc? doc {
-		owned get {
-			return any_of (typeof (Doc));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
-	
-	public DocDeprecated? doc_deprecated {
-		owned get {
-			return any_of (typeof (DocDeprecated));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
-	
-	public SourcePosition? SourcePosition {
-		owned get {
-			return any_of (typeof (SourcePosition));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
+    public DocVersion? doc_version {
+        owned get {
+            return any_of (typeof (DocVersion));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
+    
+    public DocStability? doc_stability {
+        owned get {
+            return any_of (typeof (DocStability));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
+    
+    public Doc? doc {
+        owned get {
+            return any_of (typeof (Doc));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
+    
+    public DocDeprecated? doc_deprecated {
+        owned get {
+            return any_of (typeof (DocDeprecated));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
+    
+    public SourcePosition? SourcePosition {
+        owned get {
+            return any_of (typeof (SourcePosition));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
 }
 

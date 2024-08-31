@@ -20,49 +20,49 @@
 using Gee;
 
 public class Gir.Member : Node, InfoAttrs, DocElements, InfoElements {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public string value {
-		owned get {
-			return attrs["value"];
-		}
-		set {
-			attrs["value"] = value;
-		}
-	}
-	
-	public string? c_identifier {
-		owned get {
-			return attrs["c:identifier"];
-		}
-		set {
-			attrs["c:identifier"] = value;
-		}
-	}
-	
-	public string? glib_nick {
-		owned get {
-			return attrs["glib:nick"];
-		}
-		set {
-			attrs["glib:nick"] = value;
-		}
-	}
-	
-	public string? glib_name {
-		owned get {
-			return attrs["glib:name"];
-		}
-		set {
-			attrs["glib:name"] = value;
-		}
-	}
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public string value {
+        owned get {
+            return attrs["value"];
+        }
+        set {
+            attrs["value"] = value;
+        }
+    }
+    
+    public string? c_identifier {
+        owned get {
+            return attrs["c:identifier"];
+        }
+        set {
+            attrs["c:identifier"] = value;
+        }
+    }
+    
+    public string? glib_nick {
+        owned get {
+            return attrs["glib:nick"];
+        }
+        set {
+            attrs["glib:nick"] = value;
+        }
+    }
+    
+    public string? glib_name {
+        owned get {
+            return attrs["glib:name"];
+        }
+        set {
+            attrs["glib:name"] = value;
+        }
+    }
 }
 

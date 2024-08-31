@@ -20,109 +20,109 @@
 using Gee;
 
 public class Gir.Union : Node, InfoAttrs, DocElements, InfoElements {
-	public string? name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public string? c_type {
-		owned get {
-			return attrs["c:type"];
-		}
-		set {
-			attrs["c:type"] = value;
-		}
-	}
-	
-	public string? c_symbol_prefix {
-		owned get {
-			return attrs["c:symbol-prefix"];
-		}
-		set {
-			attrs["c:symbol-prefix"] = value;
-		}
-	}
-	
-	public string? glib_type_name {
-		owned get {
-			return attrs["glib:type-name"];
-		}
-		set {
-			attrs["glib:type-name"] = value;
-		}
-	}
-	
-	public string? glib_get_type {
-		owned get {
-			return attrs["glib:get-type"];
-		}
-		set {
-			attrs["glib:get-type"] = value;
-		}
-	}
-	
-	public string? copy_function {
-		owned get {
-			return attrs["copy-function"];
-		}
-		set {
-			attrs["copy-function"] = value;
-		}
-	}
-	
-	public string? free_function {
-		owned get {
-			return attrs["free-function"];
-		}
-		set {
-			attrs["free-function"] = value;
-		}
-	}
-	
-	public Gee.List<Field> fields {
-		owned get {
-			return all_of (typeof (Field));
-		}
-	}
-	
-	public Gee.List<Constructor> constructors {
-		owned get {
-			return all_of (typeof (Constructor));
-		}
-	}
-	
-	public Gee.List<Method> methods {
-		owned get {
-			return all_of (typeof (Method));
-		}
-	}
-	
-	public Gee.List<MethodInline> method_inlines {
-		owned get {
-			return all_of (typeof (MethodInline));
-		}
-	}
-	
-	public Gee.List<Function> functions {
-		owned get {
-			return all_of (typeof (Function));
-		}
-	}
-	
-	public Gee.List<FunctionInline> function_inlines {
-		owned get {
-			return all_of (typeof (FunctionInline));
-		}
-	}
-	
-	public Gee.List<Record> records {
-		owned get {
-			return all_of (typeof (Record));
-		}
-	}
+    public string? name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public string? c_type {
+        owned get {
+            return attrs["c:type"];
+        }
+        set {
+            attrs["c:type"] = value;
+        }
+    }
+    
+    public string? c_symbol_prefix {
+        owned get {
+            return attrs["c:symbol-prefix"];
+        }
+        set {
+            attrs["c:symbol-prefix"] = value;
+        }
+    }
+    
+    public string? glib_type_name {
+        owned get {
+            return attrs["glib:type-name"];
+        }
+        set {
+            attrs["glib:type-name"] = value;
+        }
+    }
+    
+    public string? glib_get_type {
+        owned get {
+            return attrs["glib:get-type"];
+        }
+        set {
+            attrs["glib:get-type"] = value;
+        }
+    }
+    
+    public string? copy_function {
+        owned get {
+            return attrs["copy-function"];
+        }
+        set {
+            attrs["copy-function"] = value;
+        }
+    }
+    
+    public string? free_function {
+        owned get {
+            return attrs["free-function"];
+        }
+        set {
+            attrs["free-function"] = value;
+        }
+    }
+    
+    public Gee.List<Field> fields {
+        owned get {
+            return all_of (typeof (Field));
+        }
+    }
+    
+    public Gee.List<Constructor> constructors {
+        owned get {
+            return all_of (typeof (Constructor));
+        }
+    }
+    
+    public Gee.List<Method> methods {
+        owned get {
+            return all_of (typeof (Method));
+        }
+    }
+    
+    public Gee.List<MethodInline> method_inlines {
+        owned get {
+            return all_of (typeof (MethodInline));
+        }
+    }
+    
+    public Gee.List<Function> functions {
+        owned get {
+            return all_of (typeof (Function));
+        }
+    }
+    
+    public Gee.List<FunctionInline> function_inlines {
+        owned get {
+            return all_of (typeof (FunctionInline));
+        }
+    }
+    
+    public Gee.List<Record> records {
+        owned get {
+            return all_of (typeof (Record));
+        }
+    }
 }
 

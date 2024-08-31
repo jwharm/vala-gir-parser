@@ -20,154 +20,154 @@
 using Gee;
 
 public class Gir.Record : Node, InfoAttrs, DocElements, InfoElements {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public string? c_type {
-		owned get {
-			return attrs["c:type"];
-		}
-		set {
-			attrs["c:type"] = value;
-		}
-	}
-	
-	public bool disguised {
-		get {
-			return attr_get_bool ("disguised", false);
-		}
-		set {
-			attr_set_bool ("disguised", value);
-		}
-	}	
-	
-	public bool opaque {
-		get {
-			return attr_get_bool ("opaque", false);
-		}
-		set {
-			attr_set_bool ("opaque", value);
-		}
-	}	
-	
-	public bool pointer {
-		get {
-			return attr_get_bool ("pointer", false);
-		}
-		set {
-			attr_set_bool ("pointer", value);
-		}
-	}
-	
-	public string? glib_type_name {
-		owned get {
-			return attrs["glib:type-name"];
-		}
-		set {
-			attrs["glib:type-name"] = value;
-		}
-	}
-	
-	public string? glib_get_type {
-		owned get {
-			return attrs["glib:get-type"];
-		}
-		set {
-			attrs["glib:get-type"] = value;
-		}
-	}
-	
-	public string? c_symbol_prefix {
-		owned get {
-			return attrs["c:symbol-prefix"];
-		}
-		set {
-			attrs["c:symbol-prefix"] = value;
-		}
-	}
-	
-	public bool foreign {
-		get {
-			return attr_get_bool ("foreign", false);
-		}
-		set {
-			attr_set_bool ("foreign", value);
-		}
-	}
-	
-	public string? glib_is_gtype_struct_for {
-		owned get {
-			return attrs["glib:is-gtype-struct-for"];
-		}
-		set {
-			attrs["glib:is-gtype-struct-for"] = value;
-		}
-	}
-	
-	public string? copy_function {
-		owned get {
-			return attrs["copy-function"];
-		}
-		set {
-			attrs["copy-function"] = value;
-		}
-	}
-	
-	public string? free_function {
-		owned get {
-			return attrs["free-function"];
-		}
-		set {
-			attrs["free-function"] = value;
-		}
-	}
-	
-	public Gee.List<Field> fields {
-		owned get {
-			return all_of (typeof (Field));
-		}
-	}
-	
-	public Gee.List<Function> functions {
-		owned get {
-			return all_of (typeof (Function));
-		}
-	}
-	
-	public Gee.List<FunctionInline> function_inlines {
-		owned get {
-			return all_of (typeof (FunctionInline));
-		}
-	}
-	
-	public Gee.List<Union> unions {
-		owned get {
-			return all_of (typeof (Union));
-		}
-	}
-	
-	public Gee.List<Method> methods {
-		owned get {
-			return all_of (typeof (Method));
-		}
-	}
-	
-	public Gee.List<MethodInline> method_inlines {
-		owned get {
-			return all_of (typeof (MethodInline));
-		}
-	}
-	
-	public Gee.List<Constructor> constructors {
-		owned get {
-			return all_of (typeof (Constructor));
-		}
-	}
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public string? c_type {
+        owned get {
+            return attrs["c:type"];
+        }
+        set {
+            attrs["c:type"] = value;
+        }
+    }
+    
+    public bool disguised {
+        get {
+            return attr_get_bool ("disguised", false);
+        }
+        set {
+            attr_set_bool ("disguised", value);
+        }
+    }   
+    
+    public bool opaque {
+        get {
+            return attr_get_bool ("opaque", false);
+        }
+        set {
+            attr_set_bool ("opaque", value);
+        }
+    }   
+    
+    public bool pointer {
+        get {
+            return attr_get_bool ("pointer", false);
+        }
+        set {
+            attr_set_bool ("pointer", value);
+        }
+    }
+    
+    public string? glib_type_name {
+        owned get {
+            return attrs["glib:type-name"];
+        }
+        set {
+            attrs["glib:type-name"] = value;
+        }
+    }
+    
+    public string? glib_get_type {
+        owned get {
+            return attrs["glib:get-type"];
+        }
+        set {
+            attrs["glib:get-type"] = value;
+        }
+    }
+    
+    public string? c_symbol_prefix {
+        owned get {
+            return attrs["c:symbol-prefix"];
+        }
+        set {
+            attrs["c:symbol-prefix"] = value;
+        }
+    }
+    
+    public bool foreign {
+        get {
+            return attr_get_bool ("foreign", false);
+        }
+        set {
+            attr_set_bool ("foreign", value);
+        }
+    }
+    
+    public string? glib_is_gtype_struct_for {
+        owned get {
+            return attrs["glib:is-gtype-struct-for"];
+        }
+        set {
+            attrs["glib:is-gtype-struct-for"] = value;
+        }
+    }
+    
+    public string? copy_function {
+        owned get {
+            return attrs["copy-function"];
+        }
+        set {
+            attrs["copy-function"] = value;
+        }
+    }
+    
+    public string? free_function {
+        owned get {
+            return attrs["free-function"];
+        }
+        set {
+            attrs["free-function"] = value;
+        }
+    }
+    
+    public Gee.List<Field> fields {
+        owned get {
+            return all_of (typeof (Field));
+        }
+    }
+    
+    public Gee.List<Function> functions {
+        owned get {
+            return all_of (typeof (Function));
+        }
+    }
+    
+    public Gee.List<FunctionInline> function_inlines {
+        owned get {
+            return all_of (typeof (FunctionInline));
+        }
+    }
+    
+    public Gee.List<Union> unions {
+        owned get {
+            return all_of (typeof (Union));
+        }
+    }
+    
+    public Gee.List<Method> methods {
+        owned get {
+            return all_of (typeof (Method));
+        }
+    }
+    
+    public Gee.List<MethodInline> method_inlines {
+        owned get {
+            return all_of (typeof (MethodInline));
+        }
+    }
+    
+    public Gee.List<Constructor> constructors {
+        owned get {
+            return all_of (typeof (Constructor));
+        }
+    }
 }
 

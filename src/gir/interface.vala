@@ -20,139 +20,139 @@
 using Gee;
 
 public class Gir.Interface : Node, InfoAttrs, DocElements, InfoElements {
-	public string name {
-		owned get {
-			return attrs["name"];
-		}
-		set {
-			attrs["name"] = value;
-		}
-	}
-	
-	public string glib_type_name {
-		owned get {
-			return attrs["glib:type-name"];
-		}
-		set {
-			attrs["glib:type-name"] = value;
-		}
-	}
-	
-	public string glib_get_type {
-		owned get {
-			return attrs["glib:get-type"];
-		}
-		set {
-			attrs["glib:get-type"] = value;
-		}
-	}
-	
-	public string? c_symbol_prefix {
-		owned get {
-			return attrs["c:symbol-prefix"];
-		}
-		set {
-			attrs["c:symbol-prefix"] = value;
-		}
-	}
-	
-	public string? c_type {
-		owned get {
-			return attrs["c:type"];
-		}
-		set {
-			attrs["c:type"] = value;
-		}
-	}
-	
-	public string? glib_type_struct {
-		owned get {
-			return attrs["glib:type-struct"];
-		}
-		set {
-			attrs["glib:type-struct"] = value;
-		}
-	}
-	
-	public Gee.List<Prerequisite> prerequisites {
-		owned get {
-			return all_of (typeof (Prerequisite));
-		}
-	}
-	
-	public Gee.List<Implements> implements {
-		owned get {
-			return all_of (typeof (Implements));
-		}
-	}
-	
-	public Gee.List<Function> functions {
-		owned get {
-			return all_of (typeof (Function));
-		}
-	}
-	
-	public Gee.List<FunctionInline> function_inlines {
-		owned get {
-			return all_of (typeof (FunctionInline));
-		}
-	}
-	
+    public string name {
+        owned get {
+            return attrs["name"];
+        }
+        set {
+            attrs["name"] = value;
+        }
+    }
+    
+    public string glib_type_name {
+        owned get {
+            return attrs["glib:type-name"];
+        }
+        set {
+            attrs["glib:type-name"] = value;
+        }
+    }
+    
+    public string glib_get_type {
+        owned get {
+            return attrs["glib:get-type"];
+        }
+        set {
+            attrs["glib:get-type"] = value;
+        }
+    }
+    
+    public string? c_symbol_prefix {
+        owned get {
+            return attrs["c:symbol-prefix"];
+        }
+        set {
+            attrs["c:symbol-prefix"] = value;
+        }
+    }
+    
+    public string? c_type {
+        owned get {
+            return attrs["c:type"];
+        }
+        set {
+            attrs["c:type"] = value;
+        }
+    }
+    
+    public string? glib_type_struct {
+        owned get {
+            return attrs["glib:type-struct"];
+        }
+        set {
+            attrs["glib:type-struct"] = value;
+        }
+    }
+    
+    public Gee.List<Prerequisite> prerequisites {
+        owned get {
+            return all_of (typeof (Prerequisite));
+        }
+    }
+    
+    public Gee.List<Implements> implements {
+        owned get {
+            return all_of (typeof (Implements));
+        }
+    }
+    
+    public Gee.List<Function> functions {
+        owned get {
+            return all_of (typeof (Function));
+        }
+    }
+    
+    public Gee.List<FunctionInline> function_inlines {
+        owned get {
+            return all_of (typeof (FunctionInline));
+        }
+    }
+    
     public Constructor? constructor {
-		owned get {
-			return any_of (typeof (Constructor));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
-	
-	public Gee.List<Method> methods {
-		owned get {
-			return all_of (typeof (Method));
-		}
-	}
-	
-	public Gee.List<MethodInline> method_inlines {
-		owned get {
-			return all_of (typeof (MethodInline));
-		}
-	}
-	
-	public Gee.List<VirtualMethod> virtual_methods {
-		owned get {
-			return all_of (typeof (VirtualMethod));
-		}
-	}
-	
-	public Gee.List<Field> fields {
-		owned get {
-			return all_of (typeof (Field));
-		}
-	}
-	
-	public Gee.List<Property> properties {
-		owned get {
-			return all_of (typeof (Property));
-		}
-	}
-	
-	public Gee.List<Signal> signals {
-		owned get {
-			return all_of (typeof (Signal));
-		}
-	}
-	
-	public Gee.List<Callback> callbacks {
-		owned get {
-			return all_of (typeof (Callback));
-		}
-	}
-	
-	public Gee.List<Constant> constants {
-		owned get {
-			return all_of (typeof (Constant));
-		}
-	}
+        owned get {
+            return any_of (typeof (Constructor));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
+    
+    public Gee.List<Method> methods {
+        owned get {
+            return all_of (typeof (Method));
+        }
+    }
+    
+    public Gee.List<MethodInline> method_inlines {
+        owned get {
+            return all_of (typeof (MethodInline));
+        }
+    }
+    
+    public Gee.List<VirtualMethod> virtual_methods {
+        owned get {
+            return all_of (typeof (VirtualMethod));
+        }
+    }
+    
+    public Gee.List<Field> fields {
+        owned get {
+            return all_of (typeof (Field));
+        }
+    }
+    
+    public Gee.List<Property> properties {
+        owned get {
+            return all_of (typeof (Property));
+        }
+    }
+    
+    public Gee.List<Signal> signals {
+        owned get {
+            return all_of (typeof (Signal));
+        }
+    }
+    
+    public Gee.List<Callback> callbacks {
+        owned get {
+            return all_of (typeof (Callback));
+        }
+    }
+    
+    public Gee.List<Constant> constants {
+        owned get {
+            return all_of (typeof (Constant));
+        }
+    }
 }
 

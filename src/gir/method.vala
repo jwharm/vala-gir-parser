@@ -20,41 +20,22 @@
 using Gee;
 
 public class Gir.Method : Node, DocElements, InfoElements, InfoAttrs,
-						  CallableAttrs {
-	public string? glib_set_property {
-		owned get {
-			return attrs["glib:set-property"];
-		}
-		set {
-			attrs["glib:set-property"] = value;
-		}
-	}
-	
-	public string? glib_get_property {
-		owned get {
-			return attrs["glib:get-property"];
-		}
-		set {
-			attrs["glib:get-property"] = value;
-		}
-	}
-	
-	public Parameters? parameters {
-		owned get {
-			return any_of (typeof (Parameters));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
-	
-	public ReturnValue? return_value {
-		owned get {
-			return any_of (typeof (ReturnValue));
-		}
-		set {
-			remove_and_set (value);
-		}
-	}
+                          CallableAttrs, Callable {
+    public string? glib_set_property {
+        owned get {
+            return attrs["glib:set-property"];
+        }
+        set {
+            attrs["glib:set-property"] = value;
+        }
+    }
+    
+    public string? glib_get_property {
+        owned get {
+            return attrs["glib:get-property"];
+        }
+        set {
+            attrs["glib:get-property"] = value;
+        }
+    }
 }
-

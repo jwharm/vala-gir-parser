@@ -17,9 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
-public class Gir.Implements : Node {
+public interface Gir.Callable : Node, DocElements, InfoElements, InfoAttrs {
     public string name {
         owned get {
             return attrs["name"];
@@ -28,5 +26,31 @@ public class Gir.Implements : Node {
             attrs["name"] = value;
         }
     }
-}
 
+    public bool @throws {
+        owned get {
+            return attr_get_bool ("throws", false);
+        }
+        set {
+            attr_set_bool ("throws", value);
+        }
+    }
+
+    public Parameters? parameters {
+        owned get {
+            return any_of (typeof (Parameters));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
+    
+    public ReturnValue? return_value {
+        owned get {
+            return any_of (typeof (ReturnValue));
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
+}
