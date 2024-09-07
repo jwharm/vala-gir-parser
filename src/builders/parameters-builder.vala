@@ -105,7 +105,7 @@ public class Builders.ParametersBuilder {
             if (is_hidden_param (i)) {
                 pos += 0.1;
             } else {
-                pos = ceil (pos) + 1.0;
+                pos = floor (pos) + 1.0;
             }
         }
 
@@ -131,8 +131,8 @@ public class Builders.ParametersBuilder {
     }
 
     /* Avoids a dependency on GLib.Math */
-    private static double ceil (double a) {
+    private static double floor (double a) {
         double b = (double) (long) a;
-        return (a == b) || (a < 0.0) ? b : a + 1.0;
+        return a < 0.0 ? b - 1.0 : b;
     }
 }
