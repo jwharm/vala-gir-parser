@@ -42,7 +42,12 @@ public class Builders.MethodBuilder : CallableBuilder {
         cr_method.has_construct_function = false;
 
         /* c name */
-        cr_method.set_attribute_string ("CCode", "cname", ctor.c_identifier);
+        if (ctor.c_identifier != generate_cname (ctor)) {
+            cr_method.set_attribute_string ("CCode", "cname", ctor.c_identifier);
+        }
+
+        /* version */
+        cr_method.set_attribute_string ("Version", "since", ctor.version);
 
         /* return type annotation */
         if (ctor.parent_node is Gir.Class) {
@@ -78,7 +83,12 @@ public class Builders.MethodBuilder : CallableBuilder {
         vmethod.binding = MemberBinding.STATIC;
 
         /* c name */
-        vmethod.set_attribute_string ("CCode", "cname", function.c_identifier);
+        if (function.c_identifier != generate_cname (function)) {
+            vmethod.set_attribute_string ("CCode", "cname", function.c_identifier);
+        }
+
+        /* version */
+        vmethod.set_attribute_string ("Version", "since", function.version);
 
         /* parameters */
         add_parameters (vmethod);
@@ -103,7 +113,12 @@ public class Builders.MethodBuilder : CallableBuilder {
         vmethod.access = SymbolAccessibility.PUBLIC;
 
         /* c name */
-        vmethod.set_attribute_string ("CCode", "cname", method.c_identifier);
+        if (method.c_identifier != generate_cname (method)) {
+            vmethod.set_attribute_string ("CCode", "cname", method.c_identifier);
+        }
+
+        /* version */
+        vmethod.set_attribute_string ("Version", "since", method.version);
 
         /* parameters */
         add_parameters (vmethod);
@@ -131,6 +146,9 @@ public class Builders.MethodBuilder : CallableBuilder {
         } else {
             vmethod.is_virtual = true;
         }
+
+        /* version */
+        vmethod.set_attribute_string ("Version", "since", method.version);
 
         /* parameters */
         add_parameters (vmethod);
@@ -202,5 +220,21 @@ public class Builders.MethodBuilder : CallableBuilder {
 
         /* no virtual method invoked by this method */
         return false;
+    }
+
+    /* generate the C function name from the GIR name and all prefixes */
+    private string generate_cname (Gir.Callable callable) {
+        var sb = new StringBuilder (callable.name);
+        unowned var node = callable.parent_node;
+        while (node != null) {
+            var prefix = node.attrs["c:symbol-prefix"] ?? node.attrs["c:symbol-prefixes"];
+            if (prefix != null) {
+                sb.prepend (prefix + "_");
+            }
+
+            node = node.parent_node;
+        }
+
+        return sb.str;
     }
 }
