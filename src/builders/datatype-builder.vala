@@ -42,7 +42,7 @@ public class Builders.DataTypeBuilder {
             if (size == 1) {
                 var inner = anytype.anytype[0];
                 DataType elem_type = new DataTypeBuilder (inner).build ();
-                return new ArrayType (elem_type, 0, anytype.source_reference);
+                return new ArrayType (elem_type, 1, anytype.source_reference);
             }
         }
 
