@@ -91,8 +91,13 @@ public class Builders.NamespaceBuilder {
         /* records */
         foreach (Gir.Record rec in ns.records) {
             if (rec.introspectable) {
-                var builder = new StructBuilder (rec);
-                vns.add_struct (builder.build ());
+                if (rec.glib_get_type == null) {
+                    var builder = new StructBuilder (rec);
+                    vns.add_struct (builder.build ());
+                } else {
+                    var builder = new BoxedBuilder (rec);
+                    vns.add_class (builder.build ());
+                }
             }
         }
 
