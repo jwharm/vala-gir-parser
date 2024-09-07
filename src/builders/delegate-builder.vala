@@ -19,10 +19,12 @@
 
 using Vala;
 
-public class Builders.DelegateBuilder : CallableBuilder {
+public class Builders.DelegateBuilder {
+
+    private Gir.Callable callable;
 
     public DelegateBuilder (Gir.Callback callable) {
-        base (callable);
+        this.callable = callable;
     }
 
     public Vala.Delegate build_callback () {
@@ -43,7 +45,7 @@ public class Builders.DelegateBuilder : CallableBuilder {
         vdelegate.set_attribute_string ("Version", "since", callable.version);
 
         /* parameters */
-        add_parameters (vdelegate);
+        new ParametersBuilder (callable, vdelegate).build_parameters ();
 
         /* throws */
         if (callback.throws) {
@@ -68,9 +70,8 @@ public class Builders.DelegateBuilder : CallableBuilder {
         vsignal.set_attribute_string ("CCode", "cname", sig.name);
 
         /* parameters */
-        add_parameters (vsignal);
+        new ParametersBuilder (callable, vsignal).build_parameters ();
 
         return vsignal;
     }
-
 }

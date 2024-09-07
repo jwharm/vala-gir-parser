@@ -19,10 +19,12 @@
 
 using Vala;
 
-public class Builders.MethodBuilder : CallableBuilder {
+public class Builders.MethodBuilder {
+
+    private Gir.Callable callable;
 
     public MethodBuilder (Gir.Callable callable) {
-        base (callable);
+        this.callable = callable;
     }
 
     public Vala.CreationMethod build_constructor () {
@@ -60,7 +62,7 @@ public class Builders.MethodBuilder : CallableBuilder {
         }
 
         /* parameters */
-        add_parameters (cr_method);
+        new ParametersBuilder (callable, cr_method).build_parameters ();
 
         /* throws */
         if (ctor.throws) {
@@ -91,7 +93,7 @@ public class Builders.MethodBuilder : CallableBuilder {
         vmethod.set_attribute_string ("Version", "since", function.version);
 
         /* parameters */
-        add_parameters (vmethod);
+        new ParametersBuilder (callable, vmethod).build_parameters ();
 
         /* throws */
         if (function.throws) {
@@ -121,7 +123,7 @@ public class Builders.MethodBuilder : CallableBuilder {
         vmethod.set_attribute_string ("Version", "since", method.version);
 
         /* parameters */
-        add_parameters (vmethod);
+        new ParametersBuilder (callable, vmethod).build_parameters ();
 
         /* throws */
         if (method.throws) {
@@ -151,7 +153,7 @@ public class Builders.MethodBuilder : CallableBuilder {
         vmethod.set_attribute_string ("Version", "since", method.version);
 
         /* parameters */
-        add_parameters (vmethod);
+        new ParametersBuilder (callable, vmethod).build_parameters ();
 
         /* throws */
         if (method.throws) {

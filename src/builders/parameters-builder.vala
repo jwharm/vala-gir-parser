@@ -19,21 +19,23 @@
 
 using Vala;
 
-public class Builders.CallableBuilder {
+public class Builders.ParametersBuilder {
 
-    protected Gir.Callable callable;
+    private Gir.Callable gcall;
+    private Vala.Callable vcall;
 
-    protected CallableBuilder (Gir.Callable callable) {
-        this.callable = callable;
+    public ParametersBuilder (Gir.Callable gcall, Vala.Callable vcall) {
+        this.gcall = gcall;
+        this.vcall = vcall;
     }
 
-    protected void add_parameters (Vala.Callable vcall) {
-        if (callable.parameters == null) {
+    public void build_parameters () {
+        if (gcall.parameters == null) {
             return;
         }
 
-        for (int i = 0; i < callable.parameters.parameters.size; i++) {
-            Gir.Parameter p = callable.parameters.parameters[i];
+        for (int i = 0; i < gcall.parameters.parameters.size; i++) {
+            Gir.Parameter p = gcall.parameters.parameters[i];
             Vala.Parameter vpar;
 
             /* varargs */
@@ -86,7 +88,7 @@ public class Builders.CallableBuilder {
 
         /* length in another parameter */
         if (arr.length != -1) {
-            var lp = callable.parameters.parameters[arr.length];
+            var lp = gcall.parameters.parameters[arr.length];
             var pos = get_param_pos (arr.length);
             var type = (Gir.TypeRef) lp.anytype;
             vpar.set_attribute_string ("CCode", "array_length_cname", lp.name);
@@ -113,7 +115,7 @@ public class Builders.CallableBuilder {
     /* A parameter is hidden from Vala API when it's an array length parameter,
      * user-data (for a closure), or a destroy-notify callback. */
     private bool is_hidden_param (int idx) {
-        foreach (Gir.Parameter p in callable.parameters.parameters) {
+        foreach (Gir.Parameter p in gcall.parameters.parameters) {
             if (p.closure == idx || p.destroy == idx) {
                 return true;
             }
