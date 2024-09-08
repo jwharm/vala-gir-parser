@@ -87,13 +87,24 @@ public class Builders.ParametersBuilder {
         }
 
         /* length in another parameter */
-        if (arr.length != -1) {
+        else if (arr.length != -1) {
             var lp = gcall.parameters.parameters[arr.length];
             var pos = get_param_pos (arr.length);
             var type = (Gir.TypeRef) lp.anytype;
             vpar.set_attribute_string ("CCode", "array_length_cname", lp.name);
             vpar.set_attribute_double ("CCode", "array_length_pos", pos);
             vpar.set_attribute_string ("CCode", "array_length_type", type.name);
+        }
+
+        /* no length specified */
+        else {
+            vpar.set_attribute_bool ("CCode", "array_length", false);
+            /* If zero-terminated is missing, there's no length, there's no
+             * fixed size, and the name attribute is unset, then zero-terminated
+             * is true. */
+            if (arr.name == null) {
+                vpar.set_attribute_bool ("CCode", "array_null_terminated", true);
+            }
         }
     }
 
