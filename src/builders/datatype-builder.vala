@@ -97,6 +97,10 @@ public class Builders.DataTypeBuilder {
             return name.replace ("GObject.", "GLib.");
         }
 
+        if (name.has_prefix ("Gio.")) {
+            return name.replace ("Gio.", "GLib.");
+        }
+
         return name;
     }
 
