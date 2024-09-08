@@ -78,11 +78,17 @@ public class Builders.MethodBuilder {
         /* return type */
         var return_value = function.return_value;
         var return_type = new DataTypeBuilder (return_value.anytype).build ();
+        return_type.nullable = return_value.nullable;
 
         /* create a static method */
         var vmethod = new Method (function.name, return_type, function.source_reference);
         vmethod.access = SymbolAccessibility.PUBLIC;
         vmethod.binding = MemberBinding.STATIC;
+
+        /* array return type attributes */
+        if (callable.return_value.anytype is Gir.Array) {
+            add_array_return_type_attributes (vmethod);
+        }
 
         /* c name */
         if (function.c_identifier != generate_cname (function)) {
@@ -109,10 +115,16 @@ public class Builders.MethodBuilder {
         /* return type */
         var return_value = method.return_value;
         var return_type = new DataTypeBuilder (return_value.anytype).build ();
+        return_type.nullable = return_value.nullable;
 
         /* the method itself */
         var vmethod = new Method (method.name, return_type, method.source_reference);
         vmethod.access = SymbolAccessibility.PUBLIC;
+
+        /* array return type attributes */
+        if (callable.return_value.anytype is Gir.Array) {
+            add_array_return_type_attributes (vmethod);
+        }
 
         /* c name */
         if (method.c_identifier != generate_cname (method)) {
@@ -139,6 +151,7 @@ public class Builders.MethodBuilder {
         /* return type */
         var return_value = method.return_value;
         var return_type = new DataTypeBuilder (return_value.anytype).build ();
+        return_type.nullable = return_value.nullable;
 
         /* the method itself */
         var vmethod = new Method (method.name, return_type, method.source_reference);
@@ -147,6 +160,11 @@ public class Builders.MethodBuilder {
             vmethod.is_abstract = true;
         } else {
             vmethod.is_virtual = true;
+        }
+
+        /* array return type attributes */
+        if (callable.return_value.anytype is Gir.Array) {
+            add_array_return_type_attributes (vmethod);
         }
 
         /* version */
@@ -222,6 +240,14 @@ public class Builders.MethodBuilder {
 
         /* no virtual method invoked by this method */
         return false;
+    }
+
+    private void add_array_return_type_attributes (Vala.Method vmethod) {
+        var vtype = (Vala.ArrayType) vmethod.return_type;
+        var girtype = (Gir.Array) callable.return_value.anytype;
+        var builder = new ParametersBuilder (callable, vmethod);
+        builder.add_array_attrs (vmethod, vtype, girtype);
+        vtype.element_type.value_owned = true;
     }
 
     /* generate the C function name from the GIR name and all prefixes */

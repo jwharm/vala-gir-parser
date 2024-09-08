@@ -59,9 +59,9 @@ public class Builders.ParametersBuilder {
 
             /* array parameter */
             if (p.anytype is Gir.Array) {
-                add_array_attrs (ref vpar, p);
                 var array_type = (Vala.ArrayType) p_type;
-                array_type.element_type.value_owned = true; /* FIXME */
+                add_array_attrs (vpar, array_type, (Gir.Array) p.anytype);
+                array_type.element_type.value_owned = true;
             }
 
             /* out or ref parameter */
@@ -75,12 +75,11 @@ public class Builders.ParametersBuilder {
         }
     }
 
-    private void add_array_attrs (ref Vala.Parameter vpar, Gir.Parameter p) {
-        var arr = (Gir.Array) p.anytype;
-
+    public void add_array_attrs (Vala.Symbol vpar,
+                                 Vala.ArrayType array_type,
+                                 Gir.Array arr) {
         /* fixed length */
         if (arr.fixed_size != -1) {
-            var array_type = (Vala.ArrayType) vpar.variable_type;
             array_type.fixed_length = true;
             array_type.length = new IntegerLiteral (arr.fixed_size.to_string ());
             vpar.set_attribute_bool ("CCode", "array_length", false);
