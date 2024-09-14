@@ -550,7 +550,8 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
     /* check if this callable has no parameters (ignoring instance parameter) */
     public static bool has_parameters (Gir.Callable call) {
-        return call.parameters == null || call.parameters.parameters.is_empty;
+        return call.parameters != null
+                && (! call.parameters.parameters.is_empty);
     }
 
     /* generate the C function name from the GIR name and all prefixes */
