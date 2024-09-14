@@ -112,6 +112,26 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             v_method.version.replacement = g_function.moved_to;
         }
 
+        /* try to convert struct functions into instance methods */
+        if (g_function.parent_node is Gir.Record && (! no_parameters (g_function))) {
+
+            /* check if the first parameter is an "instance parameter", i.e. it
+             * has the type of the enclosing struct */
+            var g_rec = (Gir.Record) g_function.parent_node;
+            var g_this = g_function.parameters.parameters[0];
+            var g_type_name = (g_this.anytype as Gir.TypeRef)?.name;
+            var check_direction = g_this.direction == IN
+                    || (g_this.direction == OUT && g_this.caller_allocates);
+            var check_name = g_type_name == g_rec.name;
+
+            /* if found, remove the first parameter and change the static method
+             * into an instance method */
+            if (check_direction && check_name) {
+                g_function.parameters.parameters.remove_at (0);
+                v_method.binding = MemberBinding.INSTANCE;
+            }
+        }
+
         /* parameters */
         new ParametersBuilder (g_function, v_method).build_parameters ();
 
