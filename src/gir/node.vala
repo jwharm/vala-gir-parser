@@ -39,6 +39,14 @@ public class Gir.Node : Object {
     }
 
     /**
+     * Add the new child node, and set its parent_node to this node.
+     */
+    public void add (Node node) {
+        node.parent_node = this;
+        children.add (node);
+    }
+
+    /**
      * Get a filtered view of all child nodes with the specified gtype.
      */
     internal Gee.List<T> all_of<T> (Type gtype) {
@@ -57,10 +65,13 @@ public class Gir.Node : Object {
      * the same gtype.
      */ 
     internal void remove_and_set (Node node) {
-        children.remove_all_iterator (
-            children.filter (e => e.get_type () == node.get_type ())
-        );
-        children.add (node);
+        for (int i = 0; i < children.size; i++) {
+            if (children[i].get_type () == node.get_type ()) {
+                children.remove_at (i);
+                break;
+            }
+        }
+        add (node);
     }
 
     /**
