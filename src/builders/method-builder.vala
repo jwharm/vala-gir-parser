@@ -113,7 +113,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* try to convert struct functions into instance methods */
-        if (g_function.parent_node is Gir.Record && (! no_parameters (g_function))) {
+        if (g_function.parent_node is Gir.Record && has_parameters (g_function)) {
 
             /* check if the first parameter is an "instance parameter", i.e. it
              * has the type of the enclosing struct */
@@ -337,7 +337,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
     /* void functions with one trailing out parameter: change the out parameter
      * into a return value */
     private void set_out_parameter_as_return_value () {
-        if ((! returns_void (g_call)) || no_parameters (g_call)) {
+        if (! (returns_void (g_call) && has_parameters (g_call))) {
             return;
         }
 
@@ -509,8 +509,8 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             return false;
         }
 
-        var a_noarg = no_parameters (a);
-        var b_noarg = no_parameters (b);
+        var a_noarg = ! has_parameters (a);
+        var b_noarg = ! has_parameters (b);
 
         /* if both have no parameters, it's a match */
         if (a_noarg || b_noarg) {
@@ -549,7 +549,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
     }
 
     /* check if this callable has no parameters (ignoring instance parameter) */
-    public static bool no_parameters (Gir.Callable call) {
+    public static bool has_parameters (Gir.Callable call) {
         return call.parameters == null || call.parameters.parameters.is_empty;
     }
 
