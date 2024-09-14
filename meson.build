@@ -22,7 +22,6 @@ sources = files(
 		'src/builders/constant-builder.vala',
 		'src/builders/datatype-builder.vala',
 		'src/builders/enum-builder.vala',
-		'src/builders/error-domain-builder.vala',
 		'src/builders/field-builder.vala',
 		'src/builders/identifier-builder.vala',
 		'src/builders/info-attrs-builder.vala',

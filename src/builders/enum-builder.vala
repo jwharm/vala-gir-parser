@@ -21,7 +21,7 @@ using Vala;
 
 public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
-    private Gir.EnumBase g_enum;
+    protected Gir.EnumBase g_enum;
 
     public EnumBuilder (Gir.EnumBase g_enum) {
         this.g_enum = g_enum;
@@ -31,7 +31,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
         return this.g_enum;
     }
 
-    public Vala.Enum build () {
+    public Vala.Enum build_enum () {
         /* refactor functions into instance methods when possible */
         change_functions_into_methods ();
 
@@ -93,6 +93,69 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
         /* flags */
         v_enum.set_attribute ("Flags", g_enum is Gir.Bitfield);
+
+        return v_enum;
+    }
+
+    public Vala.ErrorDomain build_error_domain () {
+        /* refactor functions into instance methods when possible */
+        change_functions_into_methods ();
+
+        /* create the error domain */
+        Vala.ErrorDomain v_enum = new Vala.ErrorDomain (g_enum.name, g_enum.source_reference);
+        v_enum.access = SymbolAccessibility.PUBLIC;
+
+        /* c_name */
+        if (g_enum.c_type != generate_cname (g_enum)) {
+            v_enum.set_attribute_string ("CCode", "cname", g_enum.c_type);
+        }
+
+        /* version */
+        add_version_attrs (v_enum);
+
+        /* get_type method */
+        var type_id = g_enum.glib_get_type;
+        if (type_id == null) {
+            v_enum.set_attribute_bool ("CCode", "has_type_id", false);
+        } else {
+            v_enum.set_attribute_string ("CCode", "type_id", type_id + " ()");
+        }
+
+        /* functions */
+        foreach (var g_function in g_enum.functions) {
+            var builder = new MethodBuilder (g_function);
+            if (! builder.skip ()) {
+                v_enum.add_method (builder.build_function ());
+            } 
+        }
+
+        /* methods */
+        Gee.List<Gir.Method> g_methods = g_enum.all_of (typeof (Gir.Method));
+        foreach (var g_method in g_methods) {
+            var builder = new MethodBuilder (g_method);
+            if (! builder.skip ()) {
+                v_enum.add_method (builder.build_method ());
+            }
+        }
+
+        /* cprefix */
+        string? common_prefix = null;
+        foreach (var g_member in g_enum.members) {
+            var name = g_member.c_identifier.ascii_up().replace ("-", "_");
+            calculate_common_prefix (ref common_prefix, name);
+        }
+        v_enum.set_attribute_string ("CCode", "cprefix", common_prefix);
+
+        /* members */
+        foreach (var g_member in g_enum.members) {
+            var name = g_member.c_identifier
+                    .substring (common_prefix.length)
+                    .ascii_up()
+                    .replace ("-", "_");
+            unowned var source = g_member.source_reference;
+            var value = new IntegerLiteral(g_member.value);
+            v_enum.add_code (new ErrorCode.with_value (name, value, source));
+        }
 
         return v_enum;
     }

@@ -44,7 +44,7 @@ public class Builders.NamespaceBuilder {
         foreach (Gir.Bitfield g_bf in g_ns.bitfields) {
             if (g_bf.introspectable) {
                 EnumBuilder builder = new EnumBuilder (g_bf);
-                v_ns.add_enum (builder.build ());
+                v_ns.add_enum (builder.build_enum ());
             }
         }
 
@@ -67,12 +67,11 @@ public class Builders.NamespaceBuilder {
         /* enumerations (and error domains) */
         foreach (Gir.Enumeration g_enum in g_ns.enumerations) {
             if (g_enum.introspectable) {
+                var builder = new EnumBuilder (g_enum);
                 if (g_enum.glib_error_domain != null) {
-                    var builder = new ErrorDomainBuilder (g_enum);
-                    v_ns.add_error_domain (builder.build ());
+                    v_ns.add_error_domain (builder.build_error_domain ());
                 } else {
-                    var builder = new EnumBuilder (g_enum);
-                    v_ns.add_enum (builder.build ());
+                    v_ns.add_enum (builder.build_enum ());
                 }
             }
         }
