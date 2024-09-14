@@ -40,7 +40,7 @@ public class Gir.Property : Node, InfoAttrs, DocElements, InfoElements {
     
     public bool readable {
         get {
-            return attr_get_bool ("readable", false);
+            return attr_get_bool ("readable", true);
         }
         set {
             attr_set_bool ("readable", value);

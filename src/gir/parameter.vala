@@ -40,7 +40,7 @@ public class Gir.Parameter : Node, DocElements {
     
     public bool allow_none {
         get {
-            return attr_get_bool ("allow-none", true);
+            return attr_get_bool ("allow-none", false);
         }
         set {
             attr_set_bool ("allow-none", value);
