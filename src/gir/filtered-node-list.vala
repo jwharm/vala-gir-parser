@@ -78,7 +78,7 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
     public override bool foreach (ForallFunc<G> f) {
         var iter = iterator ();
         while (iter.next ()) {
-            if (!f (iter.get ())) {
+            if (! f (iter.get ())) {
                 return false;
             }
         }
@@ -309,6 +309,7 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
         
         public void remove () {
             data.remove_at (cursor);
+            previous ();
         }
         
         public bool previous () {
@@ -350,7 +351,7 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
         
         public bool foreach (ForallFunc<G> f) {
             while (next ()) {
-                if (!f (get ())) {
+                if (! f (get ())) {
                     return false;
                 }
             }
