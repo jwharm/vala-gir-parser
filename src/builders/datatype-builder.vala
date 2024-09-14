@@ -34,32 +34,40 @@ public class Builders.DataTypeBuilder {
             Report.error (null, "expected <array> or <type>");
             return new VoidType ();
         }
+
+        /* <array name="GLib.PtrArray"> */
+        if ((g_anytype as Gir.Array)?.name == "GLib.PtrArray") {
+            var g_ptr_array = (Gir.Array) g_anytype;
+            return build_type (g_ptr_array.name,
+                               g_ptr_array.anytype,
+                               g_ptr_array.source_reference);
+        }
         
+        /* <type> */
         if (g_anytype is Gir.TypeRef) {
-            return build_type ((Gir.TypeRef) g_anytype);
-        } else if (g_anytype is Gir.Array) {
-            var size = g_anytype.anytype?.size ?? 0;
-            if (size == 1) {
-                var inner = g_anytype.anytype[0];
-                DataType v_type = new DataTypeBuilder (inner).build ();
-                return new ArrayType (v_type, 1, g_anytype.source_reference);
-            }
+            var g_type = (Gir.TypeRef) g_anytype;
+            return build_type (g_type.name, g_type.anytype, g_type.source_reference);
         }
 
-        return new VoidType (g_anytype.source_reference);
+        /* <array> */
+        var inner = g_anytype.anytype[0];
+        DataType v_type = new DataTypeBuilder (inner).build ();
+        return new ArrayType (v_type, 1, g_anytype.source_reference);
     }
 
     /* Create Vala.DataType from a Gir <type> element. */
-    private Vala.DataType build_type (Gir.TypeRef g_type) {
-        string? builtin = to_builtin_type (g_type.name);
+    private Vala.DataType build_type (string name,
+                                      Gee.List<Gir.AnyType> g_inner_type,
+                                      SourceReference source) {
+        string? builtin = to_builtin_type (name);
         if (builtin != null) {
-            var sym = new UnresolvedSymbol (null, builtin, g_type.source_reference);
-            return new UnresolvedType.from_symbol (sym, g_type.source_reference);
+            var sym = new UnresolvedSymbol (null, builtin, source);
+            return new UnresolvedType.from_symbol (sym, source);
         }
 
-        var v_type = from_name (g_type.name, g_type.source_reference);
+        var v_type = from_name (name, source);
 
-        foreach (var g_type_arg in g_type.anytype) {
+        foreach (var g_type_arg in g_inner_type) {
             var v_type_arg = new DataTypeBuilder (g_type_arg).build ();
             v_type.add_type_argument (v_type_arg);
         }
@@ -102,6 +110,10 @@ public class Builders.DataTypeBuilder {
 
         if (name == "GLib.Data") {
             return "GLib.Datalist";
+        }
+
+        if (name == "GLib.PtrArray") {
+            return "GLib.GenericArray";
         }
 
         if (name.has_prefix ("GObject.")) {

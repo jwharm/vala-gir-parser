@@ -119,7 +119,7 @@ public class Builders.PropertyBuilder : InfoAttrsBuilder {
         }
 
         /* array attributes */
-        if (g_prop.anytype is Gir.Array) {
+        if (v_type is Vala.ArrayType) {
             unowned var v_arr_type = (Vala.ArrayType) v_type;
             var g_arr_type = (Gir.Array) g_prop.anytype;
             var builder = new ParametersBuilder (null, null);

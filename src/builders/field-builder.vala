@@ -49,7 +49,7 @@ public class Builders.FieldBuilder : InfoAttrsBuilder {
         add_version_attrs (v_field);
 
         /* array attributes */
-        if (g_field.anytype is Gir.Array) {
+        if (v_type is Vala.ArrayType) {
             unowned var v_arr_type = (Vala.ArrayType) v_type;
             add_array_attrs (v_field, v_arr_type, (Gir.Array) g_field.anytype);
         }

@@ -73,7 +73,7 @@ public class Builders.ParametersBuilder {
             v_par = new Vala.Parameter (g_par.name, v_type, g_par.source_reference);
 
             /* array parameter */
-            if (g_par.anytype is Gir.Array) {
+            if (v_type is Vala.ArrayType) {
                 unowned var v_arr_type = (Vala.ArrayType) v_type;
                 add_array_attrs (v_par, v_arr_type, (Gir.Array) g_par.anytype);
                 v_arr_type.element_type.value_owned = true;
@@ -108,6 +108,11 @@ public class Builders.ParametersBuilder {
     public void add_array_attrs (Vala.Symbol v_sym,
                                  Vala.ArrayType v_type,
                                  Gir.Array g_arr) {
+        /* don't emit array attributes for a GLib.GenericArray */
+        if (g_arr.name == "GLib.PtrArray") {
+            return;
+        }
+
         /* fixed length */
         if (g_arr.fixed_size != -1) {
             v_type.fixed_length = true;
