@@ -149,6 +149,21 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             v_method.version.replacement = g_method.moved_to;
         }
 
+        /* method with INOUT (ref) instance parameter should be static */
+        var g_this = g_method.parameters.instance_parameter;
+        if (g_this.direction == INOUT) {
+            /* convert the instance parameter into a regular parameter */
+            var g_param = (Gir.Parameter) Object.new (typeof (Gir.Parameter),
+                attrs: g_this.attrs,
+                children: g_this.children,
+                source_reference: g_this.source_reference
+            );
+            g_method.parameters.parameters.insert (0, g_param);
+            
+            /* change into a static method */
+            v_method.binding = MemberBinding.STATIC;
+        }
+
         /* parameters */
         new ParametersBuilder (g_method, v_method).build_parameters ();
 
