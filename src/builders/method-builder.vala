@@ -75,7 +75,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* parameters */
-        new ParametersBuilder (g_call, v_cm).build_parameters ();
+        new ParametersBuilder (g_ctor, v_cm).build_parameters ();
 
         /* throws */
         if (g_ctor.throws) {
@@ -97,7 +97,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         v_method.binding = MemberBinding.STATIC;
 
         /* array return type attributes */
-        if (g_call.return_value.anytype is Gir.Array) {
+        if (g_function.return_value.anytype is Gir.Array) {
             add_array_return_type_attributes (v_method);
         }
 
@@ -113,7 +113,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* parameters */
-        new ParametersBuilder (g_call, v_method).build_parameters ();
+        new ParametersBuilder (g_function, v_method).build_parameters ();
 
         /* throws */
         if (g_function.throws) {
@@ -134,7 +134,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         v_method.access = SymbolAccessibility.PUBLIC;
 
         /* array return type attributes */
-        if (g_call.return_value.anytype is Gir.Array) {
+        if (g_method.return_value.anytype is Gir.Array) {
             add_array_return_type_attributes (v_method);
         }
 
@@ -150,7 +150,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* parameters */
-        new ParametersBuilder (g_call, v_method).build_parameters ();
+        new ParametersBuilder (g_method, v_method).build_parameters ();
 
         /* throws */
         if (g_method.throws) {
@@ -191,7 +191,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* array return type attributes */
-        if (g_call.return_value.anytype is Gir.Array) {
+        if (g_vm.return_value.anytype is Gir.Array) {
             add_array_return_type_attributes (v_method);
         }
 
@@ -207,7 +207,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* parameters */
-        new ParametersBuilder (g_call, v_method).build_parameters ();
+        new ParametersBuilder (g_vm, v_method).build_parameters ();
 
         /* throws */
         if (g_vm.throws) {
@@ -236,7 +236,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* array return type attributes */
-        if (g_call.return_value.anytype is Gir.Array) {
+        if (g_callback.return_value.anytype is Gir.Array) {
             add_array_return_type_attributes (v_del);
         }
 
@@ -244,7 +244,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         add_version_attrs (v_del);
 
         /* parameters */
-        new ParametersBuilder (g_call, v_del).build_parameters ();
+        new ParametersBuilder (g_callback, v_del).build_parameters ();
 
         /* throws */
         if (g_callback.throws) {
@@ -268,7 +268,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         v_sig.access = SymbolAccessibility.PUBLIC;
 
         /* array return type attributes */
-        if (g_call.return_value.anytype is Gir.Array) {
+        if (g_sig.return_value.anytype is Gir.Array) {
             add_array_return_type_attributes (v_sig);
         }
 
@@ -276,22 +276,22 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         add_version_attrs (v_sig);
 
         /* parameters */
-        new ParametersBuilder (g_call, v_sig).build_parameters ();
+        new ParametersBuilder (g_sig, v_sig).build_parameters ();
 
         /* find emitter method */
         Gee.List<Gir.Method> g_methods =
-                g_call.parent_node.all_of (typeof (Gir.Method));
+                g_sig.parent_node.all_of (typeof (Gir.Method));
         foreach (var g_method in g_methods) {
-            if (compare_name_and_signature (g_call, g_method)) {
+            if (compare_name_and_signature (g_sig, g_method)) {
                 v_sig.set_attribute ("HasEmitter", true);
             }
         }
         
         /* find virtual emitter method */
         Gee.List<Gir.VirtualMethod> g_virtual_methods =
-                g_call.parent_node.all_of (typeof (Gir.VirtualMethod));
+                g_sig.parent_node.all_of (typeof (Gir.VirtualMethod));
         foreach (var g_vm in g_virtual_methods) {
-            if (compare_name_and_signature (g_call, g_vm)) {
+            if (compare_name_and_signature (g_sig, g_vm)) {
                 v_sig.is_virtual = true;
             }
         }
@@ -299,16 +299,17 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         return v_sig;
     }
 
-    /* void functions with one out parameter: change the out parameter into a
-     * return value */
+    /* void functions with one trailing out parameter: change the out parameter
+     * into a return value */
     private void set_out_parameter_as_return_value () {
         if ((! returns_void (g_call)) || no_parameters (g_call)) {
             return;
         }
 
-        var return_value = g_call.return_value;
         var parameters = g_call.parameters.parameters;
         var last_param = parameters[parameters.size - 1];
+
+        /* count the number of out-parameters */
         var num_out_parameters = 0;
         foreach (var p in parameters) {
             if (p.direction == OUT) {
@@ -317,7 +318,10 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         if (num_out_parameters == 1 && last_param.direction == OUT) {
-            return_value.anytype = last_param.anytype;
+            /* set return type to the type of the out-parameter */
+            g_call.return_value.anytype = last_param.anytype;
+
+            /* remove the out-parameter */
             parameters.remove (last_param);
         }
     }
@@ -348,6 +352,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         v_type.element_type.value_owned = true;
     }
 
+    /* return true when this method must be omitted from the vapi */
     public bool skip () {
         return (! g_call.introspectable)
                 || is_invoker_method ()
