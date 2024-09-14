@@ -21,43 +21,50 @@ using Vala;
 
 public class Builders.DataTypeBuilder {
 
-    private Gir.AnyType anytype;
+    private Gir.AnyType g_anytype;
 
-    public DataTypeBuilder (Gir.AnyType anytype) {
-        this.anytype = anytype;
+    public DataTypeBuilder (Gir.AnyType g_anytype) {
+        this.g_anytype = g_anytype;
     }
 
     /* Create Vala.DataType from a Gir AnyType, which is either 
      * an <array> or <type> element. */
     public Vala.DataType build () {
-        if (anytype == null) {
-            Report.error (anytype.source_reference, "expected <array> or <type>");
-            return new VoidType (anytype.source_reference);
+        if (g_anytype == null) {
+            Report.error (null, "expected <array> or <type>");
+            return new VoidType ();
         }
         
-        if (anytype is Gir.TypeRef) {
-            return build_type ((Gir.TypeRef) anytype);
-        } else if (anytype is Gir.Array) {
-            var size = anytype.anytype?.size ?? 0;
+        if (g_anytype is Gir.TypeRef) {
+            return build_type ((Gir.TypeRef) g_anytype);
+        } else if (g_anytype is Gir.Array) {
+            var size = g_anytype.anytype?.size ?? 0;
             if (size == 1) {
-                var inner = anytype.anytype[0];
-                DataType elem_type = new DataTypeBuilder (inner).build ();
-                return new ArrayType (elem_type, 1, anytype.source_reference);
+                var inner = g_anytype.anytype[0];
+                DataType v_type = new DataTypeBuilder (inner).build ();
+                return new ArrayType (v_type, 1, g_anytype.source_reference);
             }
         }
 
-        return new VoidType (anytype.source_reference);
+        return new VoidType (g_anytype.source_reference);
     }
 
     /* Create Vala.DataType from a Gir <type> element. */
-    private Vala.DataType build_type (Gir.TypeRef type) {
-        string? builtin = to_builtin_type (type.name);
+    private Vala.DataType build_type (Gir.TypeRef g_type) {
+        string? builtin = to_builtin_type (g_type.name);
         if (builtin != null) {
-            var sym = new UnresolvedSymbol (null, builtin, type.source_reference);
-            return new UnresolvedType.from_symbol (sym, type.source_reference);
+            var sym = new UnresolvedSymbol (null, builtin, g_type.source_reference);
+            return new UnresolvedType.from_symbol (sym, g_type.source_reference);
         }
 
-        return from_name (type.name, type.source_reference);
+        var v_type = from_name (g_type.name, g_type.source_reference);
+
+        foreach (var g_type_arg in g_type.anytype) {
+            var v_type_arg = new DataTypeBuilder (g_type_arg).build ();
+            v_type.add_type_argument (v_type_arg);
+        }
+
+        return v_type;
     }
     
     /* Create Vala.DataType from a string (for example "Gio.File"). */
@@ -91,6 +98,10 @@ public class Builders.DataTypeBuilder {
 
         if (name == "GLib.String") {
             return "GLib.StringBuilder";
+        }
+
+        if (name == "GLib.Data") {
+            return "GLib.Datalist";
         }
 
         if (name.has_prefix ("GObject.")) {
@@ -131,5 +142,12 @@ public class Builders.DataTypeBuilder {
             case "gssize":   return "ssize_t";
             default:         return null;
         }
+    }
+
+    /* Generate a string representation for a Gir <type> or <array> so they
+     * can be easily compared for equality. */
+    public static string generate_string (Gir.AnyType? g_anytype) {
+        return (g_anytype == null) ? "null"
+                : new DataTypeBuilder (g_anytype).build ().to_string ();
     }
 }

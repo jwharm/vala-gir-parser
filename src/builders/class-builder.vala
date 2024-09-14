@@ -19,101 +19,143 @@
 
 using Vala;
 
-public class Builders.ClassBuilder {
+public class Builders.ClassBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
-    private Gir.Class cls;
+    private Gir.Class g_class;
 
-    public ClassBuilder (Gir.Class cls) {
-        this.cls = cls;
+    public ClassBuilder (Gir.Class g_class) {
+        this.g_class = g_class;
+    }
+
+    public Gir.InfoAttrs info_attrs () {
+        return this.g_class;
     }
 
     public Vala.Class build () {
         /* the class */
-        Vala.Class vclass = new Vala.Class (cls.name, cls.source_reference);
-        vclass.access = SymbolAccessibility.PUBLIC;
-        vclass.is_abstract = cls.abstract;
-        vclass.is_sealed = cls.final;
+        Vala.Class v_class = new Vala.Class (g_class.name, g_class.source_reference);
+        v_class.access = SymbolAccessibility.PUBLIC;
+        v_class.is_abstract = g_class.abstract;
+        v_class.is_sealed = g_class.final;
 
         /* parent class */
-        if (cls.parent != null) {
-            var parent_type = DataTypeBuilder.from_name (cls.parent, cls.source_reference);
-            vclass.add_base_type (parent_type);
+        if (g_class.parent != null) {
+            var base_type = DataTypeBuilder.from_name (g_class.parent, g_class.source_reference);
+            v_class.add_base_type (base_type);
         }
 
         /* implemented interfaces */
-        foreach (var imp in cls.implements) {
-            var imp_type = DataTypeBuilder.from_name (imp.name, imp.source_reference);
-            vclass.add_base_type (imp_type);
+        foreach (var g_imp in g_class.implements) {
+            var imp_type = DataTypeBuilder.from_name (g_imp.name, g_imp.source_reference);
+            v_class.add_base_type (imp_type);
         }
 
         /* c_name */
-        vclass.set_attribute_string ("CCode", "cname", cls.c_type);
+        if (g_class.c_type != generate_cname (g_class)) {
+            v_class.set_attribute_string ("CCode", "cname", g_class.c_type);
+        }
 
         /* version */
-        vclass.set_attribute_string ("Version", "since", cls.version);
+        add_version_attrs (v_class);
 
         /* type_cname */
-        vclass.set_attribute_string ("CCode", "type_cname", cls.glib_type_struct);
+        if (g_class.glib_type_struct != null &&
+                g_class.glib_type_struct != generate_type_cname (g_class)) {
+            var type_cname = get_ns_prefix (g_class) + g_class.glib_type_struct;
+            v_class.set_attribute_string ("CCode", "type_cname", type_cname);
+        }
 
         /* get_type method */
-        var type_id = cls.glib_get_type;
+        var type_id = g_class.glib_get_type;
         if (type_id == null) {
-            vclass.set_attribute_bool ("CCode", "has_type_id", false);
+            v_class.set_attribute_bool ("CCode", "has_type_id", false);
         } else {
-            vclass.set_attribute_string ("CCode", "type_id", type_id + " ()");
+            v_class.set_attribute_string ("CCode", "type_id", type_id + " ()");
         }
 
         /* add constructors */
-        if (! cls.abstract) {
-            foreach (var c in cls.constructors) {
-                var builder = new MethodBuilder (c);
+        if (! g_class.abstract) {
+            foreach (var g_ctor in g_class.constructors) {
+                var builder = new MethodBuilder (g_ctor);
                 if (! builder.skip ()) {
-                    vclass.add_method (builder.build_constructor ());
+                    v_class.add_method (builder.build_constructor ());
                 }
             }
         }
 
         /* add functions */
-        foreach (var f in cls.functions) {
-            var builder = new MethodBuilder (f);
+        foreach (var g_function in g_class.functions) {
+            var builder = new MethodBuilder (g_function);
             if (! builder.skip ()) {
-                vclass.add_method (builder.build_function ());
+                v_class.add_method (builder.build_function ());
             } 
         }
 
         /* add methods */
-        foreach (var m in cls.methods) {
-            var builder = new MethodBuilder (m);
+        foreach (var g_method in g_class.methods) {
+            var builder = new MethodBuilder (g_method);
             if (! builder.skip ()) {
-                vclass.add_method (builder.build_method ());
+                v_class.add_method (builder.build_method ());
             } 
         }
 
         /* add virtual methods */
-        foreach (var vm in cls.virtual_methods) {
-            var builder = new MethodBuilder (vm);
+        foreach (var g_vm in g_class.virtual_methods) {
+            var builder = new MethodBuilder (g_vm);
             if (! builder.skip ()) {
-                vclass.add_method (builder.build_virtual_method ());
+                v_class.add_method (builder.build_virtual_method ());
             } 
         }
 
-        /* add fields */
-        foreach (var f in cls.fields) {
-            var field_builder = new FieldBuilder (f);
-            if (! field_builder.skip ()) {
-                vclass.add_field (field_builder.build ());
+        /* add fields, but skip the parent instance pointer */
+        bool first_field = true;
+        foreach (var g_field in g_class.fields) {
+            /* first field is guaranteed to be the parent instance */
+            if (first_field) {
+                first_field = false;
+                if (g_class.parent != null) {
+                    continue;
+                }
             }
+
+            var builder = new FieldBuilder (g_field);
+            if (! builder.skip ()) {
+                v_class.add_field (builder.build ());
+            }
+        }
+
+        /* add properties */
+        foreach (var g_param in g_class.properties) {
+            var builder = new PropertyBuilder (g_param);
+            v_class.add_property (builder.build ());
+        }
+
+        /* add signals */
+        foreach (var g_signal in g_class.signals) {
+            var builder = new MethodBuilder (g_signal);
+            v_class.add_signal (builder.build_signal ());
         }
 
         /* always provide constructor in generated bindings
          * to indicate that implicit Object () chainup is allowed */
-        if (cls.constructors.is_empty) {
-            var cm = new CreationMethod (null, null, cls.source_reference);
-            cm.has_construct_function = false;
-            cm.access = SymbolAccessibility.PROTECTED;
-            vclass.add_method (cm);
+        if (no_introspectable_constructors ()) {
+            var v_cm = new CreationMethod (null, null, g_class.source_reference);
+            v_cm.has_construct_function = false;
+            v_cm.access = SymbolAccessibility.PROTECTED;
+            v_class.add_method (v_cm);
         }
 
-        return vclass;
+        return v_class;
+    }
+
+    /* check if one or more constructors will be generated for this class */
+    private bool no_introspectable_constructors () {
+        foreach (var ctor in g_class.constructors) {
+            if (ctor.introspectable) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

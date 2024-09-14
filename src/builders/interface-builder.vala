@@ -19,77 +19,98 @@
 
 using Vala;
 
-public class Builders.InterfaceBuilder {
+public class Builders.InterfaceBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
-    private Gir.Interface ifc;
+    private Gir.Interface g_iface;
 
-    public InterfaceBuilder (Gir.Interface ifc) {
-        this.ifc = ifc;
+    public InterfaceBuilder (Gir.Interface g_iface) {
+        this.g_iface = g_iface;
+    }
+
+    public Gir.InfoAttrs info_attrs () {
+        return this.g_iface;
     }
 
     public Vala.Interface build () {
         /* the interface */
-        Vala.Interface vifc = new Vala.Interface (ifc.name, ifc.source_reference);
-        vifc.access = SymbolAccessibility.PUBLIC;
+        Vala.Interface v_iface = new Vala.Interface (g_iface.name, g_iface.source_reference);
+        v_iface.access = SymbolAccessibility.PUBLIC;
 
         /* prerequisite interfaces */
-        foreach (var imp in ifc.implements) {
-            var imp_type = DataTypeBuilder.from_name (imp.name, imp.source_reference);
-            vifc.add_prerequisite (imp_type);
+        foreach (var g_imp in g_iface.prerequisites) {
+            var imp_type = DataTypeBuilder.from_name (g_imp.name, g_imp.source_reference);
+            v_iface.add_prerequisite (imp_type);
         }
 
         /* when no prerequisites were specified, GLib.Object is the default */
-        if (ifc.implements.is_empty) {
-        vifc.add_prerequisite (DataTypeBuilder.from_name ("GLib.Object"));
+        if (g_iface.prerequisites.is_empty) {
+            v_iface.add_prerequisite (DataTypeBuilder.from_name ("GLib.Object"));
         }
 
         /* c_name */
-        vifc.set_attribute_string ("CCode", "cname", ifc.c_type);
+        if (g_iface.c_type != generate_cname (g_iface)) {
+            v_iface.set_attribute_string ("CCode", "cname", g_iface.c_type);
+        }
 
         /* version */
-        vifc.set_attribute_string ("Version", "since", ifc.version);
+        add_version_attrs (v_iface);
 
         /* type_cname */
-        vifc.set_attribute_string ("CCode", "type_cname", ifc.glib_type_struct);
+        if (g_iface.glib_type_struct != generate_type_cname (g_iface)) {
+            var type_cname = get_ns_prefix (g_iface) + g_iface.glib_type_struct;
+            v_iface.set_attribute_string ("CCode", "type_cname", type_cname);
+        }
 
         /* get_type method */
-        var type_id = ifc.glib_get_type;
+        var type_id = g_iface.glib_get_type;
         if (type_id == null) {
-            vifc.set_attribute_bool ("CCode", "has_type_id", false);
+            v_iface.set_attribute_bool ("CCode", "has_type_id", false);
         } else {
-            vifc.set_attribute_string ("CCode", "type_id", type_id + " ()");
+            v_iface.set_attribute_string ("CCode", "type_id", type_id + " ()");
         }
 
         /* add functions */
-        foreach (var f in ifc.functions) {
-            var builder = new MethodBuilder (f);
+        foreach (var g_function in g_iface.functions) {
+            var builder = new MethodBuilder (g_function);
             if (! builder.skip ()) {
-                vifc.add_method (builder.build_function ());
+                v_iface.add_method (builder.build_function ());
             } 
         }
 
         /* add methods */
-        foreach (var m in ifc.methods) {
-            var builder = new MethodBuilder (m);
+        foreach (var g_method in g_iface.methods) {
+            var builder = new MethodBuilder (g_method);
             if (! builder.skip ()) {
-                vifc.add_method (builder.build_method ());
+                v_iface.add_method (builder.build_method ());
             } 
         }
 
         /* add virtual methods */
-        foreach (var vm in ifc.virtual_methods) {
-            var builder = new MethodBuilder (vm);
+        foreach (var g_vm in g_iface.virtual_methods) {
+            var builder = new MethodBuilder (g_vm);
             if (! builder.skip ()) {
-                vifc.add_method (builder.build_virtual_method ());
+                v_iface.add_method (builder.build_virtual_method ());
             } 
         }
 
         /* add fields */
-        foreach (var f in ifc.fields) {
-            var vfield = new FieldBuilder (f).build ();
-            vifc.add_field (vfield);
+        foreach (var g_field in g_iface.fields) {
+            var vfield = new FieldBuilder (g_field).build ();
+            v_iface.add_field (vfield);
         }
 
-        return vifc;
+        /* add properties */
+        foreach (var g_prop in g_iface.properties) {
+            var builder = new PropertyBuilder (g_prop);
+            v_iface.add_property (builder.build ());
+        }
+
+        /* add signals */
+        foreach (var g_signal in g_iface.signals) {
+            var builder = new MethodBuilder (g_signal);
+            v_iface.add_signal (builder.build_signal ());
+        }
+
+        return v_iface;
     }
 }

@@ -21,87 +21,98 @@ using Vala;
 
 public class Builders.NamespaceBuilder {
 
-    private Gir.Namespace ns;
+    private Gir.Namespace g_ns;
     private Gee.List<Gir.CInclude> c_includes;
 
     public NamespaceBuilder (Gir.Namespace ns, Gee.List<Gir.CInclude> c_includes) {
-        this.ns = ns;
+        this.g_ns = ns;
         this.c_includes = c_includes;
     }
 
     public Vala.Namespace build () {
         /* create the namespace */
-        Vala.Namespace vns = new Vala.Namespace (ns.name, ns.source_reference);
+        Vala.Namespace v_ns = new Vala.Namespace (g_ns.name, g_ns.source_reference);
 
         /* attributes */
-        vns.set_attribute_string ("CCode", "cheader_filename", get_cheader_filename ());
-        vns.set_attribute_string ("CCode", "gir_namespace", ns.name);
-        vns.set_attribute_string ("CCode", "gir_version", ns.version);
-        vns.set_attribute_string ("CCode", "cprefix", ns.c_identifier_prefixes);
-        vns.set_attribute_string ("CCode", "lower_case_cprefix", ns.c_symbol_prefixes + "_");
+        v_ns.set_attribute_string ("CCode", "cheader_filename", get_cheader_filename ());
+        v_ns.set_attribute_string ("CCode", "gir_namespace", g_ns.name);
+        v_ns.set_attribute_string ("CCode", "gir_version", g_ns.version);
+        v_ns.set_attribute_string ("CCode", "cprefix", g_ns.c_identifier_prefixes);
+        v_ns.set_attribute_string ("CCode", "lower_case_cprefix", g_ns.c_symbol_prefixes + "_");
 
         /* bitfields */
-        foreach (Gir.Bitfield btf in ns.bitfields) {
-            if (btf.introspectable) {
-                EnumBuilder builder = new EnumBuilder (btf);
-                vns.add_enum (builder.build ());
+        foreach (Gir.Bitfield g_bf in g_ns.bitfields) {
+            if (g_bf.introspectable) {
+                EnumBuilder builder = new EnumBuilder (g_bf);
+                v_ns.add_enum (builder.build ());
             }
         }
 
         /* callbacks */
-        foreach (Gir.Callback cb in ns.callbacks) {
-            if (cb.introspectable) {
-                var builder = new DelegateBuilder (cb);
-                vns.add_delegate (builder.build_callback ());
+        foreach (Gir.Callback g_cb in g_ns.callbacks) {
+            if (g_cb.introspectable) {
+                var builder = new MethodBuilder (g_cb);
+                v_ns.add_delegate (builder.build_delegate ());
             }
         }
 
         /* classes */
-        foreach (Gir.Class cls in ns.classes) {
-            if (cls.introspectable) {
-                ClassBuilder builder = new ClassBuilder (cls);
-                vns.add_class (builder.build ());
+        foreach (Gir.Class g_class in g_ns.classes) {
+            if (g_class.introspectable) {
+                ClassBuilder builder = new ClassBuilder (g_class);
+                v_ns.add_class (builder.build ());
             }
         }
 
-        /* enumerations */
-        foreach (Gir.Enumeration enm in ns.enumerations) {
-            if (enm.introspectable) {
-                EnumBuilder builder = new EnumBuilder (enm);
-                vns.add_enum (builder.build ());
-            }
-        }
-
-        /* functions */
-        foreach (var f in ns.functions) {
-            var builder = new MethodBuilder (f);
-            if (! builder.skip ()) {
-                vns.add_method (builder.build_function ());
-            } 
-        }
-
-        /* interfaces */
-        foreach (Gir.Interface ifc in ns.interfaces) {
-            if (ifc.introspectable) {
-                InterfaceBuilder builder = new InterfaceBuilder (ifc);
-                vns.add_interface (builder.build ());
-            }
-        }
-
-        /* records */
-        foreach (Gir.Record rec in ns.records) {
-            if (rec.introspectable) {
-                if (rec.glib_get_type == null) {
-                    var builder = new StructBuilder (rec);
-                    vns.add_struct (builder.build ());
+        /* enumerations (and error domains) */
+        foreach (Gir.Enumeration g_enum in g_ns.enumerations) {
+            if (g_enum.introspectable) {
+                if (g_enum.glib_error_domain != null) {
+                    var builder = new ErrorDomainBuilder (g_enum);
+                    v_ns.add_error_domain (builder.build ());
                 } else {
-                    var builder = new BoxedBuilder (rec);
-                    vns.add_class (builder.build ());
+                    var builder = new EnumBuilder (g_enum);
+                    v_ns.add_enum (builder.build ());
                 }
             }
         }
 
-        return vns;
+        /* functions */
+        foreach (var g_function in g_ns.functions) {
+            var builder = new MethodBuilder (g_function);
+            if (! builder.skip ()) {
+                v_ns.add_method (builder.build_function ());
+            } 
+        }
+
+        /* interfaces */
+        foreach (Gir.Interface g_iface in g_ns.interfaces) {
+            if (g_iface.introspectable) {
+                InterfaceBuilder builder = new InterfaceBuilder (g_iface);
+                v_ns.add_interface (builder.build ());
+            }
+        }
+
+        /* records */
+        foreach (Gir.Record g_rec in g_ns.records) {
+            var builder = new StructBuilder (g_rec);
+            if (! builder.skip ()) {
+                if (g_rec.glib_get_type == null) {
+                    v_ns.add_struct (builder.build ());
+                } else {
+                    var boxed_builder = new BoxedBuilder (g_rec);
+                    v_ns.add_class (boxed_builder.build ());
+                }
+            }
+        }
+
+        /* constants */
+        foreach (Gir.Constant g_constant in g_ns.constants) {
+            var builder = new ConstantBuilder (g_constant);
+            v_ns.add_constant (builder.build ());
+        }
+
+        return v_ns;
     }
 
     private string get_cheader_filename () {

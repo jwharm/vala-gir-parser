@@ -19,22 +19,78 @@
 
 using Vala;
 
-public class Builders.FieldBuilder {
+public class Builders.FieldBuilder : InfoAttrsBuilder {
 
-    private Gir.Field field;
+    private Gir.Field g_field;
 
-    public FieldBuilder (Gir.Field field) {
-        this.field = field;
+    public FieldBuilder (Gir.Field g_field) {
+        this.g_field = g_field;
+    }
+
+    public Gir.InfoAttrs info_attrs () {
+        return this.g_field;
     }
 
     public bool skip () {
-        return field.private || field.name == "priv" || field.anytype == null;
+        return g_field.private
+                || g_field.name == "priv"
+                || g_field.anytype == null;
     }
 
     public Vala.Field build () {
-        var f_type = new DataTypeBuilder (field.anytype).build ();
-        var vfield = new Field (field.name, f_type, null, field.source_reference, null);
-        vfield.access = SymbolAccessibility.PUBLIC;
-        return vfield;
+        /* type */
+        var v_type = new DataTypeBuilder (g_field.anytype).build ();
+
+        /* create the const field */
+        var v_field = new Field (g_field.name, v_type, null, g_field.source_reference);
+        v_field.access = SymbolAccessibility.PUBLIC;
+
+        /* version */
+        add_version_attrs (v_field);
+
+        /* array attributes */
+        if (g_field.anytype is Gir.Array) {
+            unowned var v_arr_type = (Vala.ArrayType) v_type;
+            add_array_attrs (v_field, v_arr_type, (Gir.Array) g_field.anytype);
+        }
+
+        return v_field;
+    }
+
+    public void add_array_attrs (Vala.Symbol v_arr_field,
+                                 Vala.ArrayType v_arr_type,
+                                 Gir.Array g_arr) {
+        /* fixed length */
+        if (g_arr.fixed_size != -1) {
+            v_arr_type.fixed_length = true;
+            v_arr_type.length = new IntegerLiteral (g_arr.fixed_size.to_string ());
+            v_arr_field.set_attribute_bool ("CCode", "array_length", false);
+        }
+
+        /* length in another field */
+        else if (g_arr.length != -1) {
+            Gee.List<Gir.Field> fields =
+                    g_field.parent_node.all_of (typeof (Gir.Field));
+            var g_length_field = fields[g_arr.length];
+            var g_type = (Gir.TypeRef) g_length_field.anytype;
+
+            v_arr_field.set_attribute_string ("CCode", "array_length_cname", g_length_field.name);
+
+            /* int is the default and can be omitted */
+            if (g_type.name != "gint") {
+                v_arr_field.set_attribute_string ("CCode", "array_length_type", g_type.name);
+            }
+        }
+
+        /* no length specified */
+        else {
+            v_arr_field.set_attribute_bool ("CCode", "array_length", false);
+            /* If zero-terminated is missing, there's no length, there's no
+             * fixed size, and the name attribute is unset, then zero-terminated
+             * is true. */
+            if (g_arr.zero_terminated || g_arr.name == null) {
+                v_arr_field.set_attribute_bool ("CCode", "array_null_terminated", true);
+            }
+        }
     }
 }

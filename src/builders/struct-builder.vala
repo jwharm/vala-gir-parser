@@ -19,74 +19,85 @@
 
 using Vala;
 
-public class Builders.StructBuilder {
+public class Builders.StructBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
-    private Gir.Record rec;
+    private Gir.Record g_rec;
 
-    public StructBuilder (Gir.Record rec) {
-        this.rec = rec;
+    public StructBuilder (Gir.Record g_rec) {
+        this.g_rec = g_rec;
+    }
+
+    public Gir.InfoAttrs info_attrs () {
+        return this.g_rec;
     }
 
     public Vala.Struct build () {
         /* the struct */
-        Vala.Struct vstruct = new Vala.Struct (rec.name, rec.source_reference);
-        vstruct.access = SymbolAccessibility.PUBLIC;
+        Vala.Struct v_struct = new Vala.Struct (g_rec.name, g_rec.source_reference);
+        v_struct.access = SymbolAccessibility.PUBLIC;
 
         /* c_name */
-        vstruct.set_attribute_string ("CCode", "cname", rec.c_type);
+        if (g_rec.c_type != generate_cname (g_rec)) {
+            v_struct.set_attribute_string ("CCode", "cname", g_rec.c_type);
+        }
 
         /* version */
-        vstruct.set_attribute_string ("Version", "since", rec.version);
+        add_version_attrs (v_struct);
 
         /* get_type method */
-        var type_id = rec.glib_get_type;
+        var type_id = g_rec.glib_get_type;
         if (type_id == null) {
-            vstruct.set_attribute_bool ("CCode", "has_type_id", false);
+            v_struct.set_attribute_bool ("CCode", "has_type_id", false);
         } else {
-            vstruct.set_attribute_string ("CCode", "type_id", type_id + " ()");
+            v_struct.set_attribute_string ("CCode", "type_id", type_id + " ()");
         }
 
         /* add constructors */
-        foreach (var c in rec.constructors) {
-            var builder = new MethodBuilder (c);
+        foreach (var g_ctor in g_rec.constructors) {
+            var builder = new MethodBuilder (g_ctor);
             if (! builder.skip ()) {
-                vstruct.add_method (builder.build_constructor ());
+                v_struct.add_method (builder.build_constructor ());
             } 
         }
 
         /* add functions */
-        foreach (var f in rec.functions) {
-            var builder = new MethodBuilder (f);
+        foreach (var g_function in g_rec.functions) {
+            var builder = new MethodBuilder (g_function);
             if (! builder.skip ()) {
-                vstruct.add_method (builder.build_function ());
+                v_struct.add_method (builder.build_function ());
             } 
         }
 
         /* add methods */
-        foreach (var m in rec.methods) {
-            var builder = new MethodBuilder (m);
+        foreach (var g_method in g_rec.methods) {
+            var builder = new MethodBuilder (g_method);
             if (! builder.skip ()) {
-                vstruct.add_method (builder.build_method ());
+                v_struct.add_method (builder.build_method ());
             } 
         }
 
         /* add fields */
         bool first = true;
-        foreach (var f in rec.fields) {
+        foreach (var g_field in g_rec.fields) {
             /* exclude first (parent) field */
             if (first) {
                 first = false;
-                if (rec.glib_is_gtype_struct_for != null) {
+                if (g_rec.glib_is_gtype_struct_for != null) {
                     continue;
                 }
             }
 
-            var field_builder = new FieldBuilder (f);
+            var field_builder = new FieldBuilder (g_field);
             if (! field_builder.skip ()) {
-                vstruct.add_field (field_builder.build ());
+                v_struct.add_field (field_builder.build ());
             }
         }
 
-        return vstruct;
+        return v_struct;
+    }
+
+    public bool skip () {
+        return (! g_rec.introspectable)
+                || g_rec.glib_is_gtype_struct_for != null;
     }
 }
