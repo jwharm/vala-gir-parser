@@ -167,7 +167,7 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
      */
     public override void insert (int index, G item) {
         var iter = (Iterator<G>) iterator ();
-        for (int i = -1; i < index; i++) {
+        for (int i = 0; i < index; i++) {
             iter.next ();
         }
         
@@ -186,7 +186,7 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
      */
     public override G remove_at (int index) {
         var iter = iterator ();
-        for (int i = -1; i < index; i++) {
+        for (int i = 0; i < index; i++) {
             iter.next ();
         }
         
