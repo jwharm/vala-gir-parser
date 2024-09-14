@@ -174,8 +174,8 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
         while (prefix.length > 0 &&
             (! prefix.has_suffix ("_") ||
-                (cname.get_char (prefix.length).isdigit () && (cname.length - prefix.length) <= 1))) {
-            // enum values may not consist solely of digits
+                /* enum values may not consist solely of digits */
+                cname.get_char (prefix.length).isdigit ())) {
             prefix = prefix.substring (0, prefix.length - 1);
         }
     }
