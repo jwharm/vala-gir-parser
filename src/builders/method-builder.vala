@@ -352,7 +352,9 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             }
         }
 
-        if (num_out_parameters == 1 && last_param.direction == OUT) {
+        if (num_out_parameters == 1
+                && last_param.direction == OUT
+                && (! last_param.nullable)) {
             /* set return type to the type of the out-parameter */
             g_call.return_value.anytype = last_param.anytype;
 
