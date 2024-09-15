@@ -317,7 +317,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         Gee.List<Gir.Method> g_methods =
                 g_sig.parent_node.all_of (typeof (Gir.Method));
         foreach (var g_method in g_methods) {
-            if (compare_name_and_signature (g_sig, g_method)) {
+            if (equal_method_names (g_sig, g_method)) {
                 v_sig.set_attribute ("HasEmitter", true);
             }
         }
@@ -326,7 +326,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         Gee.List<Gir.VirtualMethod> g_virtual_methods =
                 g_sig.parent_node.all_of (typeof (Gir.VirtualMethod));
         foreach (var g_vm in g_virtual_methods) {
-            if (compare_name_and_signature (g_sig, g_vm)) {
+            if (equal_method_names (g_sig, g_vm)) {
                 v_sig.is_virtual = true;
             }
         }
@@ -412,7 +412,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
                 return true;
             }
 
-            if (compare_name_and_signature (m, vm)) {
+            if (equal_method_names (m, vm)) {
                 return true;
             }
         }
@@ -434,7 +434,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
                 return true;
             }
 
-            if (compare_name_and_signature (m, vm)) {
+            if (equal_method_names (m, vm)) {
                 return true;
             }
         }
@@ -482,7 +482,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         Gee.List<Gir.Signal> signals =
                 g_call.parent_node.all_of (typeof (Gir.Signal));
         foreach (var s in signals) {
-            if (compare_name_and_signature (g_call, s)) {
+            if (equal_method_names (g_call, s)) {
                 return true;
             }
         }
@@ -504,44 +504,8 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         return false;
     }
 
-    private bool compare_name_and_signature (Gir.Callable a, Gir.Callable b) {
-        /* check if the names match, and both or neither throws */
-        if (a.name.replace ("-", "_") != b.name.replace ("-", "_")
-                || a.throws != b.throws) {
-            return false;
-        }
-
-        var a_noarg = ! has_parameters (a);
-        var b_noarg = ! has_parameters (b);
-
-        /* if both have no parameters, it's a match */
-        if (a_noarg || b_noarg) {
-            return true;
-        }
-
-        /* if only one has no parameters, it's not a match */
-        if (a_noarg != b_noarg) {
-            return false;
-        }
-
-        var a_params = a.parameters.parameters;
-        var b_params = b.parameters.parameters;
-
-        /* both should have the same number of parameters */
-        if (a_params.size != b_params.size) {
-            return false;
-        }
-
-        /* both should have the same parameter types */
-        for (int i = 0; i < a_params.size; i++) {
-            var a_type_str = DataTypeBuilder.generate_string (a_params[i].anytype);
-            var b_type_str = DataTypeBuilder.generate_string (b_params[i].anytype);
-            if (a_type_str != b_type_str) {
-                return false;
-            }
-        }
-
-        return true;
+    private bool equal_method_names (Gir.Callable a, Gir.Callable b) {
+        return a.name.replace ("-", "_") == b.name.replace ("-", "_");
     }
 
     /* check if this callable returns void */
