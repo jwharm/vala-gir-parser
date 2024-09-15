@@ -160,6 +160,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
         return v_enum;
     }
 
+    /* determine the longest prefix that all members have in common */
     private void calculate_common_prefix (ref string? prefix, string cname) {
         if (prefix == null) {
             prefix = cname;
@@ -214,7 +215,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
             /* vapigen seems to never generates a cname for these, probably
              * because gir <enumeration> elements don't have a "c:symbol-prefix"
-              * attribute. Explicitly remove the cname for now... */
+             * attribute. Explicitly remove the cname for now... */
             method.c_identifier = null;
 
             /* transform the first parameter into an InstanceParameter node */
