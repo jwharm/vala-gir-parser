@@ -41,12 +41,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         unowned var g_ctor = (Gir.Constructor) g_call;
 
         /* name */
-        var name = g_ctor.name;
-        if (name == "new") {
-            name = null;
-        } else if (name.has_prefix ("new_")) {
-            name = name.substring ("new_".length);
-        }
+        var name = get_constructor_name ();
 
         /* create the constructor */
         var v_cm = new CreationMethod (null, name, g_ctor.source_reference);
@@ -97,7 +92,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         v_method.binding = MemberBinding.STATIC;
 
         /* array return type attributes */
-        if (g_function.return_value.anytype is Gir.Array) {
+        if (v_return_type is Vala.ArrayType) {
             add_array_return_type_attributes (v_method);
         }
 
@@ -154,7 +149,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         v_method.access = SymbolAccessibility.PUBLIC;
 
         /* array return type attributes */
-        if (g_method.return_value.anytype is Gir.Array) {
+        if (v_return_type is Vala.ArrayType) {
             add_array_return_type_attributes (v_method);
         }
 
@@ -226,7 +221,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* array return type attributes */
-        if (g_vm.return_value.anytype is Gir.Array) {
+        if (v_return_type is Vala.ArrayType) {
             add_array_return_type_attributes (v_method);
         }
 
@@ -271,7 +266,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* array return type attributes */
-        if (g_callback.return_value.anytype is Gir.Array) {
+        if (v_return_type is Vala.ArrayType) {
             add_array_return_type_attributes (v_del);
         }
 
@@ -303,7 +298,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         v_sig.access = SymbolAccessibility.PUBLIC;
 
         /* array return type attributes */
-        if (g_sig.return_value.anytype is Gir.Array) {
+        if (v_return_type is Vala.ArrayType) {
             add_array_return_type_attributes (v_sig);
         }
 
@@ -316,6 +311,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         /* find emitter method */
         Gee.List<Gir.Method> g_methods =
                 g_sig.parent_node.all_of (typeof (Gir.Method));
+
         foreach (var g_method in g_methods) {
             if (equal_method_names (g_sig, g_method)) {
                 v_sig.set_attribute ("HasEmitter", true);
@@ -325,6 +321,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         /* find virtual emitter method */
         Gee.List<Gir.VirtualMethod> g_virtual_methods =
                 g_sig.parent_node.all_of (typeof (Gir.VirtualMethod));
+
         foreach (var g_vm in g_virtual_methods) {
             if (equal_method_names (g_sig, g_vm)) {
                 v_sig.is_virtual = true;
@@ -389,6 +386,18 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         v_type.element_type.value_owned = true;
     }
 
+    private string? get_constructor_name () {
+        if (g_call is Gir.Constructor) {
+            if (g_call.name == "new") {
+                return null;
+            } else if (g_call.name.has_prefix ("new_")) {
+                return g_call.name.substring ("new_".length);
+            }
+        }
+
+        return g_call.name;
+    }
+
     /* return true when this method must be omitted from the vapi */
     public bool skip () {
         return (! g_call.introspectable)
@@ -407,6 +416,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         unowned var m = (Gir.Method) g_call;
         Gee.List<Gir.VirtualMethod> virtual_methods =
                 g_call.parent_node.all_of (typeof (Gir.VirtualMethod));
+
         foreach (var vm in virtual_methods) {
             if (vm.invoker == m.name) {
                 return true;
@@ -429,6 +439,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         unowned var vm = (Gir.VirtualMethod) g_call;
         Gee.List<Gir.Method> methods =
                 g_call.parent_node.all_of (typeof (Gir.Method));
+
         foreach (var m in methods) {
             if (vm.invoker == m.name) {
                 return true;
@@ -449,6 +460,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
         Gee.List<Gir.Method> methods =
                 g_call.parent_node.all_of (typeof (Gir.Method));
+
         foreach (var m in methods) {
             if (m.glib_finish_func == g_call.name) {
                 return true;
@@ -462,6 +474,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         var name = ((Gir.Method) g_call).glib_finish_func;
         Gee.List<Gir.Method> methods =
                 g_call.parent_node.all_of (typeof (Gir.Method));
+
         foreach (var m in methods) {
             if (m.name == name) {
                 return m;
@@ -481,6 +494,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
         Gee.List<Gir.Signal> signals =
                 g_call.parent_node.all_of (typeof (Gir.Signal));
+
         foreach (var s in signals) {
             if (equal_method_names (g_call, s)) {
                 return true;
@@ -493,10 +507,14 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
     /* Find a property with the same name as this method. If found, the property
      * takes precedence. */
      public bool is_property_accessor () {
+        var name = (g_call is Gir.Constructor)
+                ? get_constructor_name () : g_call.name;
+
         Gee.List<Gir.Property> properties =
                 g_call.parent_node.all_of (typeof (Gir.Property));
+
         foreach (var p in properties) {
-            if (g_call.name.replace ("-", "_") == p.name.replace ("-", "_")) {
+            if (name?.replace ("-", "_") == p.name.replace ("-", "_")) {
                 return true;
             }
         }
