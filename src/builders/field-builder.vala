@@ -34,7 +34,8 @@ public class Builders.FieldBuilder : InfoAttrsBuilder {
     public bool skip () {
         return g_field.private
                 || g_field.name == "priv"
-                || g_field.anytype == null;
+                || g_field.anytype == null
+                || has_naming_conflict ();
     }
 
     public Vala.Field build () {
@@ -92,5 +93,16 @@ public class Builders.FieldBuilder : InfoAttrsBuilder {
                 v_arr_field.set_attribute_bool ("CCode", "array_null_terminated", true);
             }
         }
+    }
+
+    /* whatelse has precedence over the field */
+    private bool has_naming_conflict () {
+        foreach (var child in g_field.parent_node.children) {
+            if (child.attrs["name"]?.replace ("-", "_") == g_field.name) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
