@@ -145,7 +145,8 @@ public class Gir.Parameter : Node, DocElements {
             return any_of (typeof (AnyType));
         }
         set {
-            remove_and_set (value);
+            remove (typeof (AnyType));
+            add (value);
         }
     }
     

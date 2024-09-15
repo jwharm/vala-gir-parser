@@ -47,6 +47,17 @@ public class Gir.Node : Object {
     }
 
     /**
+     * Remove all child nodes with the specified type.
+     */
+    public void remove (Type type) {
+        for (int i = 0; i < children.size; i++) {
+            if (children[i].get_type ().is_a (type)) {
+                children.remove_at (i);
+            }
+        }
+    }
+
+    /**
      * Get a filtered view of all child nodes with the specified gtype.
      */
     internal Gee.List<T> all_of<T> (Type gtype) {

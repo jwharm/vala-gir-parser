@@ -43,7 +43,8 @@ public class Gir.Alias : Node, InfoAttrs, DocElements, InfoElements {
             return any_of (typeof (AnyType));
         }
         set {
-            remove_and_set (value);
+            remove (typeof (AnyType));
+            add (value);
         }
     }
 }
