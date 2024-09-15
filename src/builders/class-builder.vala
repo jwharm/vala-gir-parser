@@ -133,7 +133,9 @@ public class Builders.ClassBuilder : IdentifierBuilder, InfoAttrsBuilder {
         /* add signals */
         foreach (var g_signal in g_class.signals) {
             var builder = new MethodBuilder (g_signal);
-            v_class.add_signal (builder.build_signal ());
+            if (! builder.skip ()) {
+                v_class.add_signal (builder.build_signal ());
+            }
         }
 
         /* always provide constructor in generated bindings
