@@ -409,20 +409,21 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
     /* Find a virtual method invoked by this method. */
     public bool is_invoker_method () {
-        if (! (g_call is Gir.Method)) {
+        if (! (g_call is Gir.Method || g_call is Gir.Function)) {
             return false;
         }
 
-        unowned var m = (Gir.Method) g_call;
+        var name = g_call.attrs["name"];
+
         Gee.List<Gir.VirtualMethod> virtual_methods =
                 g_call.parent_node.all_of (typeof (Gir.VirtualMethod));
 
         foreach (var vm in virtual_methods) {
-            if (vm.invoker == m.name) {
+            if (vm.invoker == name) {
                 return true;
             }
 
-            if (equal_method_names (m, vm)) {
+            if (equal_method_names (g_call, vm)) {
                 return true;
             }
         }
