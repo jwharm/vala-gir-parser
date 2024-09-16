@@ -19,16 +19,12 @@
 
 using Vala;
 
-public class Builders.InterfaceBuilder : IdentifierBuilder, InfoAttrsBuilder {
+public class Builders.InterfaceBuilder : IdentifierBuilder {
 
     private Gir.Interface g_iface;
 
     public InterfaceBuilder (Gir.Interface g_iface) {
         this.g_iface = g_iface;
-    }
-
-    public Gir.InfoAttrs info_attrs () {
-        return this.g_iface;
     }
 
     public Vala.Interface build () {
@@ -53,7 +49,7 @@ public class Builders.InterfaceBuilder : IdentifierBuilder, InfoAttrsBuilder {
         }
 
         /* version */
-        add_version_attrs (v_iface);
+        new InfoAttrsBuilder (g_iface).add_version_attrs (v_iface);
 
         /* type_cname */
         if (g_iface.glib_type_struct != generate_type_cname (g_iface)) {

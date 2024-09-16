@@ -19,16 +19,12 @@
 
 using Vala;
 
-public class Builders.BoxedBuilder : IdentifierBuilder, InfoAttrsBuilder {
+public class Builders.BoxedBuilder : IdentifierBuilder {
 
     private Gir.Record g_rec;
 
     public BoxedBuilder (Gir.Record g_rec) {
         this.g_rec = g_rec;
-    }
-
-    public Gir.InfoAttrs info_attrs () {
-        return this.g_rec;
     }
 
     public Vala.Class build () {
@@ -49,7 +45,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder, InfoAttrsBuilder {
         }
 
         /* version */
-        add_version_attrs (v_class);
+        new InfoAttrsBuilder(g_rec).add_version_attrs (v_class);
 
         /* get_type method */
         var type_id = g_rec.glib_get_type + " ()";

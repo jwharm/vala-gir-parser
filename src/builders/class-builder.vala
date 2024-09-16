@@ -19,16 +19,12 @@
 
 using Vala;
 
-public class Builders.ClassBuilder : IdentifierBuilder, InfoAttrsBuilder {
+public class Builders.ClassBuilder : IdentifierBuilder {
 
     private Gir.Class g_class;
 
     public ClassBuilder (Gir.Class g_class) {
         this.g_class = g_class;
-    }
-
-    public Gir.InfoAttrs info_attrs () {
-        return this.g_class;
     }
 
     public Vala.Class build () {
@@ -56,7 +52,7 @@ public class Builders.ClassBuilder : IdentifierBuilder, InfoAttrsBuilder {
         }
 
         /* version */
-        add_version_attrs (v_class);
+        new InfoAttrsBuilder (g_class).add_version_attrs (v_class);
 
         /* type_cname */
         if (g_class.glib_type_struct != null &&

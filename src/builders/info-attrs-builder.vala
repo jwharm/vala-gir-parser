@@ -19,13 +19,15 @@
 
 using Vala;
 
-public interface Builders.InfoAttrsBuilder {
+public class Builders.InfoAttrsBuilder {
 
-    public abstract Gir.InfoAttrs info_attrs ();
+    private Gir.InfoAttrs g_info_attrs;
+
+    public InfoAttrsBuilder (Gir.InfoAttrs g_info_attrs) {
+        this.g_info_attrs = g_info_attrs;
+    }
 
     public void add_version_attrs (Vala.Symbol v_sym) {
-        var g_info_attrs = info_attrs ();
-
         /* version */
         v_sym.version.since = g_info_attrs.version;
 

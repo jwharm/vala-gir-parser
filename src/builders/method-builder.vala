@@ -19,7 +19,7 @@
 
 using Vala;
 
-public class Builders.MethodBuilder : InfoAttrsBuilder {
+public class Builders.MethodBuilder {
 
     private Gir.Callable g_call;
 
@@ -31,10 +31,6 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         if (! (g_call is Gir.Constructor)) {
             set_out_parameter_as_return_value ();
         }
-    }
-
-    public Gir.InfoAttrs info_attrs () {
-        return this.g_call;
     }
 
     public Vala.CreationMethod build_constructor () {
@@ -54,7 +50,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* version and deprecation */
-        add_version_attrs (v_cm);
+        new InfoAttrsBuilder (g_call).add_version_attrs (v_cm);
         if (g_ctor.moved_to != null) {
             v_cm.version.replacement = g_ctor.moved_to;
         }
@@ -102,7 +98,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* version and deprecation */
-        add_version_attrs (v_method);
+        new InfoAttrsBuilder (g_call).add_version_attrs (v_method);
         if (g_function.moved_to != null) {
             v_method.version.replacement = g_function.moved_to;
         }
@@ -153,7 +149,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* version and deprecation */
-        add_version_attrs (v_method);
+        new InfoAttrsBuilder (g_call).add_version_attrs (v_method);
         if (g_method.moved_to != null) {
             v_method.version.replacement = g_method.moved_to;
         }
@@ -165,7 +161,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             var g_param = (Gir.Parameter) Object.new (typeof (Gir.Parameter),
                 attrs: g_this.attrs,
                 children: g_this.children,
-                source_reference: g_this.source
+                source: g_this.source
             );
             g_method.parameters.parameters.insert (0, g_param);
             
@@ -225,7 +221,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* version and deprecation */
-        add_version_attrs (v_method);
+        new InfoAttrsBuilder (g_call).add_version_attrs (v_method);
         if (g_vm.moved_to != null) {
             v_method.version.replacement = g_vm.moved_to;
         }
@@ -270,7 +266,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* version */
-        add_version_attrs (v_del);
+        new InfoAttrsBuilder (g_call).add_version_attrs (v_del);
 
         /* parameters */
         new ParametersBuilder (g_callback, v_del).build_parameters ();
@@ -302,7 +298,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* version */
-        add_version_attrs (v_sig);
+        new InfoAttrsBuilder (g_call).add_version_attrs (v_sig);
 
         /* parameters */
         new ParametersBuilder (g_sig, v_sig).build_parameters ();

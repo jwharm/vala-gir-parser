@@ -19,16 +19,12 @@
 
 using Vala;
 
-public class Builders.PropertyBuilder : InfoAttrsBuilder {
+public class Builders.PropertyBuilder {
 
     private Gir.Property g_prop;
 
     public PropertyBuilder (Gir.Property g_prop) {
         this.g_prop = g_prop;
-    }
-
-    public Gir.InfoAttrs info_attrs () {
-        return this.g_prop;
     }
 
     public Vala.Property build () {
@@ -128,7 +124,7 @@ public class Builders.PropertyBuilder : InfoAttrsBuilder {
         }
 
         /* version */
-        add_version_attrs (v_prop);
+        new InfoAttrsBuilder (g_prop).add_version_attrs (v_prop);
 
         /* there is no information about the internal ownership, so assume
          * `owned` as default */

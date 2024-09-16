@@ -19,16 +19,12 @@
 
 using Vala;
 
-public class Builders.FieldBuilder : InfoAttrsBuilder {
+public class Builders.FieldBuilder {
 
     private Gir.Field g_field;
 
     public FieldBuilder (Gir.Field g_field) {
         this.g_field = g_field;
-    }
-
-    public Gir.InfoAttrs info_attrs () {
-        return this.g_field;
     }
 
     public bool skip () {
@@ -47,7 +43,7 @@ public class Builders.FieldBuilder : InfoAttrsBuilder {
         v_field.access = PUBLIC;
 
         /* version */
-        add_version_attrs (v_field);
+        new InfoAttrsBuilder (g_field).add_version_attrs (v_field);
 
         /* array attributes */
         if (v_type is Vala.ArrayType) {

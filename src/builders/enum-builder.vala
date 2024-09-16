@@ -19,16 +19,12 @@
 
 using Vala;
 
-public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
+public class Builders.EnumBuilder : IdentifierBuilder {
 
     protected Gir.EnumBase g_enum;
 
     public EnumBuilder (Gir.EnumBase g_enum) {
         this.g_enum = g_enum;
-    }
-
-    public Gir.InfoAttrs info_attrs () {
-        return this.g_enum;
     }
 
     public Vala.Enum build_enum () {
@@ -45,7 +41,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
         }
 
         /* version */
-        add_version_attrs (v_enum);
+        new InfoAttrsBuilder (g_enum).add_version_attrs (v_enum);
 
         /* get_type method */
         var type_id = g_enum.glib_get_type;
@@ -101,30 +97,30 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
         change_functions_into_methods ();
 
         /* create the error domain */
-        Vala.ErrorDomain v_enum = new Vala.ErrorDomain (g_enum.name, g_enum.source);
-        v_enum.access = PUBLIC;
+        Vala.ErrorDomain v_err = new Vala.ErrorDomain (g_enum.name, g_enum.source);
+        v_err.access = PUBLIC;
 
         /* c_name */
         if (g_enum.c_type != generate_cname (g_enum)) {
-            v_enum.set_attribute_string ("CCode", "cname", g_enum.c_type);
+            v_err.set_attribute_string ("CCode", "cname", g_enum.c_type);
         }
 
         /* version */
-        add_version_attrs (v_enum);
+        new InfoAttrsBuilder (g_enum).add_version_attrs (v_err);
 
         /* get_type method */
         var type_id = g_enum.glib_get_type;
         if (type_id == null) {
-            v_enum.set_attribute_bool ("CCode", "has_type_id", false);
+            v_err.set_attribute_bool ("CCode", "has_type_id", false);
         } else {
-            v_enum.set_attribute_string ("CCode", "type_id", type_id + " ()");
+            v_err.set_attribute_string ("CCode", "type_id", type_id + " ()");
         }
 
         /* functions */
         foreach (var g_function in g_enum.functions) {
             var builder = new MethodBuilder (g_function);
             if (! builder.skip ()) {
-                v_enum.add_method (builder.build_function ());
+                v_err.add_method (builder.build_function ());
             } 
         }
 
@@ -132,7 +128,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
         foreach (var g_method in g_enum.all_of<Gir.Method> ()) {
             var builder = new MethodBuilder (g_method);
             if (! builder.skip ()) {
-                v_enum.add_method (builder.build_method ());
+                v_err.add_method (builder.build_method ());
             }
         }
 
@@ -142,7 +138,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
             var name = g_member.c_identifier.ascii_up().replace ("-", "_");
             calculate_common_prefix (ref common_prefix, name);
         }
-        v_enum.set_attribute_string ("CCode", "cprefix", common_prefix);
+        v_err.set_attribute_string ("CCode", "cprefix", common_prefix);
 
         /* members */
         foreach (var g_member in g_enum.members) {
@@ -152,10 +148,10 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
                     .replace ("-", "_");
             unowned var source = g_member.source;
             var value = new IntegerLiteral(g_member.value);
-            v_enum.add_code (new ErrorCode.with_value (name, value, source));
+            v_err.add_code (new ErrorCode.with_value (name, value, source));
         }
 
-        return v_enum;
+        return v_err;
     }
 
     /* determine the longest prefix that all members have in common */
@@ -208,7 +204,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
                 typeof (Gir.Method),
                 attrs: func.attrs,
                 children: func.children,
-                source_reference: func.source
+                source: func.source
             ) as Gir.Method;
 
             /* vapigen seems to never generates a cname for these, probably
@@ -221,7 +217,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
                 typeof (Gir.InstanceParameter),
                 attrs: first.attrs,
                 children: first.children,
-                source_reference: first.source
+                source: first.source
             ) as Gir.InstanceParameter;
             method.parameters.parameters.remove_at (0);
 

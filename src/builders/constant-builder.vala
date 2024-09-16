@@ -19,16 +19,12 @@
 
 using Vala;
 
-public class Builders.ConstantBuilder : InfoAttrsBuilder {
+public class Builders.ConstantBuilder {
 
     private Gir.Constant g_constant;
 
     public ConstantBuilder (Gir.Constant g_constant) {
         this.g_constant = g_constant;
-    }
-
-    public Gir.InfoAttrs info_attrs () {
-        return this.g_constant;
     }
 
     public Vala.Constant build () {
@@ -43,7 +39,7 @@ public class Builders.ConstantBuilder : InfoAttrsBuilder {
         v_const.set_attribute_string ("CCode", "cname", g_constant.c_type);
 
         /* version */
-        add_version_attrs (v_const);
+        new InfoAttrsBuilder (g_constant).add_version_attrs (v_const);
 
         return v_const;
     }

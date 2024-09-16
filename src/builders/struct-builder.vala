@@ -19,16 +19,12 @@
 
 using Vala;
 
-public class Builders.StructBuilder : IdentifierBuilder, InfoAttrsBuilder {
+public class Builders.StructBuilder : IdentifierBuilder {
 
     private Gir.Record g_rec;
 
     public StructBuilder (Gir.Record g_rec) {
         this.g_rec = g_rec;
-    }
-
-    public Gir.InfoAttrs info_attrs () {
-        return this.g_rec;
     }
 
     public Vala.Struct build () {
@@ -42,7 +38,7 @@ public class Builders.StructBuilder : IdentifierBuilder, InfoAttrsBuilder {
         }
 
         /* version */
-        add_version_attrs (v_struct);
+        new InfoAttrsBuilder (g_rec).add_version_attrs (v_struct);
 
         /* get_type method */
         var type_id = g_rec.glib_get_type;

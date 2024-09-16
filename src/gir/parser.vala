@@ -94,7 +94,7 @@ public class Gir.Parser {
                            attrs: attrs,
                            children: children,
                            content: content.str.strip (),
-                           source_reference: source) as Node;
+                           source: source) as Node;
     }
 
     /**
