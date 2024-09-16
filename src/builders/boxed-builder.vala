@@ -32,7 +32,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder, InfoAttrsBuilder {
     }
 
     public Vala.Class build () {
-        /* the class */
+        /* create a Vala compact class for boxed types */
         Vala.Class v_class = new Vala.Class (g_rec.name, g_rec.source_reference);
         v_class.access = SymbolAccessibility.PUBLIC;
         v_class.set_attribute ("Compact", true);

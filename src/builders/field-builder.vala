@@ -42,7 +42,7 @@ public class Builders.FieldBuilder : InfoAttrsBuilder {
         /* type */
         var v_type = new DataTypeBuilder (g_field.anytype).build ();
 
-        /* create the const field */
+        /* create the field */
         var v_field = new Field (g_field.name, v_type, null, g_field.source_reference);
         v_field.access = SymbolAccessibility.PUBLIC;
 
