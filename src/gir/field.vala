@@ -67,7 +67,7 @@ public class Gir.Field : Node, InfoAttrs, DocElements, InfoElements {
     
     public Callback? callback {
         owned get {
-            return any_of (typeof (Callback));
+            return any_of<Callback> ();
         }
         set {
             remove_and_set (value);
@@ -76,7 +76,7 @@ public class Gir.Field : Node, InfoAttrs, DocElements, InfoElements {
     
     public AnyType? anytype {
         owned get {
-            return any_of (typeof (AnyType));
+            return any_of<AnyType> ();
         }
         set {
             remove (typeof (AnyType));

@@ -148,85 +148,85 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements {
     
     public Gee.List<Implements> implements {
         owned get {
-            return all_of (typeof (Implements));
+            return all_of<Implements> ();
         }
     }
     
     public Gee.List<Constructor> constructors {
         owned get {
-            return all_of (typeof (Constructor));
+            return all_of<Constructor> ();
         }
     }
 
     public Gee.List<Method> methods {
         owned get {
-            return all_of (typeof (Method));
+            return all_of<Method> ();
         }
     }
     
     public Gee.List<MethodInline> method_inlines {
         owned get {
-            return all_of (typeof (MethodInline));
+            return all_of<MethodInline> ();
         }
     }
     
     public Gee.List<Function> functions {
         owned get {
-            return all_of (typeof (Function));
+            return all_of<Function> ();
         }
     }
     
     public Gee.List<FunctionInline> function_inlines {
         owned get {
-            return all_of (typeof (FunctionInline));
+            return all_of<FunctionInline> ();
         }
     }
     
     public Gee.List<VirtualMethod> virtual_methods {
         owned get {
-            return all_of (typeof (VirtualMethod));
+            return all_of<VirtualMethod> ();
         }
     }
     
     public Gee.List<Field> fields {
         owned get {
-            return all_of (typeof (Field));
+            return all_of<Field> ();
         }
     }
     
     public Gee.List<Property> properties {
         owned get {
-            return all_of (typeof (Property));
+            return all_of<Property> ();
         }
     }
     
     public Gee.List<Signal> signals {
         owned get {
-            return all_of (typeof (Signal));
+            return all_of<Signal> ();
         }
     }
     
     public Gee.List<Union> unions {
         owned get {
-            return all_of (typeof (Union));
+            return all_of<Union> ();
         }
     }
     
     public Gee.List<Constant> constants {
         owned get {
-            return all_of (typeof (Constant));
+            return all_of<Constant> ();
         }
     }
     
     public Gee.List<Record> records {
         owned get {
-            return all_of (typeof (Record));
+            return all_of<Record> ();
         }
     }
     
     public Gee.List<Callback> callbacks {
         owned get {
-            return all_of (typeof (Callback));
+            return all_of<Callback> ();
         }
     }
 }

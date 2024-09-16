@@ -60,15 +60,17 @@ public class Gir.Node : Object {
     /**
      * Get a filtered view of all child nodes with the specified gtype.
      */
-    internal Gee.List<T> all_of<T> (Type gtype) {
-        return new FilteredNodeList<T> (children, gtype);
+    public Gee.List<T> all_of<T> () {
+        return new FilteredNodeList<T> (children);
     }
 
     /**
      * Get the child node with the specified gtype, or ``null`` if not found.
      */
-    internal T? any_of<T> (Type gtype) {
-        return (T?) children.first_match ((e) => e.get_type ().is_a (gtype));
+    internal T? any_of<T> () {
+        return (T?) children.first_match (
+            (e) => e.get_type ().is_a (typeof (T))
+        );
     }
 
     /**

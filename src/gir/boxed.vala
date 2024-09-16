@@ -58,13 +58,13 @@ public class Gir.Boxed : Node, InfoAttrs, DocElements, InfoElements {
     
     public Gee.List<Function> functions {
         owned get {
-            return all_of (typeof (Function));
+            return all_of<Function> ();
         }
     }
     
     public Gee.List<FunctionInline> function_inlines {
         owned get {
-            return all_of (typeof (FunctionInline));
+            return all_of<FunctionInline> ();
         }
     }
 }

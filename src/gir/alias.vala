@@ -40,7 +40,7 @@ public class Gir.Alias : Node, InfoAttrs, DocElements, InfoElements {
     
     public AnyType? anytype {
         owned get {
-            return any_of (typeof (AnyType));
+            return any_of<AnyType> ();
         }
         set {
             remove (typeof (AnyType));

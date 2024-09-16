@@ -309,20 +309,14 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         new ParametersBuilder (g_sig, v_sig).build_parameters ();
 
         /* find emitter method */
-        Gee.List<Gir.Method> g_methods =
-                g_sig.parent_node.all_of (typeof (Gir.Method));
-
-        foreach (var g_method in g_methods) {
+        foreach (var g_method in g_sig.parent_node.all_of<Gir.Method> ()) {
             if (equal_method_names (g_sig, g_method)) {
                 v_sig.set_attribute ("HasEmitter", true);
             }
         }
         
         /* find virtual emitter method */
-        Gee.List<Gir.VirtualMethod> g_virtual_methods =
-                g_sig.parent_node.all_of (typeof (Gir.VirtualMethod));
-
-        foreach (var g_vm in g_virtual_methods) {
+        foreach (var g_vm in g_sig.parent_node.all_of<Gir.VirtualMethod> ()) {
             if (equal_method_names (g_sig, g_vm)) {
                 v_sig.is_virtual = true;
             }
@@ -415,10 +409,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
         var name = g_call.attrs["name"];
 
-        Gee.List<Gir.VirtualMethod> virtual_methods =
-                g_call.parent_node.all_of (typeof (Gir.VirtualMethod));
-
-        foreach (var vm in virtual_methods) {
+        foreach (var vm in g_call.parent_node.all_of<Gir.VirtualMethod> ()) {
             if (vm.invoker == name) {
                 return true;
             }
@@ -438,10 +429,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         unowned var vm = (Gir.VirtualMethod) g_call;
-        Gee.List<Gir.Method> methods =
-                g_call.parent_node.all_of (typeof (Gir.Method));
-
-        foreach (var m in methods) {
+        foreach (var m in g_call.parent_node.all_of<Gir.Method> ()) {
             if (vm.invoker == m.name) {
                 return true;
             }
@@ -459,10 +447,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             return false;
         }
 
-        Gee.List<Gir.Method> methods =
-                g_call.parent_node.all_of (typeof (Gir.Method));
-
-        foreach (var m in methods) {
+        foreach (var m in g_call.parent_node.all_of<Gir.Method> ()) {
             if (m.glib_finish_func == g_call.name) {
                 return true;
             }
@@ -473,10 +458,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
     public Gir.Method? get_async_finish_method () {
         var name = ((Gir.Method) g_call).glib_finish_func;
-        Gee.List<Gir.Method> methods =
-                g_call.parent_node.all_of (typeof (Gir.Method));
-
-        foreach (var m in methods) {
+        foreach (var m in g_call.parent_node.all_of<Gir.Method> ()) {
             if (m.name == name) {
                 return m;
             }
@@ -493,10 +475,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             return false;
         }
 
-        Gee.List<Gir.Signal> signals =
-                g_call.parent_node.all_of (typeof (Gir.Signal));
-
-        foreach (var s in signals) {
+        foreach (var s in g_call.parent_node.all_of<Gir.Signal> ()) {
             if (equal_method_names (g_call, s)) {
                 return true;
             }
@@ -511,10 +490,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         var name = (g_call is Gir.Constructor)
                 ? get_constructor_name () : g_call.name;
 
-        Gee.List<Gir.Property> properties =
-                g_call.parent_node.all_of (typeof (Gir.Property));
-
-        foreach (var p in properties) {
+        foreach (var p in g_call.parent_node.all_of<Gir.Property> ()) {
             if (name?.replace ("-", "_") == p.name.replace ("-", "_")) {
                 return true;
             }

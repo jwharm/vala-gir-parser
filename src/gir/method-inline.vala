@@ -23,7 +23,7 @@ public class Gir.MethodInline : Node, DocElements, InfoElements, InfoAttrs,
                                 CallableAttrs {
     public Parameters? parameters {
         owned get {
-            return any_of (typeof (Parameters));
+            return any_of<Parameters> ();
         }
         set {
             remove_and_set (value);
@@ -32,7 +32,7 @@ public class Gir.MethodInline : Node, DocElements, InfoElements, InfoAttrs,
     
     public ReturnValue? return_value {
         owned get {
-            return any_of (typeof (ReturnValue));
+            return any_of<ReturnValue> ();
         }
         set {
             remove_and_set (value);

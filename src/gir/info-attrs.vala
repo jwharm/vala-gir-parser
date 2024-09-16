@@ -73,7 +73,7 @@ public interface Gir.InfoAttrs : Node {
 public interface Gir.DocElements : Node {
     public DocVersion? doc_version {
         owned get {
-            return any_of (typeof (DocVersion));
+            return any_of<DocVersion> ();
         }
         set {
             remove_and_set (value);
@@ -82,7 +82,7 @@ public interface Gir.DocElements : Node {
     
     public DocStability? doc_stability {
         owned get {
-            return any_of (typeof (DocStability));
+            return any_of<DocStability> ();
         }
         set {
             remove_and_set (value);
@@ -91,7 +91,7 @@ public interface Gir.DocElements : Node {
     
     public Doc? doc {
         owned get {
-            return any_of (typeof (Doc));
+            return any_of<Doc> ();
         }
         set {
             remove_and_set (value);
@@ -100,7 +100,7 @@ public interface Gir.DocElements : Node {
     
     public DocDeprecated? doc_deprecated {
         owned get {
-            return any_of (typeof (DocDeprecated));
+            return any_of<DocDeprecated> ();
         }
         set {
             remove_and_set (value);
@@ -109,7 +109,7 @@ public interface Gir.DocElements : Node {
     
     public SourcePosition? SourcePosition {
         owned get {
-            return any_of (typeof (SourcePosition));
+            return any_of<SourcePosition> ();
         }
         set {
             remove_and_set (value);

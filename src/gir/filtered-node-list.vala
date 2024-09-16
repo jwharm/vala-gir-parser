@@ -65,11 +65,10 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
      * Create a new FilteredNodeList for the specified type. The type must be
      * a (subclass of) Gir.Node.
      */
-    public FilteredNodeList (owned Gee.List<Gir.Node> backing_list,
-                             GLib.Type filter_type) {
+    public FilteredNodeList (owned Gee.List<Gir.Node> backing_list) {
         this.data = backing_list;
-        this.type = filter_type;
-        assert (filter_type.is_a (typeof (Gir.Node)));
+        this.type = typeof (G);
+        assert (this.type.is_a (typeof (Gir.Node)));
     }
     
     /**
@@ -90,21 +89,21 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
      * {@inheritDoc}
      */
     public override Gee.Iterator<G> iterator () {
-        return new Iterator<G> (data, type);
+        return new Iterator<G> (data);
     }
     
     /**
      * {@inheritDoc}
      */
     public override ListIterator<G> list_iterator () {
-        return new Iterator<G> (data, type);
+        return new Iterator<G> (data);
     }
     
     /**
      * {@inheritDoc}
      */
     public override BidirListIterator<G> bidir_list_iterator () {
-        return new Iterator<G> (data, type);
+        return new Iterator<G> (data);
     }
     
     /**
@@ -257,10 +256,9 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
             }
         }
         
-        public Iterator (Gee.List<Gir.Node> backing_list,
-                         GLib.Type filter_type) {
+        public Iterator (Gee.List<Gir.Node> backing_list) {
             this.data = backing_list;
-            this.type = filter_type;
+            this.type = typeof (G);
         }
         
         public Iterator.from_iterator (Iterator<G> iter) {

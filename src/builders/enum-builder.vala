@@ -64,8 +64,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
         }
 
         /* methods */
-        Gee.List<Gir.Method> g_methods = g_enum.all_of (typeof (Gir.Method));
-        foreach (var g_method in g_methods) {
+        foreach (var g_method in g_enum.all_of<Gir.Method> ()) {
             var builder = new MethodBuilder (g_method);
             if (! builder.skip ()) {
                 v_enum.add_method (builder.build_method ());
@@ -130,8 +129,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
         }
 
         /* methods */
-        Gee.List<Gir.Method> g_methods = g_enum.all_of (typeof (Gir.Method));
-        foreach (var g_method in g_methods) {
+        foreach (var g_method in g_enum.all_of<Gir.Method> ()) {
             var builder = new MethodBuilder (g_method);
             if (! builder.skip ()) {
                 v_enum.add_method (builder.build_method ());

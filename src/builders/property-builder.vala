@@ -139,9 +139,7 @@ public class Builders.PropertyBuilder : InfoAttrsBuilder {
 
     private Gir.Method? find_method (string? name) {
         if (name != null) {
-            Gee.List<Gir.Method> methods =
-                    g_prop.parent_node.all_of (typeof (Gir.Method));
-            foreach (var m in methods) {
+            foreach (var m in g_prop.parent_node.all_of<Gir.Method> ()) {
                 if (m.name == name) {
                     return m;
                 }

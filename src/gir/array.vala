@@ -76,7 +76,7 @@ public class Gir.Array : Node, AnyType {
     
     public override Gee.List<AnyType> anytype {
         owned get {
-            return all_of (typeof (AnyType));
+            return all_of<AnyType> ();
         }
     }
 }

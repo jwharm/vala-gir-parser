@@ -142,7 +142,7 @@ public class Gir.Parameter : Node, DocElements {
     
     public AnyType? anytype {
         owned get {
-            return any_of (typeof (AnyType));
+            return any_of<AnyType> ();
         }
         set {
             remove (typeof (AnyType));
@@ -152,7 +152,7 @@ public class Gir.Parameter : Node, DocElements {
     
     public Varargs? varargs {
         owned get {
-            return any_of (typeof (Varargs));
+            return any_of<Varargs> ();
         }
         set {
             remove_and_set (value);
@@ -161,7 +161,7 @@ public class Gir.Parameter : Node, DocElements {
     
     public Gee.List<Attribute> attributes {
         owned get {
-            return all_of (typeof (Attribute));
+            return all_of<Attribute> ();
         }
     }
 }

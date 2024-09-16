@@ -70,8 +70,7 @@ public class Builders.FieldBuilder : InfoAttrsBuilder {
 
         /* length in another field */
         else if (g_arr.length != -1) {
-            Gee.List<Gir.Field> fields =
-                    g_field.parent_node.all_of (typeof (Gir.Field));
+            var fields = g_field.parent_node.all_of<Gir.Field> ();
             var g_length_field = fields[g_arr.length];
             var g_type = (Gir.TypeRef) g_length_field.anytype;
 
