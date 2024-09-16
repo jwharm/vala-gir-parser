@@ -37,7 +37,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
         /* the enum */
         Vala.Enum v_enum = new Vala.Enum (g_enum.name, g_enum.source_reference);
-        v_enum.access = SymbolAccessibility.PUBLIC;
+        v_enum.access = PUBLIC;
 
         /* c_name */
         if (g_enum.c_type != generate_cname (g_enum)) {
@@ -102,7 +102,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
         /* create the error domain */
         Vala.ErrorDomain v_enum = new Vala.ErrorDomain (g_enum.name, g_enum.source_reference);
-        v_enum.access = SymbolAccessibility.PUBLIC;
+        v_enum.access = PUBLIC;
 
         /* c_name */
         if (g_enum.c_type != generate_cname (g_enum)) {

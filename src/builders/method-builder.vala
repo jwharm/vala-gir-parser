@@ -45,7 +45,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
         /* create the constructor */
         var v_cm = new CreationMethod (null, name, g_ctor.source_reference);
-        v_cm.access = SymbolAccessibility.PUBLIC;
+        v_cm.access = PUBLIC;
         v_cm.has_construct_function = false;
 
         /* c name */
@@ -88,8 +88,8 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
         /* create a static method */
         var v_method = new Method (g_function.name, v_return_type, g_function.source_reference);
-        v_method.access = SymbolAccessibility.PUBLIC;
-        v_method.binding = MemberBinding.STATIC;
+        v_method.access = PUBLIC;
+        v_method.binding = STATIC;
 
         /* array return type attributes */
         if (v_return_type is Vala.ArrayType) {
@@ -122,7 +122,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
              * into an instance method */
             if (dir_is_ok && type_is_ok) {
                 g_function.parameters.parameters.remove_at (0);
-                v_method.binding = MemberBinding.INSTANCE;
+                v_method.binding = INSTANCE;
             }
         }
 
@@ -145,7 +145,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
         /* the method itself */
         var v_method = new Method (g_method.name, v_return_type, g_method.source_reference);
-        v_method.access = SymbolAccessibility.PUBLIC;
+        v_method.access = PUBLIC;
 
         /* c name */
         if (g_method.c_identifier != generate_cname (g_method)) {
@@ -170,7 +170,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             g_method.parameters.parameters.insert (0, g_param);
             
             /* change into a static method */
-            v_method.binding = MemberBinding.STATIC;
+            v_method.binding = STATIC;
         }
 
         /* parameters */
@@ -212,7 +212,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
         /* the method itself */
         var v_method = new Method (g_vm.name, v_return_type, g_vm.source_reference);
-        v_method.access = SymbolAccessibility.PUBLIC;
+        v_method.access = PUBLIC;
         if (g_vm.parent_node is Gir.Interface) {
             v_method.is_abstract = true;
         } else {
@@ -254,7 +254,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
         /* create the delegate */
         var v_del = new Delegate (g_callback.name, v_return_type, g_callback.source_reference);
-        v_del.access = SymbolAccessibility.PUBLIC;
+        v_del.access = PUBLIC;
 
         /* c_name */
         if (g_callback.parent_node is Gir.Namespace) {
@@ -294,7 +294,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
 
         /* create the signal */
         var v_sig = new Vala.Signal (name, v_return_type, g_sig.source_reference);
-        v_sig.access = SymbolAccessibility.PUBLIC;
+        v_sig.access = PUBLIC;
 
         /* array return type attributes */
         if (v_return_type is Vala.ArrayType) {

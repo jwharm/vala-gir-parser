@@ -34,7 +34,7 @@ public class Builders.InterfaceBuilder : IdentifierBuilder, InfoAttrsBuilder {
     public Vala.Interface build () {
         /* the interface */
         Vala.Interface v_iface = new Vala.Interface (g_iface.name, g_iface.source_reference);
-        v_iface.access = SymbolAccessibility.PUBLIC;
+        v_iface.access = PUBLIC;
 
         /* prerequisite interfaces */
         foreach (var g_imp in g_iface.prerequisites) {

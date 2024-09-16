@@ -41,7 +41,7 @@ public class Builders.PropertyBuilder : InfoAttrsBuilder {
 
         /* create the property */
         var v_prop = new Vala.Property (name, v_type, null, null, g_prop.source_reference);
-        v_prop.access = SymbolAccessibility.PUBLIC;
+        v_prop.access = PUBLIC;
         v_prop.is_abstract = g_prop.parent_node is Gir.Interface;
 
         /* get-accessor */

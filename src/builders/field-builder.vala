@@ -44,7 +44,7 @@ public class Builders.FieldBuilder : InfoAttrsBuilder {
 
         /* create the field */
         var v_field = new Field (g_field.name, v_type, null, g_field.source_reference);
-        v_field.access = SymbolAccessibility.PUBLIC;
+        v_field.access = PUBLIC;
 
         /* version */
         add_version_attrs (v_field);

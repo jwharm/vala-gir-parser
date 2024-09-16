@@ -37,7 +37,7 @@ public class Builders.ConstantBuilder : InfoAttrsBuilder {
 
         /* create the const field */
         var v_const = new Constant (g_constant.name, type, null, g_constant.source_reference);
-        v_const.access = SymbolAccessibility.PUBLIC;
+        v_const.access = PUBLIC;
 
         /* cname */
         v_const.set_attribute_string ("CCode", "cname", g_constant.c_type);

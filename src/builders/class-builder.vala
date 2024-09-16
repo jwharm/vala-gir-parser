@@ -34,7 +34,7 @@ public class Builders.ClassBuilder : IdentifierBuilder, InfoAttrsBuilder {
     public Vala.Class build () {
         /* the class */
         Vala.Class v_class = new Vala.Class (g_class.name, g_class.source_reference);
-        v_class.access = SymbolAccessibility.PUBLIC;
+        v_class.access = PUBLIC;
         v_class.is_abstract = g_class.abstract;
         v_class.is_sealed = g_class.final;
 
@@ -143,7 +143,7 @@ public class Builders.ClassBuilder : IdentifierBuilder, InfoAttrsBuilder {
         if (no_introspectable_constructors ()) {
             var v_cm = new CreationMethod (null, null, g_class.source_reference);
             v_cm.has_construct_function = false;
-            v_cm.access = SymbolAccessibility.PROTECTED;
+            v_cm.access = PROTECTED;
             v_class.add_method (v_cm);
         }
 
