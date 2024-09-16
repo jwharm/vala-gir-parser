@@ -47,7 +47,7 @@ public class Builders.ParametersBuilder {
 
             /* varargs */
             if (g_par.varargs != null) {
-                v_par = new Vala.Parameter.with_ellipsis (g_par.source_reference);
+                v_par = new Vala.Parameter.with_ellipsis (g_par.source);
                 v_call.add_parameter (v_par);
                 return;
             }
@@ -70,7 +70,7 @@ public class Builders.ParametersBuilder {
             v_type.nullable = g_par.nullable || (g_par.allow_none && g_par.direction != OUT);
 
             /* create the parameter */
-            v_par = new Vala.Parameter (g_par.name, v_type, g_par.source_reference);
+            v_par = new Vala.Parameter (g_par.name, v_type, g_par.source);
 
             /* array parameter */
             if (v_type is Vala.ArrayType) {

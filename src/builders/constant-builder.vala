@@ -36,7 +36,7 @@ public class Builders.ConstantBuilder : InfoAttrsBuilder {
         var type = new DataTypeBuilder (g_constant.anytype).build ();
 
         /* create the const field */
-        var v_const = new Constant (g_constant.name, type, null, g_constant.source_reference);
+        var v_const = new Constant (g_constant.name, type, null, g_constant.source);
         v_const.access = PUBLIC;
 
         /* cname */

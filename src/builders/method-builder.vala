@@ -44,7 +44,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         var name = get_constructor_name ();
 
         /* create the constructor */
-        var v_cm = new CreationMethod (null, name, g_ctor.source_reference);
+        var v_cm = new CreationMethod (null, name, g_ctor.source);
         v_cm.access = PUBLIC;
         v_cm.has_construct_function = false;
 
@@ -87,7 +87,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         var v_return_type = build_return_type (g_function.return_value);
 
         /* create a static method */
-        var v_method = new Method (g_function.name, v_return_type, g_function.source_reference);
+        var v_method = new Method (g_function.name, v_return_type, g_function.source);
         v_method.access = PUBLIC;
         v_method.binding = STATIC;
 
@@ -144,7 +144,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         var v_return_type = build_return_type (g_method.return_value);
 
         /* the method itself */
-        var v_method = new Method (g_method.name, v_return_type, g_method.source_reference);
+        var v_method = new Method (g_method.name, v_return_type, g_method.source);
         v_method.access = PUBLIC;
 
         /* c name */
@@ -165,7 +165,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             var g_param = (Gir.Parameter) Object.new (typeof (Gir.Parameter),
                 attrs: g_this.attrs,
                 children: g_this.children,
-                source_reference: g_this.source_reference
+                source_reference: g_this.source
             );
             g_method.parameters.parameters.insert (0, g_param);
             
@@ -211,7 +211,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         var v_return_type = build_return_type (g_vm.return_value);
 
         /* the method itself */
-        var v_method = new Method (g_vm.name, v_return_type, g_vm.source_reference);
+        var v_method = new Method (g_vm.name, v_return_type, g_vm.source);
         v_method.access = PUBLIC;
         if (g_vm.parent_node is Gir.Interface) {
             v_method.is_abstract = true;
@@ -253,7 +253,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         var v_return_type = build_return_type (g_callback.return_value);
 
         /* create the delegate */
-        var v_del = new Delegate (g_callback.name, v_return_type, g_callback.source_reference);
+        var v_del = new Delegate (g_callback.name, v_return_type, g_callback.source);
         v_del.access = PUBLIC;
 
         /* c_name */
@@ -293,7 +293,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         var v_return_type = build_return_type (g_sig.return_value);
 
         /* create the signal */
-        var v_sig = new Vala.Signal (name, v_return_type, g_sig.source_reference);
+        var v_sig = new Vala.Signal (name, v_return_type, g_sig.source);
         v_sig.access = PUBLIC;
 
         /* array return type attributes */
@@ -463,7 +463,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             }
         }
 
-        Report.error (g_call.source_reference, "Cannot find finish-func \"%s\"", name);
+        Report.error (g_call.source, "Cannot find finish-func \"%s\"", name);
         return null;
     }
 

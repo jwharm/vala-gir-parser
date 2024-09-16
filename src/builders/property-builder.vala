@@ -40,7 +40,7 @@ public class Builders.PropertyBuilder : InfoAttrsBuilder {
         var name = g_prop.name.replace ("-", "_");
 
         /* create the property */
-        var v_prop = new Vala.Property (name, v_type, null, null, g_prop.source_reference);
+        var v_prop = new Vala.Property (name, v_type, null, null, g_prop.source);
         v_prop.access = PUBLIC;
         v_prop.is_abstract = g_prop.parent_node is Gir.Interface;
 

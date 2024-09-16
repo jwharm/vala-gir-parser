@@ -33,20 +33,20 @@ public class Builders.ClassBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
     public Vala.Class build () {
         /* the class */
-        Vala.Class v_class = new Vala.Class (g_class.name, g_class.source_reference);
+        Vala.Class v_class = new Vala.Class (g_class.name, g_class.source);
         v_class.access = PUBLIC;
         v_class.is_abstract = g_class.abstract;
         v_class.is_sealed = g_class.final;
 
         /* parent class */
         if (g_class.parent != null) {
-            var base_type = DataTypeBuilder.from_name (g_class.parent, g_class.source_reference);
+            var base_type = DataTypeBuilder.from_name (g_class.parent, g_class.source);
             v_class.add_base_type (base_type);
         }
 
         /* implemented interfaces */
         foreach (var g_imp in g_class.implements) {
-            var imp_type = DataTypeBuilder.from_name (g_imp.name, g_imp.source_reference);
+            var imp_type = DataTypeBuilder.from_name (g_imp.name, g_imp.source);
             v_class.add_base_type (imp_type);
         }
 
@@ -141,7 +141,7 @@ public class Builders.ClassBuilder : IdentifierBuilder, InfoAttrsBuilder {
         /* always provide constructor in generated bindings
          * to indicate that implicit Object () chainup is allowed */
         if (no_introspectable_constructors ()) {
-            var v_cm = new CreationMethod (null, null, g_class.source_reference);
+            var v_cm = new CreationMethod (null, null, g_class.source);
             v_cm.has_construct_function = false;
             v_cm.access = PROTECTED;
             v_class.add_method (v_cm);

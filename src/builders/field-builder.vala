@@ -43,7 +43,7 @@ public class Builders.FieldBuilder : InfoAttrsBuilder {
         var v_type = new DataTypeBuilder (g_field.anytype).build ();
 
         /* create the field */
-        var v_field = new Field (g_field.name, v_type, null, g_field.source_reference);
+        var v_field = new Field (g_field.name, v_type, null, g_field.source);
         v_field.access = PUBLIC;
 
         /* version */

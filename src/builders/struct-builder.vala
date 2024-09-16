@@ -33,7 +33,7 @@ public class Builders.StructBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
     public Vala.Struct build () {
         /* the struct */
-        Vala.Struct v_struct = new Vala.Struct (g_rec.name, g_rec.source_reference);
+        Vala.Struct v_struct = new Vala.Struct (g_rec.name, g_rec.source);
         v_struct.access = PUBLIC;
 
         /* c_name */

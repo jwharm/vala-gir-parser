@@ -40,19 +40,19 @@ public class Builders.DataTypeBuilder {
             var g_ptr_array = (Gir.Array) g_anytype;
             return build_type (g_ptr_array.name,
                                g_ptr_array.anytype,
-                               g_ptr_array.source_reference);
+                               g_ptr_array.source);
         }
         
         /* <type> */
         if (g_anytype is Gir.TypeRef) {
             var g_type = (Gir.TypeRef) g_anytype;
-            return build_type (g_type.name, g_type.anytype, g_type.source_reference);
+            return build_type (g_type.name, g_type.anytype, g_type.source);
         }
 
         /* <array> */
         var inner = g_anytype.anytype[0];
         DataType v_type = new DataTypeBuilder (inner).build ();
-        return new ArrayType (v_type, 1, g_anytype.source_reference);
+        return new ArrayType (v_type, 1, g_anytype.source);
     }
 
     /* Create Vala.DataType from a Gir <type> element. */

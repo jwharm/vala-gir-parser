@@ -33,12 +33,12 @@ public class Builders.InterfaceBuilder : IdentifierBuilder, InfoAttrsBuilder {
 
     public Vala.Interface build () {
         /* the interface */
-        Vala.Interface v_iface = new Vala.Interface (g_iface.name, g_iface.source_reference);
+        Vala.Interface v_iface = new Vala.Interface (g_iface.name, g_iface.source);
         v_iface.access = PUBLIC;
 
         /* prerequisite interfaces */
         foreach (var g_imp in g_iface.prerequisites) {
-            var imp_type = DataTypeBuilder.from_name (g_imp.name, g_imp.source_reference);
+            var imp_type = DataTypeBuilder.from_name (g_imp.name, g_imp.source);
             v_iface.add_prerequisite (imp_type);
         }
 

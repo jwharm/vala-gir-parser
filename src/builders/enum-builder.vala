@@ -36,7 +36,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
         change_functions_into_methods ();
 
         /* the enum */
-        Vala.Enum v_enum = new Vala.Enum (g_enum.name, g_enum.source_reference);
+        Vala.Enum v_enum = new Vala.Enum (g_enum.name, g_enum.source);
         v_enum.access = PUBLIC;
 
         /* c_name */
@@ -85,7 +85,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
                     .substring (common_prefix.length)
                     .ascii_up()
                     .replace ("-", "_");
-            unowned var source = g_member.source_reference;
+            unowned var source = g_member.source;
             var v_value = new Vala.EnumValue (name, null, source, null);
             v_enum.add_value (v_value);
         }
@@ -101,7 +101,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
         change_functions_into_methods ();
 
         /* create the error domain */
-        Vala.ErrorDomain v_enum = new Vala.ErrorDomain (g_enum.name, g_enum.source_reference);
+        Vala.ErrorDomain v_enum = new Vala.ErrorDomain (g_enum.name, g_enum.source);
         v_enum.access = PUBLIC;
 
         /* c_name */
@@ -150,7 +150,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
                     .substring (common_prefix.length)
                     .ascii_up()
                     .replace ("-", "_");
-            unowned var source = g_member.source_reference;
+            unowned var source = g_member.source;
             var value = new IntegerLiteral(g_member.value);
             v_enum.add_code (new ErrorCode.with_value (name, value, source));
         }
@@ -208,7 +208,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
                 typeof (Gir.Method),
                 attrs: func.attrs,
                 children: func.children,
-                source_reference: func.source_reference
+                source_reference: func.source
             ) as Gir.Method;
 
             /* vapigen seems to never generates a cname for these, probably
@@ -221,7 +221,7 @@ public class Builders.EnumBuilder : IdentifierBuilder, InfoAttrsBuilder {
                 typeof (Gir.InstanceParameter),
                 attrs: first.attrs,
                 children: first.children,
-                source_reference: first.source_reference
+                source_reference: first.source
             ) as Gir.InstanceParameter;
             method.parameters.parameters.remove_at (0);
 

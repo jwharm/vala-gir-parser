@@ -31,7 +31,7 @@ public class Builders.NamespaceBuilder {
 
     public Vala.Namespace build () {
         /* create the namespace */
-        Vala.Namespace v_ns = new Vala.Namespace (g_ns.name, g_ns.source_reference);
+        Vala.Namespace v_ns = new Vala.Namespace (g_ns.name, g_ns.source);
 
         /* attributes */
         v_ns.set_attribute_string ("CCode", "cheader_filename", get_cheader_filename ());
