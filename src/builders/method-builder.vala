@@ -108,20 +108,19 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         }
 
         /* try to convert struct functions into instance methods */
-        if (g_function.parent_node is Gir.Record && has_parameters (g_function)) {
+        if (g_function.parent_node is Gir.Record && has_parameters ()) {
 
             /* check if the first parameter is an "instance parameter", i.e. it
              * has the type of the enclosing struct */
             var g_rec = (Gir.Record) g_function.parent_node;
             var g_this = g_function.parameters.parameters[0];
             var g_type_name = (g_this.anytype as Gir.TypeRef)?.name;
-            var check_direction = g_this.direction == IN
-                    || (g_this.direction == OUT && g_this.caller_allocates);
-            var check_name = g_type_name == g_rec.name;
+            var dir_is_ok = g_this.direction == IN || g_this.caller_allocates;
+            var type_is_ok = g_type_name == g_rec.name;
 
             /* if found, remove the first parameter and change the static method
              * into an instance method */
-            if (check_direction && check_name) {
+            if (dir_is_ok && type_is_ok) {
                 g_function.parameters.parameters.remove_at (0);
                 v_method.binding = MemberBinding.INSTANCE;
             }
@@ -147,11 +146,6 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
         /* the method itself */
         var v_method = new Method (g_method.name, v_return_type, g_method.source_reference);
         v_method.access = SymbolAccessibility.PUBLIC;
-
-        /* array return type attributes */
-        if (v_return_type is Vala.ArrayType) {
-            add_array_return_type_attributes (v_method);
-        }
 
         /* c name */
         if (g_method.c_identifier != generate_cname (g_method)) {
@@ -200,6 +194,11 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
             if ((! g_method.throws) && g_finish_func.throws) {
                 v_method.add_error_type (new Vala.ErrorType (null, null));
             }
+        }
+
+        /* array return type attributes */
+        if (v_return_type is Vala.ArrayType) {
+            add_array_return_type_attributes (v_method);
         }
 
         return v_method;
@@ -328,7 +327,7 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
     /* void functions with one trailing out parameter: change the out parameter
      * into a return value */
     private void set_out_parameter_as_return_value () {
-        if (! (returns_void (g_call) && has_parameters (g_call))) {
+        if (! (returns_void () && has_parameters ())) {
             return;
         }
 
@@ -504,15 +503,15 @@ public class Builders.MethodBuilder : InfoAttrsBuilder {
     }
 
     /* check if this callable returns void */
-    public static bool returns_void (Gir.Callable call) {
-        return call.return_value.anytype is Gir.TypeRef
-                && ((Gir.TypeRef) call.return_value.anytype).name == "none";
+    public bool returns_void () {
+        return g_call.return_value.anytype is Gir.TypeRef
+                && ((Gir.TypeRef) g_call.return_value.anytype).name == "none";
     }
 
     /* check if this callable has no parameters (ignoring instance parameter) */
-    public static bool has_parameters (Gir.Callable call) {
-        return call.parameters != null
-                && (! call.parameters.parameters.is_empty);
+    public bool has_parameters () {
+        return g_call.parameters != null
+                && (! g_call.parameters.parameters.is_empty);
     }
 
     /* generate the C function name from the GIR name and all prefixes */
