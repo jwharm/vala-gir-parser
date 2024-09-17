@@ -17,10 +17,14 @@ meson compile -C _build
 Usage:
 
 ```
-_build/vapigen2 --library libraryname filename.gir
+_build/vapigen --library libraryname filename.gir
 ```
 
 The tool can be used as a drop-in replacement for the existing `vapigen` tool.
+Technically, it acts as a new back-end that `vapigen` will call.
+
+Please be aware that this project is still in development and is not yet
+finished.
 
 ## Design
 

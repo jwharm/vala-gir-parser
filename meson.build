@@ -83,4 +83,4 @@ sources = files(
 		'src/gir/union.vala',
 )
 
-executable('vapigen2', sources, dependencies: dependencies)
+executable('vapigen', sources, dependencies: dependencies)
