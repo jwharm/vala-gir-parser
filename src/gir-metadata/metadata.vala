@@ -35,6 +35,7 @@ public class GirMetadata.Metadata {
         }
     }
 
+    public string pattern;
     public PatternSpec pattern_spec;
     public string? selector;
     public SourceReference source_reference;
@@ -44,9 +45,20 @@ public class GirMetadata.Metadata {
     public ArrayList<Metadata> children = new ArrayList<Metadata> ();
 
     public Metadata (string pattern, string? selector = null, SourceReference? source_reference = null) {
+        this.pattern = pattern;
         this.pattern_spec = new PatternSpec (pattern);
         this.selector = selector;
         this.source_reference = source_reference;
+    }
+
+    public string to_string (int indent = 0) {
+        StringBuilder sb = new StringBuilder();
+        sb.append (string.nfill (indent, ' '));
+        sb.append(pattern).append("\n");
+        foreach (var child in children) {
+            sb.append(child.to_string(indent + 2));
+        }
+        return sb.str;
     }
 
     public void add_child (Metadata metadata) {

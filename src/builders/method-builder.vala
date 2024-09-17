@@ -389,8 +389,7 @@ public class Builders.MethodBuilder {
 
     /* return true when this method must be omitted from the vapi */
     public bool skip () {
-        return (! g_call.introspectable)
-                || is_invoker_method ()
+        return is_invoker_method ()
                 || is_signal_emitter_method ()
                 || is_async_finish_method ()
                 || is_property_accessor ();

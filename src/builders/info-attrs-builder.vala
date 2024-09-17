@@ -42,5 +42,11 @@ public class Builders.InfoAttrsBuilder {
             v_sym.version.deprecated = g_info_attrs.deprecated;
             v_sym.version.deprecated_since = g_info_attrs.deprecated_version;
         }
+
+        /* Hide non-introspectable symbols */
+        if (! g_info_attrs.introspectable) {
+            v_sym.set_attribute ("not-introspectable", true);
+        }
+
     }
 }

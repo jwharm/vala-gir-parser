@@ -27,6 +27,7 @@ public class GirMetadata.MetadataProcessor : CodeVisitor {
 
     public MetadataProcessor (Metadata metadata, string ns_name) {
         this.metadata_stack.add (metadata);
+        this.metadata = metadata;
         this.ns_name = ns_name;
     }
 
@@ -41,17 +42,38 @@ public class GirMetadata.MetadataProcessor : CodeVisitor {
     }
 
     public override void visit_class (Vala.Class cl) {
-        if (push_metadata (cl.name, "class")) {
-            cl.accept_children (this);
-            pop_metadata ();
-        }
+        push_metadata (cl.name, "class");
+        cl.accept_children (this);
+        pop_metadata ();
     }
 
     public override void visit_method (Vala.Method m) {
-        if (push_metadata (m.name, "method")) {
-			m.set_attribute ("PrintfFormat", metadata.get_bool (PRINTF_FORMAT));
-            pop_metadata ();
+        push_metadata (m.name, "method");
+        process_skip (m);
+        process_printf_format (m);
+        pop_metadata ();
+    }
+
+    public override void visit_creation_method (Vala.CreationMethod m) {
+        push_metadata (m.name, "constructor");
+        process_skip (m);
+        process_printf_format (m);
+        pop_metadata ();
+    }
+
+    private void process_skip (Symbol sym) {
+        var not_introspectable = sym.get_attribute ("not-introspectable") != null;
+        var skip_false = metadata.has_argument (SKIP) && (! metadata.get_bool(SKIP));
+        var skip_true = metadata.get_bool(SKIP);
+        if (skip_true || (not_introspectable && (! skip_false))) {
+            sym.access = PRIVATE;
         }
+
+        sym.set_attribute ("not-introspectable", false);
+    }
+
+    private void process_printf_format (Symbol sym) {
+        sym.set_attribute ("PrintfFormat", metadata.get_bool (PRINTF_FORMAT));
     }
 
 	private Metadata get_current_metadata (string name, string selector) {
@@ -71,13 +93,6 @@ public class GirMetadata.MetadataProcessor : CodeVisitor {
 
 	private bool push_metadata (string name, string selector) {
 		var new_metadata = get_current_metadata (name, selector);
-		/* skip ? */
-		if (new_metadata.has_argument (SKIP)) {
-			if (new_metadata.get_bool (SKIP)) {
-				return false;
-			}
-		}
-
 		metadata_stack.add (metadata);
 		metadata = new_metadata;
 		return true;
