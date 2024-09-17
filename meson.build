@@ -7,7 +7,7 @@ add_project_arguments('-Wno-unused-variable', language: 'c')
 add_project_arguments('-Wno-unused-but-set-variable', language: 'c')
 
 dependencies = [
-    dependency('glib-2.0'),
+    dependency('glib-2.0', version: '>=2.70'),
     dependency('gobject-2.0'),
     dependency('libvala-0.56'),
 ]
@@ -81,6 +81,12 @@ sources = files(
 		'src/gir/varargs.vala',
 		'src/gir/virtual-method.vala',
 		'src/gir/union.vala',
+		'src/gir-metadata/argument-type.vala',
+		'src/gir-metadata/argument.vala',
+		'src/gir-metadata/metadata-parser.vala',
+		'src/gir-metadata/metadata-processor.vala',
+		'src/gir-metadata/metadata-set.vala',
+		'src/gir-metadata/metadata.vala',
 )
 
 executable('vapigen', sources, dependencies: dependencies)

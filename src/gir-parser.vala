@@ -19,6 +19,7 @@
 
 using Vala;
 using Builders;
+using GirMetadata;
 
 public class GirParser2 : CodeVisitor {
 
@@ -63,6 +64,28 @@ public class GirParser2 : CodeVisitor {
             var builder = new NamespaceBuilder (repository.namespace,
                                                 repository.c_includes);
             context.root.add_namespace (builder.build ());
+
+            /* apply metadata */
+            var metadata = load_metadata (context, source_file);
+            if (metadata != Metadata.empty) {
+                var name = repository.namespace.name;
+                var metadata_processor = new MetadataProcessor (metadata, name);
+                metadata_processor.apply (context);
+            }
+        }
+    }
+
+    /* Load metadata, first look into metadata directories then in the same
+     * directory of the .gir. */
+    private Metadata load_metadata (CodeContext context, SourceFile gir_file) {
+		string? filename = context.get_metadata_path (gir_file.filename);
+		if (filename != null && FileUtils.test (filename, EXISTS)) {
+			var parser = new MetadataParser ();
+			var file = new SourceFile (context, gir_file.file_type, filename);
+			context.add_source_file (file);
+			return parser.parse_metadata (file);
+		} else {
+            return Metadata.empty;
         }
     }
 }
