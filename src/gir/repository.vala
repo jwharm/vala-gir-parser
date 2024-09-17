@@ -17,8 +17,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
 public class Gir.Repository : Node {
     public string version {
         owned get {
@@ -47,13 +45,13 @@ public class Gir.Repository : Node {
         }
     }
     
-    public Gee.List<Include> includes {
+    public Vala.List<Include> includes {
         owned get {
             return all_of<Include> ();
         }
     }
     
-    public Gee.List<CInclude> c_includes {
+    public Vala.List<CInclude> c_includes {
         owned get {
             return all_of<CInclude> ();
         }

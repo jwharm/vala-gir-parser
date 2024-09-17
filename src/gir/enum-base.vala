@@ -54,19 +54,19 @@ public interface Gir.EnumBase : Node, InfoAttrs, DocElements, InfoElements {
         }
     }
     
-    public Gee.List<Member> members {
+    public Vala.List<Member> members {
         owned get {
             return all_of<Member> ();
         }
     }
     
-    public Gee.List<Function> functions {
+    public Vala.List<Function> functions {
         owned get {
             return all_of<Function> ();
         }
     }
     
-    public Gee.List<FunctionInline> function_inlines {
+    public Vala.List<FunctionInline> function_inlines {
         owned get {
             return all_of<FunctionInline> ();
         }

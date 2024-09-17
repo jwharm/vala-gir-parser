@@ -17,10 +17,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
 public interface Gir.InfoElements : Node, DocElements {
-    public Gee.List<Attribute> attributes {
+    public Vala.List<Attribute> attributes {
         owned get {
             return all_of<Attribute> ();
         }

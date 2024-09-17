@@ -17,9 +17,9 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
+using Vala;
 
-/**
+ /**
  * Provides a view over a list of Nodes, that only contains elements of a
  * specific type.
  * 
@@ -32,8 +32,8 @@ using Gee;
  * 
  * The view relies on the backing list to perform out-of-bounds checks.
  */
-public class FilteredNodeList<G> : AbstractBidirList<G> {
-    private Gee.List<Gir.Node> data;
+public class FilteredNodeList<G> : Vala.List<G> {
+    private Vala.List<Gir.Node> data;
     private GLib.Type type;
     
     /**
@@ -53,57 +53,27 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
     }
     
     /**
-     * Returns whether the backing list (and therefore, this list) is read-only.
-     */
-    public override bool read_only {
-        get {
-            return data.read_only;
-        }
-    }
-    
-    /**
      * Create a new FilteredNodeList for the specified type. The type must be
      * a (subclass of) Gir.Node.
      */
-    public FilteredNodeList (owned Gee.List<Gir.Node> backing_list) {
+    public FilteredNodeList (owned Vala.List<Gir.Node> backing_list) {
         this.data = backing_list;
         this.type = typeof (G);
         assert (this.type.is_a (typeof (Gir.Node)));
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public override bool foreach (ForallFunc<G> f) {
-        var iter = iterator ();
-        while (iter.next ()) {
-            if (! f (iter.get ())) {
-                return false;
-            }
-        }
-        
-        return true;
+     public override Type get_element_type () {
+        return this.type;
     }
     
     /**
      * {@inheritDoc}
      */
-    public override Gee.Iterator<G> iterator () {
-        return new Iterator<G> (data);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public override ListIterator<G> list_iterator () {
-        return new Iterator<G> (data);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public override BidirListIterator<G> bidir_list_iterator () {
-        return new Iterator<G> (data);
+    public override Iterator<G> iterator () {
+        return new NodeListIterator<G> (data);
     }
     
     /**
@@ -146,7 +116,7 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
      * {@inheritDoc}
      */
     public override void set (int index, G item) {
-        var iter = (Iterator<G>) iterator ();
+        var iter = (NodeListIterator<G>) iterator ();
         for (int i = -1; i < index; i++) {
             iter.next ();
         }
@@ -165,7 +135,7 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
      * {@inheritDoc}
      */
     public override void insert (int index, G item) {
-        var iter = (Iterator<G>) iterator ();
+        var iter = (NodeListIterator<G>) iterator ();
         for (int i = 0; i < index; i++) {
             iter.next ();
         }
@@ -207,25 +177,7 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
     /**
      * {@inheritDoc}
      */
-    public override Gee.List<G>? slice (int start, int stop) {
-        var slice = new ArrayList<G> ();
-        var iter = iterator ();
-        int i = 0;
-        
-        while (i++ < stop) {
-            iter.next ();
-            if (i >= start) {
-                slice.add (iter.get ());
-            }
-        }
-        
-        return slice;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public bool add_all (Collection<G> collection) {
+    public override bool add_all (Collection<G> collection) {
         if (collection.is_empty) {
             return false;
         }
@@ -237,34 +189,20 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
         return true;
     }
     
-    private class Iterator<G> : Object, Traversable<G>, Gee.Iterator<G>,
-                                BidirIterator<G>, ListIterator<G>,
-                                BidirListIterator<G> {
-        private Gee.List<Gir.Node> data;
+    private class NodeListIterator<G> : Vala.Iterator<G> {
+        private Vala.List<Gir.Node> data;
         private GLib.Type type;
         private int cursor = -1;
         
-        public bool read_only {
-            get {
-                return data.read_only;
-            }
-        }
-        
-        public bool valid {
+        public override bool valid {
             get {
                 return cursor != -1;
             }
         }
         
-        public Iterator (Gee.List<Gir.Node> backing_list) {
+        public NodeListIterator (Vala.List<Gir.Node> backing_list) {
             this.data = backing_list;
             this.type = typeof (G);
-        }
-        
-        public Iterator.from_iterator (Iterator<G> iter) {
-            this.data = iter.data;
-            this.type = iter.type;
-            this.cursor = iter.cursor;
         }
         
         private int previous_index_from (int current) {
@@ -287,25 +225,20 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
             return -1;
         }
         
-        public bool next () {
+        public override bool next () {
             cursor = next_index_from (cursor);
             return valid;
         }
         
-        public bool has_next () {
+        public override bool has_next () {
             return next_index_from (cursor) != -1;
         }
         
-        public bool first () {
-            cursor = -1;
-            return next ();
-        }
-        
-        public new G get () {
+        public override G get () {
             return (G) data[cursor];
         }
         
-        public void remove () {
+        public override void remove () {
             data.remove_at (cursor);
             previous ();
         }
@@ -315,60 +248,13 @@ public class FilteredNodeList<G> : AbstractBidirList<G> {
             return valid;
         }
         
-        public bool has_previous () {
-            return previous_index_from (cursor) != -1;
-        }
-        
-        public bool last () {
-            cursor = data.size + 1;
-            return previous ();
-        }
-        
         public new void set (G item) {
             data[cursor] = (Gir.Node) item;
-        }
-        
-        public void insert (G item) {
-            data.insert (cursor, (Gir.Node) item);
-            cursor++;
         }
         
         public void add (G item) {
             cursor++;
             data.insert (cursor, (Gir.Node) item);
-        }
-        
-        public int index () {
-            int pos = 0;
-            for (int i = -2; i != -1 && i < cursor; i = next_index_from (i)) {
-                pos++;
-            }
-            
-            return pos;
-        }
-        
-        public bool foreach (ForallFunc<G> f) {
-            while (next ()) {
-                if (! f (get ())) {
-                    return false;
-                }
-            }
-            
-            return true;
-        }
-        
-        public Gee.Iterator<G>[] tee (uint forks) {
-            if (forks == 0) {
-                return new Gee.Iterator<G>[0];
-            }
-            
-            Gee.Iterator<G>[] result = new Gee.Iterator<G>[forks];
-            result[0] = this;
-            for (uint i = 1; i < forks; i++) {
-                result[i] = new Iterator<G>.from_iterator (this);
-            }
-            
-            return result;
         }
     }
 }

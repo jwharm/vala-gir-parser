@@ -56,7 +56,7 @@ children.
 The GIR node tree can be displayed in an easy-to-read text format with
 `to_string ()`, or in XML format with `to_xml ()`. The generated XML is
 identical to the original GIR XML file, except the XML element attributes have a
-different ordering (the attributes are kept in a `Gee.Map`, an unordered
+different ordering (the attributes are kept in a `Vala.Map`, an unordered
 collection).
 
 ### VAPI generator

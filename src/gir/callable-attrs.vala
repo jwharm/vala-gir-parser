@@ -17,8 +17,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
 public interface Gir.CallableAttrs : Node, InfoAttrs {
     public string name {
         owned get {

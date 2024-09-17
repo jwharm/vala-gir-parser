@@ -17,8 +17,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
 /**
  * Base class for all Gir Nodes. A Gir Node has attributes, text content, child
  * nodes, and a parent node. The parent node of the root node is ``null``.
@@ -27,7 +25,7 @@ public class Gir.Node : Object {
     public weak Node? parent_node { get; private set; default = null; }
     public string? content { get; internal set construct; }
     public Vala.Map<string, string> attrs { get; construct; }
-    public Gee.List<Node> children { get; construct; }
+    public Vala.List<Node> children { get; construct; }
     public Vala.SourceReference source {get; construct; }
 
     construct {
@@ -49,7 +47,8 @@ public class Gir.Node : Object {
     /**
      * Remove all child nodes with the specified type.
      */
-    public void remove (Type type) {
+    public void remove<T> () {
+        var type = typeof (T);
         for (int i = 0; i < children.size; i++) {
             if (children[i].get_type ().is_a (type)) {
                 children.remove_at (i);
@@ -58,28 +57,34 @@ public class Gir.Node : Object {
     }
 
     /**
-     * Get a filtered view of all child nodes with the specified gtype.
+     * Get a filtered view of all child nodes with the specified type.
      */
-    public Gee.List<T> all_of<T> () {
+    public Vala.List<T> all_of<T> () {
         return new FilteredNodeList<T> (children);
     }
 
     /**
-     * Get the child node with the specified gtype, or ``null`` if not found.
+     * Get the child node with the specified type, or ``null`` if not found.
      */
     internal T? any_of<T> () {
-        return (T?) children.first_match (
-            (e) => e.get_type ().is_a (typeof (T))
-        );
+        var type = typeof (T);
+        foreach (var child in children) {
+            if (child.get_type ().is_a (type)) {
+                return child;
+            }
+        }
+
+        return null;
     }
 
     /**
      * Add a node to the list of child nodes, removing any existing nodes with
-     * the same gtype.
+     * the same type.
      */ 
     internal void remove_and_set (Node node) {
+        var type = node.get_type ();
         for (int i = 0; i < children.size; i++) {
-            if (children[i].get_type () == node.get_type ()) {
+            if (children[i].get_type () == type) {
                 children.remove_at (i);
                 break;
             }

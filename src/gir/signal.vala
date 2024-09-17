@@ -17,8 +17,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
 public class Gir.Signal : Node, InfoAttrs, DocElements, InfoElements, Callable {
     public bool detailed {
         get {

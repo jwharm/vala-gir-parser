@@ -17,8 +17,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
 public class Gir.Property : Node, InfoAttrs, DocElements, InfoElements {
     public string name {
         owned get {
@@ -110,7 +108,7 @@ public class Gir.Property : Node, InfoAttrs, DocElements, InfoElements {
             return any_of<AnyType> ();
         }
         set {
-            remove (typeof (AnyType));
+            remove<AnyType> ();
             add (value);
         }
     }

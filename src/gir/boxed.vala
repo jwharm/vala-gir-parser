@@ -17,8 +17,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
 public class Gir.Boxed : Node, InfoAttrs, DocElements, InfoElements {
     public string name {
         owned get {
@@ -56,13 +54,13 @@ public class Gir.Boxed : Node, InfoAttrs, DocElements, InfoElements {
         }
     }
     
-    public Gee.List<Function> functions {
+    public Vala.List<Function> functions {
         owned get {
             return all_of<Function> ();
         }
     }
     
-    public Gee.List<FunctionInline> function_inlines {
+    public Vala.List<FunctionInline> function_inlines {
         owned get {
             return all_of<FunctionInline> ();
         }

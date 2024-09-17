@@ -9,8 +9,6 @@ add_project_arguments('-Wno-unused-but-set-variable', language: 'c')
 dependencies = [
     dependency('glib-2.0'),
     dependency('gobject-2.0'),
-    dependency('gio-2.0'),
-    dependency('gee-0.8'),
     dependency('libvala-0.56'),
 ]
 

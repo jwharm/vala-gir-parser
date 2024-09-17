@@ -57,7 +57,7 @@ public class Builders.DataTypeBuilder {
 
     /* Create Vala.DataType from a Gir <type> element. */
     private Vala.DataType build_type (string name,
-                                      Gee.List<Gir.AnyType> g_inner_type,
+                                      Vala.List<Gir.AnyType> g_inner_type,
                                       SourceReference source) {
         string? builtin = to_builtin_type (name);
         if (builtin != null) {

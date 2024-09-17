@@ -17,8 +17,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
 public class Gir.Array : Node, AnyType {
     public string name {
         owned get {
@@ -74,7 +72,7 @@ public class Gir.Array : Node, AnyType {
         }
     }
     
-    public override Gee.List<AnyType> anytype {
+    public override Vala.List<AnyType> anytype {
         owned get {
             return all_of<AnyType> ();
         }

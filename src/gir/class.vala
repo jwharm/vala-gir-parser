@@ -17,8 +17,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Gee;
-
 public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements {
     public string name {
         owned get {
@@ -146,85 +144,85 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements {
         }
     }
     
-    public Gee.List<Implements> implements {
+    public Vala.List<Implements> implements {
         owned get {
             return all_of<Implements> ();
         }
     }
     
-    public Gee.List<Constructor> constructors {
+    public Vala.List<Constructor> constructors {
         owned get {
             return all_of<Constructor> ();
         }
     }
 
-    public Gee.List<Method> methods {
+    public Vala.List<Method> methods {
         owned get {
             return all_of<Method> ();
         }
     }
     
-    public Gee.List<MethodInline> method_inlines {
+    public Vala.List<MethodInline> method_inlines {
         owned get {
             return all_of<MethodInline> ();
         }
     }
     
-    public Gee.List<Function> functions {
+    public Vala.List<Function> functions {
         owned get {
             return all_of<Function> ();
         }
     }
     
-    public Gee.List<FunctionInline> function_inlines {
+    public Vala.List<FunctionInline> function_inlines {
         owned get {
             return all_of<FunctionInline> ();
         }
     }
     
-    public Gee.List<VirtualMethod> virtual_methods {
+    public Vala.List<VirtualMethod> virtual_methods {
         owned get {
             return all_of<VirtualMethod> ();
         }
     }
     
-    public Gee.List<Field> fields {
+    public Vala.List<Field> fields {
         owned get {
             return all_of<Field> ();
         }
     }
     
-    public Gee.List<Property> properties {
+    public Vala.List<Property> properties {
         owned get {
             return all_of<Property> ();
         }
     }
     
-    public Gee.List<Signal> signals {
+    public Vala.List<Signal> signals {
         owned get {
             return all_of<Signal> ();
         }
     }
     
-    public Gee.List<Union> unions {
+    public Vala.List<Union> unions {
         owned get {
             return all_of<Union> ();
         }
     }
     
-    public Gee.List<Constant> constants {
+    public Vala.List<Constant> constants {
         owned get {
             return all_of<Constant> ();
         }
     }
     
-    public Gee.List<Record> records {
+    public Vala.List<Record> records {
         owned get {
             return all_of<Record> ();
         }
     }
     
-    public Gee.List<Callback> callbacks {
+    public Vala.List<Callback> callbacks {
         owned get {
             return all_of<Callback> ();
         }

@@ -18,7 +18,6 @@
  */
 
 using Vala;
-using Gee;
 
 public class Gir.Parser {
     static construct {
@@ -62,7 +61,7 @@ public class Gir.Parser {
     /* Parse one XML element (recursively), and return a new Gir Node */
     private Node parse_element (MarkupReader reader) {
         var element = reader.name;
-        var children = new Gee.ArrayList<Node> ();
+        var children = new Vala.ArrayList<Node> ();
         var attrs = reader.get_attributes ();
         var content = new StringBuilder ();
         var source = new SourceReference (source_file, begin, end);
@@ -82,15 +81,15 @@ public class Gir.Parser {
         }
         
         /* Determine the Node subclass */
-        Type gtype = Type.from_name (Node.element_to_type_name (element));
-        if (gtype == 0) {
+        Type type = Type.from_name (Node.element_to_type_name (element));
+        if (type == 0) {
             Report.warning (source, "Unsupported element: " + element);
             /* Fallback to generic Node type */
-            gtype = typeof (Node);
+            type = typeof (Node);
         }
 
         /* Create and return a new Gir Node */
-        return Object.new (gtype,
+        return Object.new (type,
                            attrs: attrs,
                            children: children,
                            content: content.str.strip (),

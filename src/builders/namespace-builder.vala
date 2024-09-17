@@ -22,9 +22,10 @@ using Vala;
 public class Builders.NamespaceBuilder {
 
     private Gir.Namespace g_ns;
-    private Gee.List<Gir.CInclude> c_includes;
+    private Vala.List<Gir.CInclude> c_includes;
 
-    public NamespaceBuilder (Gir.Namespace ns, Gee.List<Gir.CInclude> c_includes) {
+    public NamespaceBuilder (Gir.Namespace ns,
+                             Vala.List<Gir.CInclude> c_includes) {
         this.g_ns = ns;
         this.c_includes = c_includes;
     }
