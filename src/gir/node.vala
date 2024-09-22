@@ -37,6 +37,34 @@ public class Gir.Node : Object {
     }
 
     /**
+     * Create a new Gir Node, passing attribute keys and values as arguments.
+     * The varargs list must be `null` terminated.
+     */
+    public static T create<T> (Vala.SourceReference? source, ...) {
+        assert (typeof (T).is_a (typeof (Gir.Node)));
+
+        /* fill attributes map */
+        var attrs = new Vala.HashMap<string, string> (str_hash, str_equal);
+        var l = va_list();
+        while (true) {
+            string? key = l.arg();
+            if (key == null) {
+                break; /* end of the list */
+            }
+            attrs[key] = l.arg();
+        }
+
+        var children = new Vala.ArrayList<Node> ();
+
+        /* create and return node */
+        return (T) Object.new (typeof (T),
+                               children: children,
+                               content: null,
+                               attrs: attrs,
+                               source: source);
+    }
+
+    /**
      * Add the new child node, and set its parent_node to this node.
      */
     public void add (Node node) {
@@ -66,7 +94,7 @@ public class Gir.Node : Object {
     /**
      * Get the child node with the specified type, or ``null`` if not found.
      */
-    internal T? any_of<T> () {
+    public T? any_of<T> () {
         var type = typeof (T);
         foreach (var child in children) {
             if (child.get_type ().is_a (type)) {
@@ -81,7 +109,7 @@ public class Gir.Node : Object {
      * Add a node to the list of child nodes, removing any existing nodes with
      * the same type.
      */ 
-    internal void remove_and_set (Node node) {
+    public void remove_and_set (Node node) {
         var type = node.get_type ();
         for (int i = 0; i < children.size; i++) {
             if (children[i].get_type () == type) {
@@ -95,7 +123,7 @@ public class Gir.Node : Object {
     /**
      * Get the boolean value of this key ("1" is true, "0" is false)
      */
-    internal bool attr_get_bool (string key, bool if_not_set = false) {
+    public bool attr_get_bool (string key, bool if_not_set = false) {
         if (key in attrs) {
             return "1" == attrs[key];
         } else {
@@ -106,14 +134,14 @@ public class Gir.Node : Object {
     /**
      * Set the boolean value of this key
      */ 
-    internal void attr_set_bool (string key, bool val) {
+    public void attr_set_bool (string key, bool val) {
         attrs[key] = (val ? "1" : "0");
     }
 
     /**
      * Get the int value of this key.
      */
-    internal int attr_get_int (string key, int if_not_set = -1) {
+    public int attr_get_int (string key, int if_not_set = -1) {
         if (key in attrs) {
             return int.parse (attrs[key]);
         } else {
@@ -124,7 +152,7 @@ public class Gir.Node : Object {
     /**
      * Set the int value of this key
      */
-    internal void attr_set_int (string key, int val) {
+    public void attr_set_int (string key, int val) {
         attrs[key] = val.to_string();
     }
 
@@ -218,7 +246,7 @@ public class Gir.Node : Object {
      * special case (GirTypeRef), all others are converted from kebab case to
      * camel case.
      */
-    internal static string element_to_type_name (string element) {
+    public static string element_to_type_name (string element) {
         if (element == "type") {
             return "GirTypeRef";
         }
@@ -235,9 +263,9 @@ public class Gir.Node : Object {
     
     /**
      * Convert "GirTypeName" back to "type-name" format (reverse of the above 
-     * ``element_to_type_name`` function).
+     * `element_to_type_name` function).
      */
-    internal static string type_to_element_name (Type type) {
+    public static string type_to_element_name (Type type) {
         if (type == typeof (TypeRef)) {
             return "type";
         } else if (type == typeof (CInclude)) {
