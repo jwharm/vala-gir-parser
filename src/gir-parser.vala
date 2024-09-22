@@ -60,18 +60,17 @@ public class GirParser2 : CodeVisitor {
                 context.add_external_package (dep);
             }
 
+            /* apply metadata */
+            var metadata = load_metadata (context, source_file);
+            if (metadata != Metadata.empty) {
+                var metadata_processor = new MetadataProcessor (repository);
+                metadata_processor.apply (metadata);
+            }
+
             /* build the namespace and everything in it */
             var builder = new NamespaceBuilder (repository.namespace,
                                                 repository.c_includes);
             context.root.add_namespace (builder.build ());
-
-            /* apply metadata */
-            var metadata = load_metadata (context, source_file);
-            if (metadata != Metadata.empty) {
-                var name = repository.namespace.name;
-                var metadata_processor = new MetadataProcessor (metadata, name);
-                metadata_processor.apply (context);
-            }
         }
     }
 
