@@ -124,7 +124,7 @@ public class Builders.PropertyBuilder {
         }
 
         /* version */
-        new InfoAttrsBuilder (g_prop).add_version_attrs (v_prop);
+        new InfoAttrsBuilder (g_prop).add_info_attrs (v_prop);
 
         /* there is no information about the internal ownership, so assume
          * `owned` as default */

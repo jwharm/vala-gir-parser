@@ -27,7 +27,7 @@ public class Builders.InfoAttrsBuilder {
         this.g_info_attrs = g_info_attrs;
     }
 
-    public void add_version_attrs (Vala.Symbol v_sym) {
+    public void add_info_attrs (Vala.Symbol v_sym) {
         /* version */
         v_sym.version.since = g_info_attrs.version;
 
@@ -43,10 +43,8 @@ public class Builders.InfoAttrsBuilder {
             v_sym.version.deprecated_since = g_info_attrs.deprecated_version;
         }
 
-        /* Hide non-introspectable symbols */
-        if (! g_info_attrs.introspectable) {
-            v_sym.set_attribute ("not-introspectable", true);
+        if ("printf-format" in g_info_attrs.attrs) {
+            v_sym.set_attribute ("PrintfFormat", g_info_attrs.attr_get_bool ("printf-format"));
         }
-
     }
 }

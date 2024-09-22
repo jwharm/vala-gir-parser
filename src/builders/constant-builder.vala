@@ -39,7 +39,7 @@ public class Builders.ConstantBuilder {
         v_const.set_attribute_string ("CCode", "cname", g_constant.c_type);
 
         /* version */
-        new InfoAttrsBuilder (g_constant).add_version_attrs (v_const);
+        new InfoAttrsBuilder (g_constant).add_info_attrs (v_const);
 
         return v_const;
     }

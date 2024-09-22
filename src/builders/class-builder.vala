@@ -24,6 +24,7 @@ public class Builders.ClassBuilder : IdentifierBuilder {
     private Gir.Class g_class;
 
     public ClassBuilder (Gir.Class g_class) {
+        base (g_class);
         this.g_class = g_class;
     }
 
@@ -47,17 +48,17 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         }
 
         /* c_name */
-        if (g_class.c_type != generate_cname (g_class)) {
+        if (g_class.c_type != generate_cname ()) {
             v_class.set_attribute_string ("CCode", "cname", g_class.c_type);
         }
 
         /* version */
-        new InfoAttrsBuilder (g_class).add_version_attrs (v_class);
+        new InfoAttrsBuilder (g_class).add_info_attrs (v_class);
 
         /* type_cname */
         if (g_class.glib_type_struct != null &&
-                g_class.glib_type_struct != generate_type_cname (g_class)) {
-            var type_cname = get_ns_prefix (g_class) + g_class.glib_type_struct;
+                g_class.glib_type_struct != generate_type_cname ()) {
+            var type_cname = get_ns_prefix () + g_class.glib_type_struct;
             v_class.set_attribute_string ("CCode", "type_cname", type_cname);
         }
 

@@ -50,7 +50,7 @@ public class Builders.MethodBuilder {
         }
 
         /* version and deprecation */
-        new InfoAttrsBuilder (g_call).add_version_attrs (v_cm);
+        new InfoAttrsBuilder (g_call).add_info_attrs (v_cm);
         if (g_ctor.moved_to != null) {
             v_cm.version.replacement = g_ctor.moved_to;
         }
@@ -98,7 +98,7 @@ public class Builders.MethodBuilder {
         }
 
         /* version and deprecation */
-        new InfoAttrsBuilder (g_call).add_version_attrs (v_method);
+        new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
         if (g_function.moved_to != null) {
             v_method.version.replacement = g_function.moved_to;
         }
@@ -149,7 +149,7 @@ public class Builders.MethodBuilder {
         }
 
         /* version and deprecation */
-        new InfoAttrsBuilder (g_call).add_version_attrs (v_method);
+        new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
         if (g_method.moved_to != null) {
             v_method.version.replacement = g_method.moved_to;
         }
@@ -221,14 +221,20 @@ public class Builders.MethodBuilder {
         }
 
         /* version and deprecation */
-        new InfoAttrsBuilder (g_call).add_version_attrs (v_method);
+        new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
         if (g_vm.moved_to != null) {
             v_method.version.replacement = g_vm.moved_to;
         }
 
-        /* "NoWrapper" attribute when no invoker method has been found */
-        if (! has_invoker_method ()) {
+        /* "NoWrapper" attribute when no invoker method with the same name */
+        var invoker_method = get_invoker_method ();
+        if (invoker_method == null || invoker_method.name != g_vm.name) {
             v_method.set_attribute ("NoWrapper", true);
+        }
+
+        /* "vfunc_name" attribute when invoker method has another name */
+        if (invoker_method.name != g_vm.name) {
+            v_method.set_attribute_string ("CCode", "vfunc_name", invoker_method.name);
         }
 
         /* parameters */
@@ -254,7 +260,7 @@ public class Builders.MethodBuilder {
 
         /* c_name */
         if (g_callback.parent_node is Gir.Namespace) {
-            var cname = new IdentifierBuilder ().generate_cname (g_callback);
+            var cname = new IdentifierBuilder (g_callback).generate_cname ();
             if (g_callback.c_type != cname) {
                 v_del.set_attribute_string ("CCode", "cname", g_callback.c_type);
             }
@@ -266,7 +272,7 @@ public class Builders.MethodBuilder {
         }
 
         /* version */
-        new InfoAttrsBuilder (g_call).add_version_attrs (v_del);
+        new InfoAttrsBuilder (g_call).add_info_attrs (v_del);
 
         /* parameters */
         new ParametersBuilder (g_callback, v_del).build_parameters ();
@@ -298,7 +304,7 @@ public class Builders.MethodBuilder {
         }
 
         /* version */
-        new InfoAttrsBuilder (g_call).add_version_attrs (v_sig);
+        new InfoAttrsBuilder (g_call).add_info_attrs (v_sig);
 
         /* parameters */
         new ParametersBuilder (g_sig, v_sig).build_parameters ();
@@ -389,25 +395,20 @@ public class Builders.MethodBuilder {
 
     /* return true when this method must be omitted from the vapi */
     public bool skip () {
-        return is_invoker_method ()
+        return (! g_call.introspectable)
+                || is_invoker_method ()
                 || is_signal_emitter_method ()
                 || is_async_finish_method ()
                 || is_property_accessor ();
     }
 
-    /* Find a virtual method invoked by this method. */
+    /* Find a virtual method with the same name as this method. */
     public bool is_invoker_method () {
         if (! (g_call is Gir.Method || g_call is Gir.Function)) {
             return false;
         }
 
-        var name = g_call.attrs["name"];
-
         foreach (var vm in g_call.parent_node.all_of<Gir.VirtualMethod> ()) {
-            if (vm.invoker == name) {
-                return true;
-            }
-
             if (equal_method_names (g_call, vm)) {
                 return true;
             }
@@ -416,24 +417,28 @@ public class Builders.MethodBuilder {
         return false;
     }
 
-    /* Find a method that invokes this virtual method. */
-    public bool has_invoker_method () {
+    /* Find a method or function that invokes this virtual method. */
+    public Gir.Callable? get_invoker_method () {
         if (! (g_call is Gir.VirtualMethod)) {
-            return false;
+            return null;
         }
 
         unowned var vm = (Gir.VirtualMethod) g_call;
-        foreach (var m in g_call.parent_node.all_of<Gir.Method> ()) {
+        foreach (var m in g_call.parent_node.all_of<Gir.Callable> ()) {
+            if (! (m is Gir.Method || m is Gir.Function)) {
+                continue;
+            }
+
             if (vm.invoker == m.name) {
-                return true;
+                return m;
             }
 
             if (equal_method_names (m, vm)) {
-                return true;
+                return m;
             }
         }
 
-        return false;
+        return null;
     }
 
     public bool is_async_finish_method () {

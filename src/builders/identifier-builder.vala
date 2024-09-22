@@ -21,8 +21,18 @@ using Vala;
 
 public class Builders.IdentifierBuilder {
 
+    private Gir.Identifier identifier;
+
+    public IdentifierBuilder (Gir.Identifier identifier) {
+        this.identifier = identifier;
+    }
+
+    public virtual bool skip () {
+        return ! identifier.introspectable;
+    }
+
     /* Get the C prefix of this identifier */
-    public string? get_ns_prefix (Gir.Node identifier) {
+    public string? get_ns_prefix () {
         var ns = identifier.parent_node as Gir.Namespace;
 
         /* Return null if this is not a registered type */
@@ -34,20 +44,17 @@ public class Builders.IdentifierBuilder {
     }
 
     /* Generate C name of an identifier: for example "GtkWindow" */
-    public string? generate_cname (Gir.Node identifier) {
-        var name = identifier.attrs["name"];
-        var ns_prefix = get_ns_prefix (identifier);
-        return ns_prefix == null ? null : (ns_prefix + name);
+    public string? generate_cname () {
+        var ns_prefix = get_ns_prefix ();
+        return ns_prefix == null ? null : (ns_prefix + identifier.name);
     }
 
     /* Generate C name of the TypeClass/TypeInterface of a class/interface */
-    public string? generate_type_cname (Gir.Node identifier) {
+    public string? generate_type_cname () {
         if (identifier is Gir.Class) {
-            unowned var cls = (Gir.Class) identifier;
-            return cls.name + "Class";
+            return identifier.name + "Class";
         } else if (identifier is Gir.Interface) {
-            unowned var ifc = (Gir.Interface) identifier;
-            return ifc.name + "Iface";
+            return identifier.name + "Iface";
         } else {
             return null;
         }

@@ -24,6 +24,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
     private Gir.Record g_rec;
 
     public BoxedBuilder (Gir.Record g_rec) {
+        base (g_rec);
         this.g_rec = g_rec;
     }
 
@@ -34,7 +35,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         v_class.set_attribute ("Compact", true);
 
         /* cname */
-        if (g_rec.c_type != generate_cname (g_rec)) {
+        if (g_rec.c_type != generate_cname ()) {
             v_class.set_attribute_string ("CCode", "cname", g_rec.c_type);
         }
 
@@ -45,7 +46,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         }
 
         /* version */
-        new InfoAttrsBuilder(g_rec).add_version_attrs (v_class);
+        new InfoAttrsBuilder(g_rec).add_info_attrs (v_class);
 
         /* get_type method */
         var type_id = g_rec.glib_get_type + " ()";

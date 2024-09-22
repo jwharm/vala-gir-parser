@@ -24,6 +24,7 @@ public class Builders.EnumBuilder : IdentifierBuilder {
     protected Gir.EnumBase g_enum;
 
     public EnumBuilder (Gir.EnumBase g_enum) {
+        base (g_enum);
         this.g_enum = g_enum;
     }
 
@@ -36,12 +37,12 @@ public class Builders.EnumBuilder : IdentifierBuilder {
         v_enum.access = PUBLIC;
 
         /* c_name */
-        if (g_enum.c_type != generate_cname (g_enum)) {
+        if (g_enum.c_type != generate_cname ()) {
             v_enum.set_attribute_string ("CCode", "cname", g_enum.c_type);
         }
 
         /* version */
-        new InfoAttrsBuilder (g_enum).add_version_attrs (v_enum);
+        new InfoAttrsBuilder (g_enum).add_info_attrs (v_enum);
 
         /* get_type method */
         var type_id = g_enum.glib_get_type;
@@ -101,12 +102,12 @@ public class Builders.EnumBuilder : IdentifierBuilder {
         v_err.access = PUBLIC;
 
         /* c_name */
-        if (g_enum.c_type != generate_cname (g_enum)) {
+        if (g_enum.c_type != generate_cname ()) {
             v_err.set_attribute_string ("CCode", "cname", g_enum.c_type);
         }
 
         /* version */
-        new InfoAttrsBuilder (g_enum).add_version_attrs (v_err);
+        new InfoAttrsBuilder (g_enum).add_info_attrs (v_err);
 
         /* get_type method */
         var type_id = g_enum.glib_get_type;

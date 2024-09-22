@@ -24,6 +24,7 @@ public class Builders.StructBuilder : IdentifierBuilder {
     private Gir.Record g_rec;
 
     public StructBuilder (Gir.Record g_rec) {
+        base (g_rec);
         this.g_rec = g_rec;
     }
 
@@ -33,12 +34,12 @@ public class Builders.StructBuilder : IdentifierBuilder {
         v_struct.access = PUBLIC;
 
         /* c_name */
-        if (g_rec.c_type != generate_cname (g_rec)) {
+        if (g_rec.c_type != generate_cname ()) {
             v_struct.set_attribute_string ("CCode", "cname", g_rec.c_type);
         }
 
         /* version */
-        new InfoAttrsBuilder (g_rec).add_version_attrs (v_struct);
+        new InfoAttrsBuilder (g_rec).add_info_attrs (v_struct);
 
         /* get_type method */
         var type_id = g_rec.glib_get_type;
@@ -73,14 +74,11 @@ public class Builders.StructBuilder : IdentifierBuilder {
         }
 
         /* add fields */
-        bool first = true;
+        int i = 0;
         foreach (var g_field in g_rec.fields) {
             /* exclude first (parent) field */
-            if (first) {
-                first = false;
-                if (g_rec.glib_is_gtype_struct_for != null) {
-                    continue;
-                }
+            if (i++ == 0 && g_rec.glib_is_gtype_struct_for != null) {
+                continue;
             }
 
             var field_builder = new FieldBuilder (g_field);
@@ -92,8 +90,8 @@ public class Builders.StructBuilder : IdentifierBuilder {
         return v_struct;
     }
 
-    public bool skip () {
-        return (! g_rec.introspectable)
+    public override bool skip () {
+        return (base.skip ())
                 || g_rec.glib_is_gtype_struct_for != null;
     }
 }

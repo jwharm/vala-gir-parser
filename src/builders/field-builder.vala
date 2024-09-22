@@ -43,7 +43,7 @@ public class Builders.FieldBuilder {
         v_field.access = PUBLIC;
 
         /* version */
-        new InfoAttrsBuilder (g_field).add_version_attrs (v_field);
+        new InfoAttrsBuilder (g_field).add_info_attrs (v_field);
 
         /* array attributes */
         if (v_type is Vala.ArrayType) {

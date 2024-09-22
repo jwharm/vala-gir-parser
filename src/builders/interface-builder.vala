@@ -24,6 +24,7 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
     private Gir.Interface g_iface;
 
     public InterfaceBuilder (Gir.Interface g_iface) {
+        base (g_iface);
         this.g_iface = g_iface;
     }
 
@@ -44,16 +45,16 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
         }
 
         /* c_name */
-        if (g_iface.c_type != generate_cname (g_iface)) {
+        if (g_iface.c_type != generate_cname ()) {
             v_iface.set_attribute_string ("CCode", "cname", g_iface.c_type);
         }
 
         /* version */
-        new InfoAttrsBuilder (g_iface).add_version_attrs (v_iface);
+        new InfoAttrsBuilder (g_iface).add_info_attrs (v_iface);
 
         /* type_cname */
-        if (g_iface.glib_type_struct != generate_type_cname (g_iface)) {
-            var type_cname = get_ns_prefix (g_iface) + g_iface.glib_type_struct;
+        if (g_iface.glib_type_struct != generate_type_cname ()) {
+            var type_cname = get_ns_prefix () + g_iface.glib_type_struct;
             v_iface.set_attribute_string ("CCode", "type_cname", type_cname);
         }
 
