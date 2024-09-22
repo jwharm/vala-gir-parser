@@ -55,6 +55,7 @@ sources = files(
 		'src/gir/function.vala',
 		'src/gir/function-inline.vala',
 		'src/gir/function-macro.vala',
+		'src/gir/identifier.vala',
 		'src/gir/implements.vala',
 		'src/gir/include.vala',
 		'src/gir/instance-parameter.vala',

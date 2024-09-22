@@ -18,5 +18,5 @@
  */
 
 public class Gir.Bitfield : Node, InfoAttrs, DocElements, InfoElements,
-                            EnumBase {
+                            Identifier, EnumBase {
 }

@@ -18,7 +18,7 @@
  */
 
 public class Gir.Callback : Node, InfoAttrs, DocElements, InfoElements,
-                            Callable {
+                            Identifier, Callable {
     public string c_type {
         owned get {
             return attrs["c:type"];

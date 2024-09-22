@@ -17,8 +17,19 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Alias : Node, InfoAttrs, DocElements, InfoElements,
-                         Identifier {
+/**
+ * Implemented by all types defined in a namespace:
+ * - Alias
+ * - Boxed
+ * - Callback
+ * - Class
+ * - EnumBase (Bitfield and Enumeration)
+ * - Interface
+ * - Record
+ * - Union
+ */
+public interface Gir.Identifier : Gir.Node, Gir.InfoAttrs, Gir.DocElements,
+                                  Gir.InfoElements {
     public string name {
         owned get {
             return attrs["name"];
@@ -27,24 +38,4 @@ public class Gir.Alias : Node, InfoAttrs, DocElements, InfoElements,
             attrs["name"] = value;
         }
     }
-    
-    public string c_type {
-        owned get {
-            return attrs["c:type"];
-        }
-        set {
-            attrs["c:type"] = value;
-        }
-    }
-    
-    public AnyType? anytype {
-        owned get {
-            return any_of<AnyType> ();
-        }
-        set {
-            remove<AnyType> ();
-            add (value);
-        }
-    }
 }
-
