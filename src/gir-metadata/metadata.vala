@@ -52,11 +52,18 @@ public class GirMetadata.Metadata {
     }
 
     public string to_string (int indent = 0) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder ();
         sb.append (string.nfill (indent, ' '));
-        sb.append(pattern).append("\n");
+        sb.append (pattern);
+        foreach (var key in args.get_keys ()) {
+            string nick = key.to_string ()
+                             .replace ("GIR_METADATA_ARGUMENT_TYPE_", "")
+                             .down ();
+            sb.append (" ").append(nick);
+        }
+        sb.append("\n");
         foreach (var child in children) {
-            sb.append(child.to_string(indent + 2));
+            sb.append (child.to_string(indent + 2));
         }
         return sb.str;
     }
