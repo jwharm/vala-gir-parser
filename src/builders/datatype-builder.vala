@@ -58,7 +58,7 @@ public class Builders.DataTypeBuilder {
     /* Create Vala.DataType from a Gir <type> element. */
     private Vala.DataType build_type (string name,
                                       Vala.List<Gir.AnyType> g_inner_type,
-                                      SourceReference source) {
+                                      SourceReference? source) {
         string? builtin = to_builtin_type (name);
         if (builtin != null) {
             var sym = new UnresolvedSymbol (null, builtin, source);
