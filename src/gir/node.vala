@@ -54,13 +54,24 @@ public class Gir.Node : Object {
             attrs[key] = l.arg();
         }
 
-        var children = new Vala.ArrayList<Node> ();
-
         /* create and return node */
         return (T) Object.new (typeof (T),
-                               children: children,
+                               children: new Vala.ArrayList<Node> (),
                                content: null,
                                attrs: attrs,
+                               source: source);
+    }
+
+    /**
+     * Create a new node form this node, with another type.
+     */
+    public T cast_to<T> () {
+        assert (typeof (T).is_a (typeof (Gir.Node)));
+        
+        return (T) Object.new (typeof (T),
+                               attrs: attrs,
+                               children: children,
+                               content: content,
                                source: source);
     }
 
