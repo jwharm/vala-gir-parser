@@ -88,6 +88,10 @@ sources = files(
 		'src/gir-metadata/metadata-processor.vala',
 		'src/gir-metadata/metadata-set.vala',
 		'src/gir-metadata/metadata.vala',
+		'src/transformations/transformation.vala',
+		'src/transformations/function-to-method.vala',
+		'src/transformations/out-arg-to-return-value.vala',
+		'src/transformations/ref-instance-param.vala'
 )
 
 executable('vapigen', sources, dependencies: dependencies)

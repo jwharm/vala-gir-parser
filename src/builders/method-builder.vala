@@ -25,12 +25,6 @@ public class Builders.MethodBuilder {
 
     public MethodBuilder (Gir.Callable g_call) {
         this.g_call = g_call;
-
-        /* functions returning void and with one out parameter: change the
-         * out parameter into a return value. */
-        if (! (g_call is Gir.Constructor)) {
-            set_out_parameter_as_return_value ();
-        }
     }
 
     public Vala.CreationMethod build_constructor () {
@@ -103,25 +97,6 @@ public class Builders.MethodBuilder {
             v_method.version.replacement = g_function.moved_to;
         }
 
-        /* try to convert struct functions into instance methods */
-        if (g_function.parent_node is Gir.Record && has_parameters ()) {
-
-            /* check if the first parameter is an "instance parameter", i.e. it
-             * has the type of the enclosing struct */
-            var g_rec = (Gir.Record) g_function.parent_node;
-            var g_this = g_function.parameters.parameters[0];
-            var g_type_name = (g_this.anytype as Gir.TypeRef)?.name;
-            var dir_is_ok = g_this.direction == IN || g_this.caller_allocates;
-            var type_is_ok = g_type_name == g_rec.name;
-
-            /* if found, remove the first parameter and change the static method
-             * into an instance method */
-            if (dir_is_ok && type_is_ok) {
-                g_function.parameters.parameters.remove_at (0);
-                v_method.binding = INSTANCE;
-            }
-        }
-
         /* parameters */
         new ParametersBuilder (g_function, v_method).build_parameters ();
 
@@ -152,21 +127,6 @@ public class Builders.MethodBuilder {
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
         if (g_method.moved_to != null) {
             v_method.version.replacement = g_method.moved_to;
-        }
-
-        /* method with INOUT (ref) instance parameter should be static */
-        var g_this = g_method.parameters.instance_parameter;
-        if (g_this.direction == INOUT) {
-            /* convert the instance parameter into a regular parameter */
-            var g_param = (Gir.Parameter) Object.new (typeof (Gir.Parameter),
-                attrs: g_this.attrs,
-                children: g_this.children,
-                source: g_this.source
-            );
-            g_method.parameters.parameters.insert (0, g_param);
-            
-            /* change into a static method */
-            v_method.binding = STATIC;
         }
 
         /* parameters */
@@ -233,7 +193,7 @@ public class Builders.MethodBuilder {
         }
 
         /* "vfunc_name" attribute when invoker method has another name */
-        if (invoker_method.name != g_vm.name) {
+        if (invoker_method != null && invoker_method.name != g_vm.name) {
             v_method.set_attribute_string ("CCode", "vfunc_name", invoker_method.name);
         }
 
@@ -324,35 +284,6 @@ public class Builders.MethodBuilder {
         }
 
         return v_sig;
-    }
-
-    /* void functions with one trailing out parameter: change the out parameter
-     * into a return value */
-    private void set_out_parameter_as_return_value () {
-        if (! (returns_void () && has_parameters ())) {
-            return;
-        }
-
-        var parameters = g_call.parameters.parameters;
-        var last_param = parameters[parameters.size - 1];
-
-        /* count the number of out-parameters */
-        var num_out_parameters = 0;
-        foreach (var p in parameters) {
-            if (p.direction == OUT) {
-                num_out_parameters++;
-            }
-        }
-
-        if (num_out_parameters == 1
-                && last_param.direction == OUT
-                && (! last_param.nullable)) {
-            /* set return type to the type of the out-parameter */
-            g_call.return_value.anytype = last_param.anytype;
-
-            /* remove the out-parameter */
-            parameters.remove (last_param);
-        }
     }
 
     private Vala.DataType build_return_type (Gir.ReturnValue g_return) {
@@ -500,12 +431,6 @@ public class Builders.MethodBuilder {
 
     private bool equal_method_names (Gir.Callable a, Gir.Callable b) {
         return a.name.replace ("-", "_") == b.name.replace ("-", "_");
-    }
-
-    /* check if this callable returns void */
-    public bool returns_void () {
-        return g_call.return_value.anytype is Gir.TypeRef
-                && ((Gir.TypeRef) g_call.return_value.anytype).name == "none";
     }
 
     /* check if this callable has no parameters (ignoring instance parameter) */

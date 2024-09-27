@@ -36,17 +36,19 @@ public class GirMetadata.MetadataProcessor {
 
     private void process_node (ref Gir.Node node) {
         var tag = Gir.Node.type_to_element_name (node.get_type ());
-        var relevant = node is Gir.Identifier
+        var relevant = node is Gir.Namespace
+                    || node is Gir.Identifier
                     || node is Gir.Callable
                     || node is Gir.InstanceParameter
                     || node is Gir.Parameter;
         
         if (relevant) {
             push_metadata (node.attrs["name"], tag);
+            apply_metadata (ref node, tag);
         }
 
-        if (relevant || node is Gir.Repository || node is Gir.Namespace) {
-            apply_metadata (ref node, tag);
+        if (node is Gir.Namespace) {
+            pop_metadata ();
         }
 
         /* no need to process child nodes when the parent node is skipped */
@@ -112,8 +114,8 @@ public class GirMetadata.MetadataProcessor {
             }
         }
 
-        if (metadata.has_argument (CHEADER_FILENAME) && node is Gir.Repository) {
-            var repo = (Gir.Repository) node;
+        if (metadata.has_argument (CHEADER_FILENAME) && node is Gir.Namespace) {
+            var repo = (Gir.Repository) node.parent_node;
             repo.c_includes.clear ();
 
             var headers = metadata.get_string (CHEADER_FILENAME);

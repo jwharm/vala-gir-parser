@@ -20,6 +20,7 @@
 using Vala;
 using Builders;
 using GirMetadata;
+using Transformations;
 
 public class GirParser2 : CodeVisitor {
 
@@ -59,6 +60,11 @@ public class GirParser2 : CodeVisitor {
 
                 context.add_external_package (dep);
             }
+
+            /* apply transformations */
+            new FunctionToMethod ().apply (repository);
+            new OutArgToReturnValue ().apply (repository);
+            new RefInstanceParam ().apply (repository);
 
             /* apply metadata */
             var metadata = load_metadata (context, source_file);

@@ -29,9 +29,6 @@ public class Builders.EnumBuilder : IdentifierBuilder {
     }
 
     public Vala.Enum build_enum () {
-        /* refactor functions into instance methods when possible */
-        change_functions_into_methods ();
-
         /* the enum */
         Vala.Enum v_enum = new Vala.Enum (g_enum.name, g_enum.source);
         v_enum.access = PUBLIC;
@@ -94,9 +91,6 @@ public class Builders.EnumBuilder : IdentifierBuilder {
     }
 
     public Vala.ErrorDomain build_error_domain () {
-        /* refactor functions into instance methods when possible */
-        change_functions_into_methods ();
-
         /* create the error domain */
         Vala.ErrorDomain v_err = new Vala.ErrorDomain (g_enum.name, g_enum.source);
         v_err.access = PUBLIC;
@@ -173,58 +167,6 @@ public class Builders.EnumBuilder : IdentifierBuilder {
                 /* enum values may not consist solely of digits */
                 cname.get_char (prefix.length).isdigit ())) {
             prefix = prefix.substring (0, prefix.length - 1);
-        }
-    }
-
-    /* change enum functions that could be enum instance methods, into
-     * instance methods */
-    private void change_functions_into_methods () {
-        /* iterate through the functions */
-        var iter = g_enum.functions.iterator ();
-        while (iter.next ()) {
-            var func = iter.get ();
-
-            /* skip functions with no parameters */
-            if (func.parameters == null) {
-                continue;
-            }
-
-            /* is the type of the first parameter the enum itself? */
-            var first = func.parameters.parameters[0];
-            var type = first.anytype as Gir.TypeRef;
-            if (type == null) {
-                continue;
-            }
-
-            if (type.name != g_enum.name) {
-                continue;
-            }
-
-            /* create a new Method node to replace the Function node */
-            var method = Object.new (
-                typeof (Gir.Method),
-                attrs: func.attrs,
-                children: func.children,
-                source: func.source
-            ) as Gir.Method;
-
-            /* vapigen seems to never generates a cname for these, probably
-             * because gir <enumeration> elements don't have a "c:symbol-prefix"
-             * attribute. Explicitly remove the cname for now... */
-            method.c_identifier = null;
-
-            /* transform the first parameter into an InstanceParameter node */
-            method.parameters.instance_parameter = Object.new (
-                typeof (Gir.InstanceParameter),
-                attrs: first.attrs,
-                children: first.children,
-                source: first.source
-            ) as Gir.InstanceParameter;
-            method.parameters.parameters.remove_at (0);
-
-            /* add the Method and remove the Function from the enum node */
-            g_enum.add (method);
-            iter.remove ();
         }
     }
 }
