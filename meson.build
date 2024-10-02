@@ -91,7 +91,8 @@ sources = files(
 		'src/transformations/transformation.vala',
 		'src/transformations/function-to-method.vala',
 		'src/transformations/out-arg-to-return-value.vala',
-		'src/transformations/ref-instance-param.vala'
+		'src/transformations/ref-instance-param.vala',
+		'src/transformations/remove-first-vararg.vala'
 )
 
 executable('vapigen', sources, dependencies: dependencies)

@@ -84,6 +84,12 @@ public class GirMetadata.MetadataProcessor {
             }
         }
 
+        if (metadata.has_argument (COMPACT)) {
+            if (node is Gir.Identifier) {
+                node.attr_set_bool ("compact", false);
+            }
+        }
+
         if (metadata.has_argument (TYPE)) {
             if (node is Gir.Parameter || node is Gir.Callable) {
                 node.remove<Gir.AnyType> ();

@@ -32,8 +32,10 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         /* create a Vala compact class for boxed types */
         Vala.Class v_class = new Vala.Class (g_rec.name, g_rec.source);
         v_class.access = PUBLIC;
-        v_class.set_attribute ("Compact", true);
 
+        /* compact */
+        v_class.set_attribute ("Compact", g_rec.attr_get_bool ("compact", true));
+        
         /* cname */
         if (g_rec.c_type != generate_cname ()) {
             v_class.set_attribute_string ("CCode", "cname", g_rec.c_type);

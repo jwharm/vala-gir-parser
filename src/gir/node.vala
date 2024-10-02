@@ -63,16 +63,18 @@ public class Gir.Node : Object {
     }
 
     /**
-     * Create a new node form this node, with another type.
+     * Create a new node from this node, with another type.
      */
     public T cast_to<T> () {
         assert (typeof (T).is_a (typeof (Gir.Node)));
         
-        return (T) Object.new (typeof (T),
-                               attrs: attrs,
-                               children: children,
-                               content: content,
-                               source: source);
+        T copy = (T) Object.new (typeof (T),
+                                 attrs: attrs,
+                                 children: children,
+                                 content: content,
+                                 source: source);
+        ((Node) copy).parent_node = parent_node;
+        return copy;
     }
 
     /**

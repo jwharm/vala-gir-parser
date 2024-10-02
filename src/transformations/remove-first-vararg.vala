@@ -17,7 +17,25 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public interface Transformations.Transformation : Object {
-    public abstract bool can_transform (Gir.Node node);
-    public abstract void apply (ref Gir.Node node);
+using Gir;
+
+public class Transformations.RemoveFirstVararg : Object, Transformation {
+
+    /* determine whether this parameter list has a "first vararg" parameter */
+    public bool can_transform (Gir.Node node) {
+        if (! (node is Parameters)) {
+            return false;
+        }
+
+        var params = ((Parameters) node).parameters;
+        return params.size > 1
+                && params[params.size - 1].varargs != null
+                && params[params.size - 2].name.has_prefix ("first_");
+    }
+
+    /* remove the "first vararg" parameter */
+    public void apply (ref Gir.Node node) {
+        var params = ((Parameters) node).parameters;
+        params.remove_at (params.size - 2);
+    }
 }

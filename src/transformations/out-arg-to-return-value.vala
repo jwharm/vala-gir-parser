@@ -19,26 +19,16 @@
 
 using Gir;
 
-public class Transformations.OutArgToReturnValue : Transformation {
-
-    public void apply (Gir.Node node) {
-        if (node is Callable) {
-            if (! (node is Constructor)) {
-                unowned var callable = (Callable) node;
-                if (can_transform (callable)) {
-                    move_out_parameter (callable);
-                }
-            }
-        } else {
-            foreach (var child_node in node.children) {
-                apply (child_node);
-            }
-        }
-    }
+public class Transformations.OutArgToReturnValue : Object, Transformation {
 
     /* determine whether there is one out parameter that could be the
      * return value */
-    private bool can_transform (Callable callable) {
+    public bool can_transform (Gir.Node node) {
+        if (! (node is Callable)) {
+            return false;
+        }
+
+        unowned var callable = (Callable) node;
         var builder = new Builders.MethodBuilder (callable);
         var returns_void = callable.return_value.anytype is TypeRef
                 && ((TypeRef) callable.return_value.anytype).name == "none";
@@ -64,7 +54,8 @@ public class Transformations.OutArgToReturnValue : Transformation {
     }
 
     /* change the out parameter to the return value */
-    private void move_out_parameter (Callable callable) {
+    public void apply (ref Gir.Node node) {
+        unowned var callable = (Callable) node;
         var last_param = callable.parameters.parameters.last ();
         
         /* set return type to the type of the out-parameter */

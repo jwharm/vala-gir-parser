@@ -19,25 +19,15 @@
 
 using Gir;
 
-public class Transformations.FunctionToMethod : Transformation {
-
-    public void apply (Gir.Node node) {
-        if (node is Callable) {
-            if (node is Function) {
-                unowned var function = (Function) node;
-                if (can_transform (function)) {
-                    function_to_method (function);
-                }
-            }
-        } else {
-            foreach (var child_node in node.children) {
-                apply (child_node);
-            }
-        }
-    }
+public class Transformations.FunctionToMethod : Object, Transformation {
 
     /* determine whether this function should be an instance method */
-    private bool can_transform (Function function) {
+    public bool can_transform (Gir.Node node) {
+        if (! (node is Function)) {
+            return false;
+        }
+
+        var function = (Function) node;
         var builder = new Builders.MethodBuilder (function);
         if (function.parent_node is Gir.Identifier
                 && builder.has_parameters ()) {
@@ -60,13 +50,13 @@ public class Transformations.FunctionToMethod : Transformation {
     }
 
     /* change a function into an instance method */
-    private void function_to_method (Function function) {
+    public void apply (ref Gir.Node node) {
+        unowned var function = (Function) node;
         var first_param = function.parameters.parameters.remove_at (0);
         var inst_param = first_param.cast_to<InstanceParameter> ();
         var method = function.cast_to<Method> ();
         method.parameters.instance_parameter = inst_param;
-        function.parent_node.children.remove (function);
-        function.parent_node.add (method);
+        node = method;
 
         if (method.parent_node is EnumBase) {
             /* vapigen seems to never generates a cname for these, probably

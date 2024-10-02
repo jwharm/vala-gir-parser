@@ -19,34 +19,24 @@
 
 using Gir;
 
-public class Transformations.RefInstanceParam : Transformation {
-
-    public void apply (Gir.Node node) {
-        if (node is Callable) {
-            if (node is Method) {
-                unowned var method = (Method) node;
-                if (can_transform (method)) {
-                    method_to_function (method);
-                }
-            }
-        } else {
-            foreach (var child_node in node.children) {
-                apply (child_node);
-            }
-        }
-    }
+public class Transformations.RefInstanceParam : Object, Transformation {
 
     /* Determine whether the instance parameter is an INOUT parameter.
      * Such a method should be static (i.e. a function). */
-    private bool can_transform (Method method) {
+    public bool can_transform (Gir.Node node) {
+        if (! (node is Method)) {
+            return false;
+        }
+
+        unowned var method = (Method) node;
         return method.parameters.instance_parameter.direction == INOUT;
     }
 
     /* change an instance method into a function */
-    private void method_to_function (Method method) {
+    public void apply (ref Gir.Node node) {
+        unowned Method method = (Method) node;
         method.parameters.parameters.insert (0,
             method.parameters.instance_parameter.cast_to<Gir.Parameter> ());
-        method.parent_node.children.remove (method);
-        method.parent_node.add (method.cast_to<Function> ());
+        node = method.cast_to<Function> ();
     }
 }

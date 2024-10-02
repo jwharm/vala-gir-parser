@@ -47,6 +47,9 @@ public class Builders.ClassBuilder : IdentifierBuilder {
             v_class.add_base_type (imp_type);
         }
 
+        /* compact */
+        v_class.set_attribute ("Compact", g_class.attr_get_bool ("compact", false));
+
         /* c_name */
         if (g_class.c_type != generate_cname ()) {
             v_class.set_attribute_string ("CCode", "cname", g_class.c_type);
