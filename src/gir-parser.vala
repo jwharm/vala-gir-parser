@@ -68,7 +68,7 @@ public class GirParser2 : CodeVisitor {
                 new RefInstanceParam (),
                 new RemoveFirstVararg ()
             };
-            process_transformations (repository, transformations);
+            apply_transformations (repository, transformations);
 
             /* apply metadata */
             var metadata = load_metadata (context, source_file);
@@ -100,13 +100,17 @@ public class GirParser2 : CodeVisitor {
 
     /* Loop through the gir tree (recursively) and apply the transformations
      * on every node, replacing the existing nodes with the updated one. */
-    private void process_transformations (Gir.Node node,
+    private void apply_transformations (Gir.Node node,
                                           Transformation[] transformations) {
         for (int i = 0; i < node.children.size; i++) {
             var child = node.children[i];
+
+            /* transform child nodes */
+            apply_transformations (child, transformations);
+
+            /* transform the node itself */
             foreach (var t in transformations) {
-                process_transformations (child, transformations);
-                if (t.can_transform (child)) {
+                while (t.can_transform (child)) {
                     t.apply (ref child);
                     node.children[i] = child;
                 }

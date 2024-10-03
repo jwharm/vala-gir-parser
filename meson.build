@@ -14,6 +14,7 @@ dependencies = [
 
 sources = files(
 		'src/gir-parser.vala',
+		'src/transformations.vala',
 		'src/vapigen.vala',
 		'src/builders/boxed-builder.vala',
 		'src/builders/class-builder.vala',
@@ -87,12 +88,7 @@ sources = files(
 		'src/gir-metadata/metadata-parser.vala',
 		'src/gir-metadata/metadata-processor.vala',
 		'src/gir-metadata/metadata-set.vala',
-		'src/gir-metadata/metadata.vala',
-		'src/transformations/transformation.vala',
-		'src/transformations/function-to-method.vala',
-		'src/transformations/out-arg-to-return-value.vala',
-		'src/transformations/ref-instance-param.vala',
-		'src/transformations/remove-first-vararg.vala'
+		'src/gir-metadata/metadata.vala'
 )
 
 executable('vapigen', sources, dependencies: dependencies)
