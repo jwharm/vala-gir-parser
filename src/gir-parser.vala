@@ -87,13 +87,13 @@ public class GirParser2 : CodeVisitor {
     /* Load metadata, first look into metadata directories then in the same
      * directory of the .gir. */
     private Metadata load_metadata (CodeContext context, SourceFile gir_file) {
-		string? filename = context.get_metadata_path (gir_file.filename);
-		if (filename != null && FileUtils.test (filename, EXISTS)) {
-			var parser = new MetadataParser ();
-			var file = new SourceFile (context, gir_file.file_type, filename);
-			context.add_source_file (file);
-			return parser.parse_metadata (file);
-		} else {
+        string? filename = context.get_metadata_path (gir_file.filename);
+        if (filename != null && FileUtils.test (filename, EXISTS)) {
+            var parser = new MetadataParser ();
+            var file = new SourceFile (context, gir_file.file_type, filename);
+            context.add_source_file (file);
+            return parser.parse_metadata (file);
+        } else {
             return Metadata.empty;
         }
     }
@@ -101,7 +101,7 @@ public class GirParser2 : CodeVisitor {
     /* Loop through the gir tree (recursively) and apply the transformations
      * on every node, replacing the existing nodes with the updated one. */
     private void apply_transformations (Gir.Node node,
-                                          Transformation[] transformations) {
+                                        Transformation[] transformations) {
         for (int i = 0; i < node.children.size; i++) {
             var child = node.children[i];
 
