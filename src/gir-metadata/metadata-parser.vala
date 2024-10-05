@@ -24,6 +24,242 @@
 
 using Vala;
 
+public enum GirMetadata.ArgumentType {
+    SKIP,
+    HIDDEN,
+    NEW,
+    TYPE,
+    TYPE_ARGUMENTS,
+    CHEADER_FILENAME,
+    NAME,
+    OWNED,
+    UNOWNED,
+    PARENT,
+    NULLABLE,
+    DEPRECATED,
+    REPLACEMENT,
+    DEPRECATED_SINCE,
+    SINCE,
+    ARRAY,
+    ARRAY_LENGTH_IDX,
+    ARRAY_NULL_TERMINATED,
+    DEFAULT,
+    OUT,
+    REF,
+    VFUNC_NAME,
+    VIRTUAL,
+    ABSTRACT,
+    COMPACT,
+    SEALED,
+    SCOPE,
+    STRUCT,
+    THROWS,
+    PRINTF_FORMAT,
+    ARRAY_LENGTH_FIELD,
+    SENTINEL,
+    CLOSURE,
+    DESTROY,
+    CPREFIX,
+    LOWER_CASE_CPREFIX,
+    LOWER_CASE_CSUFFIX,
+    ERRORDOMAIN,
+    DESTROYS_INSTANCE,
+    BASE_TYPE,
+    FINISH_NAME,
+    FINISH_INSTANCE,
+    SYMBOL_TYPE,
+    INSTANCE_IDX,
+    EXPERIMENTAL,
+    FEATURE_TEST_MACRO,
+    FLOATING,
+    TYPE_ID,
+    TYPE_GET_FUNCTION,
+    COPY_FUNCTION,
+    FREE_FUNCTION,
+    REF_FUNCTION,
+    REF_SINK_FUNCTION,
+    UNREF_FUNCTION,
+    RETURN_VOID,
+    RETURNS_MODIFIED_POINTER,
+    DELEGATE_TARGET_CNAME,
+    DESTROY_NOTIFY_CNAME,
+    FINISH_VFUNC_NAME,
+    NO_ACCESSOR_METHOD,
+    NO_WRAPPER,
+    CNAME,
+    DELEGATE_TARGET,
+    CTYPE;
+
+    public static ArgumentType? from_string (string name) {
+        var enum_class = (EnumClass) typeof(ArgumentType).class_ref ();
+        var nick = name.replace ("_", "-");
+        unowned GLib.EnumValue? enum_value = enum_class.get_value_by_nick (nick);
+        if (enum_value != null) {
+            ArgumentType value = (ArgumentType) enum_value.value;
+            return value;
+        }
+        return null;
+    }
+}
+
+public class GirMetadata.Argument {
+    public Expression expression;
+    public SourceReference source_reference;
+
+    public bool used = false;
+
+    public Argument (Expression expression, SourceReference? source_reference = null) {
+        this.expression = expression;
+        this.source_reference = source_reference;
+    }
+}
+
+public class GirMetadata.MetadataSet : Metadata {
+    public MetadataSet (string? selector = null) {
+        base ("", selector);
+    }
+
+    public void add_sibling (Metadata metadata) {
+        foreach (var child in metadata.children) {
+            add_child (child);
+        }
+        // merge arguments and take precedence
+        foreach (var key in metadata.args.get_keys ()) {
+            args[key] = metadata.args[key];
+        }
+    }
+}
+
+public class GirMetadata.Metadata {
+    private static Metadata _empty = null;
+    public static Metadata empty {
+        get {
+            if (_empty == null) {
+                _empty = new Metadata ("");
+            }
+            return _empty;
+        }
+    }
+
+    public string pattern;
+    public PatternSpec pattern_spec;
+    public string? selector;
+    public SourceReference source_reference;
+
+    public bool used = false;
+    public Vala.Map<ArgumentType,Argument> args = new HashMap<ArgumentType,Argument> ();
+    public ArrayList<Metadata> children = new ArrayList<Metadata> ();
+
+    public Metadata (string pattern, string? selector = null, SourceReference? source_reference = null) {
+        this.pattern = pattern;
+        this.pattern_spec = new PatternSpec (pattern);
+        this.selector = selector;
+        this.source_reference = source_reference;
+    }
+
+    public string to_string (int indent = 0) {
+        StringBuilder sb = new StringBuilder ();
+        sb.append (string.nfill (indent, ' '));
+        sb.append (pattern);
+        foreach (var key in args.get_keys ()) {
+            string nick = key.to_string ()
+                             .replace ("GIR_METADATA_ARGUMENT_TYPE_", "")
+                             .down ();
+            sb.append (" ").append(nick);
+        }
+        sb.append("\n");
+        foreach (var child in children) {
+            sb.append (child.to_string(indent + 2));
+        }
+        return sb.str;
+    }
+
+    public void add_child (Metadata metadata) {
+        children.add (metadata);
+    }
+
+    public Metadata match_child (string name, string? selector = null) {
+        var result = Metadata.empty;
+        foreach (var metadata in children) {
+            if ((selector == null || metadata.selector == null || metadata.selector == selector) && metadata.pattern_spec.match_string (name)) {
+                metadata.used = true;
+                if (result == Metadata.empty) {
+                    // first match
+                    result = metadata;
+                } else {
+                    var ms = result as MetadataSet;
+                    if (ms == null) {
+                        // second match
+                        ms = new MetadataSet (selector);
+                        ms.add_sibling (result);
+                    }
+                    ms.add_sibling (metadata);
+                    result = ms;
+                }
+            }
+        }
+        return result;
+    }
+
+    public void add_argument (ArgumentType key, Argument value) {
+        args.set (key, value);
+    }
+
+    public bool has_argument (ArgumentType key) {
+        return args.contains (key);
+    }
+
+    public Expression? get_expression (ArgumentType arg) {
+        var val = args.get (arg);
+        if (val != null) {
+            val.used = true;
+            return val.expression;
+        }
+        return null;
+    }
+
+    public string? get_string (ArgumentType arg) {
+        var lit = get_expression (arg) as StringLiteral;
+        if (lit != null) {
+            return lit.eval ();
+        }
+        return null;
+    }
+
+    public int get_integer (ArgumentType arg) {
+        var unary = get_expression (arg) as UnaryExpression;
+        if (unary != null && unary.operator == UnaryOperator.MINUS) {
+            var lit = unary.inner as IntegerLiteral;
+            if (lit != null) {
+                return -int.parse (lit.value);
+            }
+        } else {
+            var lit = get_expression (arg) as IntegerLiteral;
+            if (lit != null) {
+                return int.parse (lit.value);
+            }
+        }
+
+        return 0;
+    }
+
+    public bool get_bool (ArgumentType arg, bool default_value = false) {
+        var lit = get_expression (arg) as BooleanLiteral;
+        if (lit != null) {
+            return lit.value;
+        }
+        return default_value;
+    }
+
+    public SourceReference? get_source_reference (ArgumentType arg) {
+        var val = args.get (arg);
+        if (val != null) {
+            return val.source_reference;
+        }
+        return null;
+    }
+}
+
 public class GirMetadata.MetadataParser {
     /**
         * Grammar:

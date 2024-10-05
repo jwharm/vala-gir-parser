@@ -33,12 +33,8 @@ sources = files(
 		'src/gir/node.vala',
 		'src/gir/parser.vala',
 		'src/gir/transformations.vala',
-		'src/gir-metadata/argument-type.vala',
-		'src/gir-metadata/argument.vala',
 		'src/gir-metadata/metadata-parser.vala',
 		'src/gir-metadata/metadata-processor.vala',
-		'src/gir-metadata/metadata-set.vala',
-		'src/gir-metadata/metadata.vala'
 )
 
 executable('vapigen', sources, dependencies: dependencies)
