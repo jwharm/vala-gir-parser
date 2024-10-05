@@ -88,8 +88,7 @@ public class GirMetadata.MetadataProcessor {
             node.remove ("type", "array");
             var type_node = Gir.Node.create ("type", source,
                 "name", metadata.get_string (TYPE),
-                "expression", "1",
-                null);
+                "expression", "1");
             node.add (type_node);
         }
 
@@ -107,8 +106,7 @@ public class GirMetadata.MetadataProcessor {
                 foreach (var type_arg in type_args.split (",")) {
                     var type_node = Gir.Node.create ("type", source,
                         "name", type_arg,
-                        "expression", "1",
-                        null);
+                        "expression", "1");
                     current_type.add (type_node);
                 }
             }
@@ -121,8 +119,7 @@ public class GirMetadata.MetadataProcessor {
             var headers = metadata.get_string (CHEADER_FILENAME);
             foreach (var c_include in headers.split (",")) {
                 var c_incl_node = Gir.Node.create ("c:include", source,
-                    "name", c_include,
-                    null);
+                    "name", c_include);
                 repo.add (c_incl_node);
             }
         }
@@ -193,7 +190,7 @@ public class GirMetadata.MetadataProcessor {
                                    .any_of ("type", "array");
             }
 
-            var array = Gir.Node.create ("array", source, null);
+            var array = Gir.Node.create ("array", source);
             array.add (current_type);
 
             var parent = current_type.parent_node;
@@ -351,10 +348,7 @@ public class GirMetadata.MetadataProcessor {
         Gir.Node current_node = repository;
         foreach (string name in path.split(".")) {
             if (! move_down_gir_tree (ref current_node, name)) {
-                var new_ns = Gir.Node.create ("namespace", source,
-                    "name", name,
-                    null
-                );
+                var new_ns = Gir.Node.create ("namespace", source, "name", name);
                 current_node.add (new_ns);
                 current_node = new_ns;
             }

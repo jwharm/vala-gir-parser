@@ -97,10 +97,18 @@ public class Gir.Node {
     /**
      * Remove all child nodes with one of the specified types.
      */
-    public void remove (string tag, string? other_tag = null) {
-        for (int i = 0; i < children.size; i++) {
-            if (children[i].tag == tag || children[i].tag == other_tag) {
-                children.remove_at (i);
+    public void remove (...) {
+        var l = va_list();
+        while (true) {
+            string? tag = l.arg ();
+            if (tag == null) {
+                break;
+            }
+
+            for (int i = 0; i < children.size; i++) {
+                if (children[i].tag == tag) {
+                    children.remove_at (i);
+                }
             }
         }
     }
@@ -108,14 +116,20 @@ public class Gir.Node {
     /**
      * Return true if this node has a child with the one of the specified types.
      */
-    public bool has_any (string tag, string? other_tag = null) {
-        foreach (var child in children) {
-            if (child.tag == tag || child.tag == other_tag) {
-                return true;
+    public bool has_any (...) {
+        var l = va_list();
+        while (true) {
+            string? tag = l.arg ();
+            if (tag == null) {
+                return false;
+            }
+            
+            foreach (var child in children) {
+                if (child.tag == tag) {
+                    return true;
+                }
             }
         }
-
-        return false;
     }
 
     /**
@@ -129,14 +143,20 @@ public class Gir.Node {
      * Get the child node with one of the specified types, or `null` if not
      * found.
      */
-    public Node? any_of (string tag, string? other_tag = null) {
-        foreach (var child in children) {
-            if (child.tag == tag || child.tag == other_tag) {
-                return child;
+    public Node? any_of (...) {
+        var l = va_list();
+        while (true) {
+            string? tag = l.arg ();
+            if (tag == null) {
+                return null;
+            }
+            
+            foreach (var child in children) {
+                if (child.tag == tag) {
+                    return child;
+                }
             }
         }
-
-        return null;
     }
 
     /**
