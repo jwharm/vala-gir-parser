@@ -78,8 +78,7 @@ public class GirParser2 : CodeVisitor {
             }
 
             /* build the namespace and everything in it */
-            var builder = new NamespaceBuilder (repository.any_of ("namespace"),
-                                                repository.all_of ("c:include"));
+            var builder = new NamespaceBuilder (repository.any_of ("namespace"));
             context.root.add_namespace (builder.build ());
         }
     }

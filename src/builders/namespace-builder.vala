@@ -22,12 +22,9 @@ using Vala;
 public class Builders.NamespaceBuilder {
 
     private Gir.Node g_ns;
-    private Vala.List<Gir.Node> c_includes;
 
-    public NamespaceBuilder (Gir.Node ns,
-                             Vala.List<Gir.Node> c_includes) {
+    public NamespaceBuilder (Gir.Node ns) {
         this.g_ns = ns;
-        this.c_includes = c_includes;
     }
 
     public Vala.Namespace build () {
@@ -116,7 +113,8 @@ public class Builders.NamespaceBuilder {
     }
 
     private string get_cheader_filename () {
-        string[] names = new string[c_includes.size];
+        var c_includes = g_ns.parent_node.all_of ("c:include");
+        var names = new string[c_includes.size];
         for (int i = 0; i < c_includes.size; i++) {
             names[i] = c_includes[i].get_string ("name");
         }
