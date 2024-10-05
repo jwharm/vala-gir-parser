@@ -17,10 +17,10 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Vala;
+using Gir;
 using Builders;
 using GirMetadata;
-using Transformations;
+using Vala;
 
 public class GirParser2 : CodeVisitor {
 

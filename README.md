@@ -49,19 +49,18 @@ parser from libvala to build a tree of `Gir.Node` objects (see
 - A Vala `SourceReference` with the location in the GIR XML file (for error
   reporting)
 
-Use the properties of the Node subclasses to access the data. For example, the
-`Class` node contains properties `name`, `parent`, `glib_type_struct`,
-`methods`, `functions`, `vitual_methods` and so on. This very closely follows
-the [gir schema](https://gitlab.gnome.org/GNOME/gobject-introspection/-/blob/main/docs/gir-1.2.rnc).
-
-To use the Gir repository after parsing, simply access the nodes and their
-children.
-
 The GIR node tree can be displayed in an easy-to-read text format with
 `to_string ()`, or in XML format with `to_xml ()`. The generated XML is
 identical to the original GIR XML file, except the XML element attributes have a
 different ordering (the attributes are kept in a `Vala.Map`, an unordered
 collection).
+
+### GIR transformations & GIR Metadata
+
+Before generating a VAPI, a few transformations are applied to the GIR node
+tree. For example, methods with one out-parameter that return void, are updated
+to return the out-parameter value. Next, all instructions from the GIR metadata
+file (if available) are applied to the GIR node tree.
 
 ### VAPI generator
 
