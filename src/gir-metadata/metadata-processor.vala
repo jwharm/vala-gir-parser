@@ -24,7 +24,7 @@ public class GirMetadata.MetadataProcessor {
     private Vala.List<Metadata> metadata_stack = new ArrayList<Metadata> ();
     private Gir.Node repository;
 
-    public MetadataProcessor (Gir.Repository repository) {
+    public MetadataProcessor (Gir.Node repository) {
         this.repository = repository;
     }
 
@@ -35,30 +35,30 @@ public class GirMetadata.MetadataProcessor {
     }
 
     private void process_node (ref Gir.Node node) {
-        var tag = Gir.Node.type_to_element_name (node.get_type ());
-        var relevant = node is Gir.Namespace
-                    || node is Gir.Identifier
-                    || node is Gir.Callable
-                    || node is Gir.InstanceParameter
-                    || node is Gir.Parameter;
+        string[] relevant_types = {
+            "alias", "bitfield", "glib:boxed", "callback", "constructor",
+            "class", "enumeration", "function", "instance-parameter",
+            "interface", "method", "namespace", "parameter", "record",
+            "glib:signal", "union", "virtual-method"
+        };
         
-        if (relevant) {
-            push_metadata (node.attrs["name"], tag);
-            apply_metadata (ref node, tag);
+        if (node.tag in relevant_types) {
+            push_metadata (node.get_string ("name"), node.tag);
+            apply_metadata (ref node, node.tag);
         }
 
-        if (node is Gir.Namespace) {
+        if (node.tag == "namespace") {
             pop_metadata ();
         }
 
         /* no need to process child nodes when the parent node is skipped */
-        if (node.attr_get_bool ("introspectable", true)) {
+        if (node.get_bool ("introspectable", true)) {
             foreach (var child_node in node.children) {
                 process_node (ref child_node);
             }
         }
         
-        if (relevant) {
+        if (node.tag in relevant_types) {
             pop_metadata ();
         }
     }
@@ -72,191 +72,171 @@ public class GirMetadata.MetadataProcessor {
         var source = metadata.source_reference;
 
         if (metadata.has_argument (SKIP)) {
-            if (node is Gir.Identifier || node is Gir.Callable) {
-                node.attr_set_bool ("introspectable", ! metadata.get_bool (SKIP));
-            }
+            node.set_bool ("introspectable", ! metadata.get_bool (SKIP));
         }
 
         if (metadata.has_argument (HIDDEN)) {
-            if (node is Gir.Identifier || node is Gir.Callable) {
-                /* Unsure what to do with this; treat the same as 'skip' */
-                node.attr_set_bool ("introspectable", ! metadata.get_bool (HIDDEN));
-            }
+            /* Unsure what to do with this; treat the same as 'skip' */
+            node.set_bool ("introspectable", ! metadata.get_bool (HIDDEN));
         }
 
         if (metadata.has_argument (COMPACT)) {
-            if (node is Gir.Identifier) {
-                node.attr_set_bool ("compact", false);
-            }
+            node.set_bool ("compact", false);
         }
 
         if (metadata.has_argument (TYPE)) {
-            if (node is Gir.Parameter || node is Gir.Callable) {
-                node.remove<Gir.AnyType> ();
-                var type_node = Gir.Node.create<Gir.TypeRef> (source,
-                    "name", metadata.get_string (TYPE),
-                    "expression", "1",
-                    null);
-                node.add (type_node);
-            }
+            node.remove ("type", "array");
+            var type_node = Gir.Node.create ("type", source,
+                "name", metadata.get_string (TYPE),
+                "expression", "1",
+                null);
+            node.add (type_node);
         }
 
         if (metadata.has_argument (TYPE_ARGUMENTS)) {
-            if (node is Gir.Parameter || node is Gir.Callable) {
+            var current_type = node.any_of ("type", "array");
+            if (current_type == null && node.has_any ("return-value")) {
+                current_type = node.any_of ("return-value")
+                                   .any_of ("type", "array");
+            }
+
+            if (current_type == null) {
+                Report.error (source, "Cannot set type arguments of %s", tag);
+            } else {
                 string type_args = metadata.get_string (TYPE_ARGUMENTS);
-                var current_type = (node is Gir.Callable)
-                        ? ((Gir.Callable) node).return_value.anytype
-                        : node.any_of<Gir.AnyType> ();
-    
-                if (current_type == null) {
-                    Report.error (source, "Cannot set type arguments of %s", tag);
-                } else {
-                    foreach (var type_arg in type_args.split (",")) {
-                        var type_node = Gir.Node.create<Gir.TypeRef> (source,
-                            "name", type_arg, "expression", "1", null);
-                        current_type.add (type_node);
-                    }
+                foreach (var type_arg in type_args.split (",")) {
+                    var type_node = Gir.Node.create ("type", source,
+                        "name", type_arg,
+                        "expression", "1",
+                        null);
+                    current_type.add (type_node);
                 }
             }
         }
 
-        if (metadata.has_argument (CHEADER_FILENAME) && node is Gir.Namespace) {
-            var repo = (Gir.Repository) node.parent_node;
-            repo.c_includes.clear ();
+        if (metadata.has_argument (CHEADER_FILENAME) && node.tag == "namespace") {
+            var repo = node.parent_node;
+            repo.remove ("c:include");
 
             var headers = metadata.get_string (CHEADER_FILENAME);
             foreach (var c_include in headers.split (",")) {
-                var c_incl_node = Gir.Node.create<Gir.CInclude> (source,
-                    "name", c_include, null);
+                var c_incl_node = Gir.Node.create ("c:include", source,
+                    "name", c_include,
+                    null);
                 repo.add (c_incl_node);
             }
         }
 
         if (metadata.has_argument (NAME)) {
             var pattern = metadata.get_string (ArgumentType.NAME);
-            var name = node.attrs["name"];
+            var name = node.get_string ("name");
             if (pattern != null) {
                 replace_name_with_pattern(ref name, pattern);
-                node.attrs["name"] = name;
+                node.set_string ("name", name);
             }
         }
 
         if (metadata.has_argument (OWNED)) {
-            if (node is Gir.Parameter) {
-                ((Gir.Parameter) node).transfer_ownership = FULL;
-            } else if (node is Gir.Callable) {
-                ((Gir.Callable) node).return_value.transfer_ownership = FULL;
+            if (node.tag == "parameter") {
+                node.set_string ("transfer-ownership", "full");
+            } else if (node.has_any ("return-value")) {
+                node.any_of ("return-value")
+                    .set_string ("transfer-ownership", "full");
             }
         }
 
         if (metadata.has_argument (UNOWNED)) {
-            if (node is Gir.Parameter) {
-                ((Gir.Parameter) node).transfer_ownership = NONE;
-            } else if (node is Gir.Callable) {
-                ((Gir.Callable) node).return_value.transfer_ownership = NONE;
+            if (node.tag == "parameter") {
+                node.set_string ("transfer-ownership", "none");
+            } else if (node.has_any ("return-value")) {
+                node.any_of ("return-value")
+                    .set_string ("transfer-ownership", "none");
             }
         }
 
         if (metadata.has_argument (PARENT)) {
-            if (node is Gir.Identifier) {
-                var path = metadata.get_string (PARENT);
-                var location = find_or_create_gir_node (path, source);
-                node.parent_node.children.remove (node);
-                location.add (node);
-            }
+            var path = metadata.get_string (PARENT);
+            var location = find_or_create_gir_node (path, source);
+            node.parent_node.children.remove (node);
+            location.add (node);
         }
 
         if (metadata.has_argument (NULLABLE)) {
             var nullable = metadata.get_bool (NULLABLE);
-            if (node is Gir.Parameter) {
-                ((Gir.Parameter) node).nullable = nullable;
-            } else if (node is Gir.Callable) {
-                ((Gir.Callable) node).return_value.nullable = nullable;
+            if (node.tag == "parameter") {
+                node.set_bool ("nullable", nullable);
+            } else if (node.has_any ("return-value")) {
+                node.any_of ("return-value")
+                    .set_bool ("nullable", nullable);
             }
         }
 
         if (metadata.has_argument (DEPRECATED)) {
             var deprecated = metadata.get_bool (DEPRECATED);
-            if (node is Gir.Identifier) {
-                ((Gir.Identifier) node).deprecated = deprecated;
-            } else if (node is Gir.Callable) {
-                ((Gir.Callable) node).deprecated = deprecated;
-            }
+            node.set_bool ("deprecated", deprecated);
         }
 
-        if (metadata.has_argument (REPLACEMENT) && node is Gir.CallableAttrs) {
+        if (metadata.has_argument (REPLACEMENT)) {
             var replacement = metadata.get_string (REPLACEMENT);
-            ((Gir.CallableAttrs) node).moved_to = replacement;
+            node.set_string ("moved-to", replacement);
         }
         
         if (metadata.has_argument (DEPRECATED_SINCE)) {
             var deprecated_since = metadata.get_string (DEPRECATED_SINCE);
-            if (node is Gir.Identifier) {
-                ((Gir.Identifier) node).deprecated_version = deprecated_since;
-            } else if (node is Gir.Callable) {
-                ((Gir.Callable) node).deprecated_version = deprecated_since;
-            }
+            node.set_string ("deprecated-version", deprecated_since);
         }
 
         if (metadata.has_argument (ARRAY)) {
-            if (node is Gir.Parameter || node is Gir.Callable) {
-                var anytype = (node is Gir.Callable)
-                    ? ((Gir.Callable) node).return_value.anytype
-                    : node.any_of<Gir.AnyType> ();
-
-                var array = Gir.Node.create<Gir.Array> (source, null);
-                array.add (anytype);
-                node.remove<Gir.AnyType> ();
-                node.add (array);
+            var current_type = node.any_of ("type", "array");
+            if (current_type == null && node.has_any ("return-value")) {
+                current_type = node.any_of ("return-value")
+                                   .any_of ("type", "array");
             }
+
+            var array = Gir.Node.create ("array", source, null);
+            array.add (current_type);
+
+            var parent = current_type.parent_node;
+            parent.remove ("type", "array");
+            parent.add (array);
         }
 
         if (metadata.has_argument (ARRAY_LENGTH_IDX)) {
-            if (node is Gir.Parameter || node is Gir.Callable) {
-                var array = (node is Gir.Callable)
-                    ? ((Gir.Callable) node).return_value.any_of<Gir.Array> ()
-                    : node.any_of<Gir.Array> ();
+            var array = node.any_of ("array");
+            if (array == null && node.has_any ("return-value")) {
+                array = node.any_of ("return-value").any_of ("array");
+            }
 
-                if (array == null) {
-                    Report.error (source, "Cannot set array length idx on %s", tag);
-                } else {
-                    array.length = metadata.get_integer (ARRAY_LENGTH_IDX);
-                }
+            if (array == null) {
+                Report.error (source, "Cannot set array length idx on %s", tag);
+            } else {
+                var array_length_idx = metadata.get_integer (ARRAY_LENGTH_IDX);
+                array.set_int ("length", array_length_idx);
             }
         }
 
-        if (metadata.has_argument (DEFAULT) && node is Gir.Parameter) {
+        if (metadata.has_argument (DEFAULT) && node.tag == "parameter") {
             /* TODO: parse expression from string after building the Vala AST */
-            node.attrs["default"] = metadata.get_string (DEFAULT);
+            node.set_string ("default", metadata.get_string (DEFAULT));
         }
 
         if (metadata.has_argument (OUT)) {
             var is_out = metadata.get_bool (OUT);
-            var direction = is_out ? Gir.Direction.OUT : Gir.Direction.IN;
-            if (node is Gir.Parameter) {
-                ((Gir.Parameter) node).direction = direction;
-            } else if (node is Gir.InstanceParameter) {
-                ((Gir.InstanceParameter) node).direction = direction;
-            }
+            node.set_string ("direction", is_out ? "out" : "in");
         }
 
         if (metadata.has_argument (REF)) {
             var is_ref = metadata.get_bool (REF);
-            var direction = is_ref ? Gir.Direction.INOUT : Gir.Direction.IN;
-            if (node is Gir.Parameter) {
-                ((Gir.Parameter) node).direction = direction;
-            } else if (node is Gir.InstanceParameter) {
-                ((Gir.InstanceParameter) node).direction = direction;
-            }
+            node.set_string ("direction", is_ref ? "inout" : "in");
         }
 
-        if (metadata.has_argument (VFUNC_NAME) && node is Gir.Callable) {
+        if (metadata.has_argument (VFUNC_NAME)) {
             string vm_name = metadata.get_string (VFUNC_NAME);
-            string invoker_name = ((Gir.Callable) node).name;
+            string invoker_name = node.get_string ("name");
             bool found = false;
-            foreach (var vm in node.parent_node.all_of<Gir.VirtualMethod> ()) {
-                if (vm.name == vm_name) {
-                    vm.invoker = invoker_name;
+            foreach (var vm in node.parent_node.all_of ("virtual-method")) {
+                if (vm.get_string ("name") == vm_name) {
+                    vm.set_string ("invoker", invoker_name);
                     found = true;
                     break;
                 }
@@ -268,44 +248,37 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (VIRTUAL)) {
-            if (node is Gir.Identifier || node is Gir.Callable) {
-                node.attr_set_bool ("virtual", metadata.get_bool (VIRTUAL));
-            }
+            node.set_bool ("virtual", metadata.get_bool (VIRTUAL));
         }
 
         if (metadata.has_argument (ABSTRACT)) {
-            if (node is Gir.Class || node is Gir.Method) {
-                node.attr_set_bool ("abstract", metadata.get_bool (ABSTRACT));
-            }
+            node.set_bool ("abstract", metadata.get_bool (ABSTRACT));
         }
 
-        if (metadata.has_argument (SCOPE) && node is Gir.Parameter) {
-            var scope = Gir.Scope.from_string (metadata.get_string (SCOPE));
-            ((Gir.Parameter) node).scope = scope;
+        if (metadata.has_argument (SCOPE)) {
+            node.set_string ("scope", metadata.get_string (SCOPE));
         }
 
         if (metadata.has_argument (STRUCT)) {
-            if (node is Gir.Boxed || node is Gir.Record) {
-                node.attr_set_bool ("struct", metadata.get_bool (STRUCT));
-            }
+            node.set_bool ("struct", metadata.get_bool (STRUCT));
         }
 
-        if (metadata.has_argument (PRINTF_FORMAT) && node is Gir.Callable) {
+        if (metadata.has_argument (PRINTF_FORMAT)) {
             var printf_format = metadata.get_bool (PRINTF_FORMAT);
-            node.attr_set_bool ("printf-format", printf_format);
+            node.set_bool ("printf-format", printf_format);
         }
 
-        if (metadata.has_argument (ARRAY_LENGTH_FIELD) && node is Gir.Field) {
+        if (metadata.has_argument (ARRAY_LENGTH_FIELD)) {
             var field_name = metadata.get_string (ARRAY_LENGTH_FIELD);
-            var array = node.any_of<Gir.Array> ();
+            var array = node.any_of ("array");
             if (array == null) {
                 Report.error (source, "Cannot set array length field on %s", tag);
             } else {
-                var fields = node.parent_node.all_of<Gir.Field> ();
+                var fields = node.parent_node.all_of ("field");
                 bool found = false;
                 for (int i = 0; i < fields.size; i++) {
-                    if (fields[i].name == field_name) {
-                        array.length = i;
+                    if (fields[i].get_string ("name") == field_name) {
+                        array.set_int ("length", i);
                         found = true;
                         break;
                     }
@@ -318,33 +291,34 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (SENTINEL)) {
-            node.attr_set_bool ("sentinel", metadata.get_bool (SENTINEL));
+            node.set_bool ("sentinel", metadata.get_bool (SENTINEL));
         }
 
         if (metadata.has_argument (CLOSURE)) {
             var closure = metadata.get_integer (CLOSURE);
-            if (node is Gir.Callable) {
-                ((Gir.Callable) node).return_value.closure = closure;
-            } else if (node is Gir.Parameter) {
-                ((Gir.Parameter) node).closure = closure;
+            if (node.has_any ("return-value")) {
+                node.any_of ("return-value").set_int ("closure", closure);
+            } else {
+                node.set_int ("closure", closure);
             }
         }
 
-        if (metadata.has_argument (ERRORDOMAIN) && node is Gir.Enumeration) {
+        if (metadata.has_argument (ERRORDOMAIN)) {
             /* the value of this attribute isn't actually used, so put a dummy
              * value in it */
-            ((Gir.Enumeration) node).glib_error_domain = "DUMMY";
+            node.set_string ("glib:error-domain", "DUMMY");
         }
 
-        if (metadata.has_argument (DESTROYS_INSTANCE) && node is Gir.Method) {
+        if (metadata.has_argument (DESTROYS_INSTANCE) && node.tag == "method") {
             /* a method destroys its instance when ownership is transferred to
              * the instance parameter */
-            var method = ((Gir.Method) node);
-            method.parameters.instance_parameter.transfer_ownership = FULL;
+            node.any_of ("parameters")
+                .any_of ("instance-parameter")
+                .set_string ("transfer-ownership", "full");
         }
 
-        if (metadata.has_argument (THROWS) && node is Gir.Callable) {
-            ((Gir.Callable) node).throws = metadata.get_bool (THROWS);
+        if (metadata.has_argument (THROWS)) {
+            node.set_bool ("throws", metadata.get_bool (THROWS));
         }
     }
 
@@ -377,8 +351,7 @@ public class GirMetadata.MetadataProcessor {
         Gir.Node current_node = repository;
         foreach (string name in path.split(".")) {
             if (! move_down_gir_tree (ref current_node, name)) {
-                var new_ns = Gir.Node.create<Gir.Namespace> (
-                    source,
+                var new_ns = Gir.Node.create ("namespace", source,
                     "name", name,
                     null
                 );
@@ -393,9 +366,14 @@ public class GirMetadata.MetadataProcessor {
     /* Replace `current_node` with a child node with the requested name, if it
      * is a namespace or type identifier (class, interface, record etc). */
     private bool move_down_gir_tree (ref Gir.Node current_node, string name) {
+        string[] relevant_types = {
+            "alias", "bitfield", "glib:boxed", "callback", "class",
+            "enumeration", "interface", "namespace", "record", "union"
+        };
+
         foreach (var child in current_node.children) {
-            if ((child is Gir.Namespace || child is Gir.Identifier) 
-                    && (child.attrs["name"] == name)) {
+            if (child.tag in relevant_types
+                    && (child.get_string ("name") == name)) {
                 current_node = child;
                 return true;
             }

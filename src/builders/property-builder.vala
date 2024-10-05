@@ -21,32 +21,38 @@ using Vala;
 
 public class Builders.PropertyBuilder {
 
-    private Gir.Property g_prop;
+    private Gir.Node g_prop;
 
-    public PropertyBuilder (Gir.Property g_prop) {
+    public PropertyBuilder (Gir.Node g_prop) {
         this.g_prop = g_prop;
     }
 
     public Vala.Property build () {
         /* data type */
-        var v_type = new DataTypeBuilder (g_prop.anytype).build ();
-        v_type.value_owned = g_prop.transfer_ownership != NONE;
+        var v_type = new DataTypeBuilder (g_prop.any_of ("type", "array")).build ();
+        v_type.value_owned = g_prop.get_string ("transfer-ownership") != "none";
 
         /* name */
-        var name = g_prop.name.replace ("-", "_");
+        var name = g_prop.get_string ("name").replace ("-", "_");
 
         /* create the property */
         var v_prop = new Vala.Property (name, v_type, null, null, g_prop.source);
         v_prop.access = PUBLIC;
-        v_prop.is_abstract = g_prop.parent_node is Gir.Interface;
+        v_prop.is_abstract = g_prop.parent_node.tag == "interface";
+
+        var prop_readable = g_prop.get_bool ("readable", true);
+        var prop_writable = g_prop.get_bool ("writable", false);
+        var prop_construct = g_prop.get_bool ("construct", false);
+        var prop_construct_only = g_prop.get_bool ("construct-only", false);
 
         /* get-accessor */
-        if (g_prop.readable) {
+        if (prop_readable) {
             var getter_type = v_type.copy ();
-            var getter = find_method (g_prop.getter);
+            var getter = find_method (g_prop.get_string ("getter"));
             if (getter != null) {
-                var transfer_ownership = getter.return_value.transfer_ownership;
-                getter_type.value_owned = transfer_ownership != NONE;
+                var return_value = getter.any_of ("return-value");
+                var transfer_ownership = return_value.get_string ("transfer-ownership");
+                getter_type.value_owned = transfer_ownership != "none";
 
                 /* if the getter is virtual, then the property is virtual */
                 if (new MethodBuilder (getter).is_invoker_method ()) {
@@ -54,7 +60,7 @@ public class Builders.PropertyBuilder {
                 }
 
                 /* getter method should start with "get_" */
-                if (! getter.name.has_prefix ("get_")) {
+                if (! getter.get_string ("name").has_prefix ("get_")) {
                     v_prop.set_attribute ("NoAccessorMethod", true);
                 }
             } else {
@@ -73,19 +79,19 @@ public class Builders.PropertyBuilder {
         }
 
         /* set-accessor */
-        if (g_prop.writable || g_prop.construct_only) {
+        if (prop_writable || prop_construct_only) {
             var setter_type = v_type.copy ();
-            var setter = find_method (g_prop.setter);
+            var setter = find_method (g_prop.get_string ("setter"));
             if (setter != null) {
-                var parameter = setter.parameters.parameters[0];
-                var transfer_ownership = parameter.transfer_ownership;
-                setter_type.value_owned = transfer_ownership != NONE;
+                var parameter = setter.any_of ("parameters").any_of ("parameter");
+                var transfer_ownership = parameter.get_string ("transfer-ownership");
+                setter_type.value_owned = transfer_ownership != "none";
 
                 /* setter method should start with "set_" */
-                if (! setter.name.has_prefix ("set_")) {
+                if (! setter.get_string ("name").has_prefix ("set_")) {
                     v_prop.set_attribute ("NoAccessorMethod", true);
                 }
-            } else if (! g_prop.construct_only) {
+            } else if (! prop_construct_only) {
                 v_prop.set_attribute ("NoAccessorMethod", true);
             }
 
@@ -95,8 +101,8 @@ public class Builders.PropertyBuilder {
 
             v_prop.set_accessor = new PropertyAccessor (
                 false, /* not readable */
-                g_prop.writable && !g_prop.construct_only,
-                g_prop.construct_only || g_prop.construct,
+                prop_writable && !prop_construct_only,
+                prop_construct_only || prop_construct,
                 setter_type,
                 null,
                 null
@@ -117,7 +123,7 @@ public class Builders.PropertyBuilder {
         /* array attributes */
         if (v_type is Vala.ArrayType) {
             unowned var v_arr_type = (Vala.ArrayType) v_type;
-            var g_arr_type = (Gir.Array) g_prop.anytype;
+            var g_arr_type = g_prop.any_of ("array");
             var builder = new ParametersBuilder (null, null);
             builder.add_array_attrs (v_prop, v_arr_type, g_arr_type);
             v_arr_type.element_type.value_owned = true;
@@ -133,10 +139,10 @@ public class Builders.PropertyBuilder {
         return v_prop;
     }
 
-    private Gir.Method? find_method (string? name) {
+    private Gir.Node? find_method (string? name) {
         if (name != null) {
-            foreach (var m in g_prop.parent_node.all_of<Gir.Method> ()) {
-                if (m.name == name) {
+            foreach (var m in g_prop.parent_node.all_of ("method")) {
+                if (m.get_string ("name") == name) {
                     return m;
                 }
             }

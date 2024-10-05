@@ -20,10 +20,6 @@
 using Vala;
 
 public class Gir.Parser {
-    static construct {
-        ensure_initialized ();
-    }
-
     private SourceFile source_file;
     private SourceLocation begin;
     private SourceLocation end;
@@ -31,7 +27,7 @@ public class Gir.Parser {
     /**
      * Create a Gir Parser for the provided source file.
      *
-     * @param  source_file a valid Gir file
+     * @param source_file a valid Gir file
      */
     public Parser (SourceFile source_file) {
         this.source_file = source_file;
@@ -40,16 +36,16 @@ public class Gir.Parser {
     /**
      * Parse the provided Gir file into a tree of Gir Nodes.
      *
-     * @return the Repository, or null in case the gir file is invalid
+     * @return the repository node, or null in case the gir file is invalid
      */
-    public Repository? parse() {
+    public Gir.Node? parse() {
         var reader = new MarkupReader (source_file.filename);
         
         /* Find the first START_ELEMENT token in the XML file */
         while (true) {
             var token_type = reader.read_token (out begin, out end);
             if (token_type == START_ELEMENT) {
-                return parse_element (reader) as Repository;
+                return parse_element (reader);
             } else if (token_type == EOF) {
                 var source = new SourceReference (source_file, begin, end);
                 Report.error (source, "No repository found");
@@ -60,7 +56,7 @@ public class Gir.Parser {
 
     /* Parse one XML element (recursively), and return a new Gir Node */
     private Node parse_element (MarkupReader reader) {
-        var element = reader.name;
+        var tag = reader.name;
         var children = new Vala.ArrayList<Node> ();
         var attrs = reader.get_attributes ();
         var content = new StringBuilder ();
@@ -80,73 +76,7 @@ public class Gir.Parser {
             }
         }
         
-        /* Determine the Node subclass */
-        Type type = Type.from_name (Node.element_to_type_name (element));
-        if (type == 0) {
-            Report.warning (source, "Unsupported element: " + element);
-            /* Fallback to generic Node type */
-            type = typeof (Node);
-        }
-
         /* Create and return a new Gir Node */
-        return Object.new (type,
-                           attrs: attrs,
-                           children: children,
-                           content: content.str.strip (),
-                           source: source) as Node;
-    }
-
-    /**
-     * Make sure that all Node subclasses are registered on startup.
-     */
-    private static void ensure_initialized () {
-        typeof (Gir.Alias).ensure ();
-        typeof (Gir.AnyType).ensure ();
-        typeof (Gir.Array).ensure ();
-        typeof (Gir.Attribute).ensure ();
-        typeof (Gir.Bitfield).ensure ();
-        typeof (Gir.Boxed).ensure ();
-        typeof (Gir.CallableAttrs).ensure ();
-        typeof (Gir.Callback).ensure ();
-        typeof (Gir.CInclude).ensure ();
-        typeof (Gir.Class).ensure ();
-        typeof (Gir.Constant).ensure ();
-        typeof (Gir.Constructor).ensure ();
-        typeof (Gir.DocDeprecated).ensure ();
-        typeof (Gir.Docsection).ensure ();
-        typeof (Gir.DocStability).ensure ();
-        typeof (Gir.Doc).ensure ();
-        typeof (Gir.DocVersion).ensure ();
-        typeof (Gir.Enumeration).ensure ();
-        typeof (Gir.Field).ensure ();
-        typeof (Gir.FunctionInline).ensure ();
-        typeof (Gir.FunctionMacro).ensure ();
-        typeof (Gir.Function).ensure ();
-        typeof (Gir.Implements).ensure ();
-        typeof (Gir.Include).ensure ();
-        typeof (Gir.InfoAttrs).ensure ();
-        typeof (Gir.InfoElements).ensure ();
-        typeof (Gir.InstanceParameter).ensure ();
-        typeof (Gir.Interface).ensure ();
-        typeof (Gir.Member).ensure ();
-        typeof (Gir.MethodInline).ensure ();
-        typeof (Gir.Method).ensure ();
-        typeof (Gir.Namespace).ensure ();
-        typeof (Gir.Node).ensure ();
-        typeof (Gir.Package).ensure ();
-        typeof (Gir.Parameters).ensure ();
-        typeof (Gir.Parameter).ensure ();
-        typeof (Gir.Prerequisite).ensure ();
-        typeof (Gir.Property).ensure ();
-        typeof (Gir.Record).ensure ();
-        typeof (Gir.Repository).ensure ();
-        typeof (Gir.ReturnValue).ensure ();
-        typeof (Gir.Signal).ensure ();
-        typeof (Gir.SourcePosition).ensure ();
-        typeof (Gir.TypeRef).ensure ();
-        typeof (Gir.Union).ensure ();
-        typeof (Gir.Varargs).ensure ();
-        typeof (Gir.VirtualMethod).ensure ();
+        return new Gir.Node (tag, content.str.strip (), attrs, children, source);
     }
 }
-

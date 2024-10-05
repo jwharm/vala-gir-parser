@@ -21,9 +21,9 @@ using Vala;
 
 public class Builders.DataTypeBuilder {
 
-    private Gir.AnyType g_anytype;
+    private Gir.Node g_anytype;
 
-    public DataTypeBuilder (Gir.AnyType g_anytype) {
+    public DataTypeBuilder (Gir.Node g_anytype) {
         this.g_anytype = g_anytype;
     }
 
@@ -35,29 +35,23 @@ public class Builders.DataTypeBuilder {
             return new VoidType ();
         }
 
-        /* <array name="GLib.PtrArray"> */
-        if ((g_anytype as Gir.Array)?.name == "GLib.PtrArray") {
-            var g_ptr_array = (Gir.Array) g_anytype;
-            return build_type (g_ptr_array.name,
-                               g_ptr_array.anytype,
-                               g_ptr_array.source);
-        }
-        
-        /* <type> */
-        if (g_anytype is Gir.TypeRef) {
-            var g_type = (Gir.TypeRef) g_anytype;
-            return build_type (g_type.name, g_type.anytype, g_type.source);
+        /* <type> or <array name="GLib.PtrArray"> */
+        if ((g_anytype.tag == "array" && g_anytype.get_string ("name") == "GLib.PtrArray")
+                || (g_anytype.tag == "type")) {
+            return build_type (g_anytype.get_string ("name"),
+                               g_anytype.all_of ("type"),
+                               g_anytype.source);
         }
 
         /* <array> */
-        var inner = g_anytype.anytype[0];
+        var inner = g_anytype.any_of ("array", "type");
         DataType v_type = new DataTypeBuilder (inner).build ();
         return new ArrayType (v_type, 1, g_anytype.source);
     }
 
     /* Create Vala.DataType from a Gir <type> element. */
     private Vala.DataType build_type (string name,
-                                      Vala.List<Gir.AnyType> g_inner_type,
+                                      Vala.List<Gir.Node> g_inner_type,
                                       SourceReference? source) {
         string? builtin = to_builtin_type (name);
         if (builtin != null) {
@@ -158,7 +152,7 @@ public class Builders.DataTypeBuilder {
 
     /* Generate a string representation for a Gir <type> or <array> so they
      * can be easily compared for equality. */
-    public static string generate_string (Gir.AnyType? g_anytype) {
+    public static string generate_string (Gir.Node? g_anytype) {
         return (g_anytype == null) ? "null"
                 : new DataTypeBuilder (g_anytype).build ().to_string ();
     }

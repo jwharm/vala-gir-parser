@@ -21,52 +21,54 @@ using Vala;
 
 public class Builders.ClassBuilder : IdentifierBuilder {
 
-    private Gir.Class g_class;
+    private Gir.Node g_class;
 
-    public ClassBuilder (Gir.Class g_class) {
+    public ClassBuilder (Gir.Node g_class) {
         base (g_class);
         this.g_class = g_class;
     }
 
     public Vala.Class build () {
         /* the class */
-        Vala.Class v_class = new Vala.Class (g_class.name, g_class.source);
+        Vala.Class v_class = new Vala.Class (g_class.get_string ("name"), g_class.source);
         v_class.access = PUBLIC;
-        v_class.is_abstract = g_class.abstract;
-        v_class.is_sealed = g_class.final;
+        v_class.is_abstract = g_class.get_bool ("abstract");
+        v_class.is_sealed = g_class.get_bool ("final");
 
         /* parent class */
-        if (g_class.parent != null) {
-            var base_type = DataTypeBuilder.from_name (g_class.parent, g_class.source);
+        if (g_class.has_attr ("parent")) {
+            var base_type = DataTypeBuilder.from_name (g_class.get_string ("parent"), g_class.source);
             v_class.add_base_type (base_type);
         }
 
         /* implemented interfaces */
-        foreach (var g_imp in g_class.implements) {
-            var imp_type = DataTypeBuilder.from_name (g_imp.name, g_imp.source);
+        foreach (var g_imp in g_class.all_of ("implements")) {
+            var imp_type = DataTypeBuilder.from_name (g_imp.get_string ("name"), g_imp.source);
             v_class.add_base_type (imp_type);
         }
 
         /* compact */
-        v_class.set_attribute ("Compact", g_class.attr_get_bool ("compact", false));
+        v_class.set_attribute ("Compact", g_class.get_bool ("compact"));
 
-        /* c_name */
-        if (g_class.c_type != generate_cname ()) {
-            v_class.set_attribute_string ("CCode", "cname", g_class.c_type);
+        /* cname */
+        var c_type = g_class.get_string ("c:type");
+        if (c_type != generate_cname ()) {
+            v_class.set_attribute_string ("CCode", "cname", c_type);
         }
 
         /* version */
         new InfoAttrsBuilder (g_class).add_info_attrs (v_class);
 
         /* type_cname */
-        if (g_class.glib_type_struct != null &&
-                g_class.glib_type_struct != generate_type_cname ()) {
-            var type_cname = get_ns_prefix () + g_class.glib_type_struct;
+        var type_struct = g_class.get_string ("glib:type-struct");
+        if (type_struct != null &&
+                type_struct != generate_type_cname ()) {
+            var type_cname = get_ns_prefix () + type_struct;
             v_class.set_attribute_string ("CCode", "type_cname", type_cname);
         }
 
         /* get_type method */
-        var type_id = g_class.glib_get_type;
+        var type_id = g_class.get_string ("glib:get-type");
         if (type_id == null) {
             v_class.set_attribute_bool ("CCode", "has_type_id", false);
         } else {
@@ -74,8 +76,8 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         }
 
         /* add constructors */
-        if (! g_class.abstract) {
-            foreach (var g_ctor in g_class.constructors) {
+        if (! g_class.get_bool ("abstract")) {
+            foreach (var g_ctor in g_class.all_of ("constructor")) {
                 var builder = new MethodBuilder (g_ctor);
                 if (! builder.skip ()) {
                     v_class.add_method (builder.build_constructor ());
@@ -84,7 +86,7 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         }
 
         /* add functions */
-        foreach (var g_function in g_class.functions) {
+        foreach (var g_function in g_class.all_of ("function")) {
             var builder = new MethodBuilder (g_function);
             if (! builder.skip ()) {
                 v_class.add_method (builder.build_function ());
@@ -92,7 +94,7 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         }
 
         /* add methods */
-        foreach (var g_method in g_class.methods) {
+        foreach (var g_method in g_class.all_of ("method")) {
             var builder = new MethodBuilder (g_method);
             if (! builder.skip ()) {
                 v_class.add_method (builder.build_method ());
@@ -100,7 +102,7 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         }
 
         /* add virtual methods */
-        foreach (var g_vm in g_class.virtual_methods) {
+        foreach (var g_vm in g_class.all_of ("virtual-method")) {
             var builder = new MethodBuilder (g_vm);
             if (! builder.skip ()) {
                 v_class.add_method (builder.build_virtual_method ());
@@ -109,11 +111,11 @@ public class Builders.ClassBuilder : IdentifierBuilder {
 
         /* add fields, but skip the parent instance pointer */
         bool first_field = true;
-        foreach (var g_field in g_class.fields) {
+        foreach (var g_field in g_class.all_of ("field")) {
             /* first field is guaranteed to be the parent instance */
             if (first_field) {
                 first_field = false;
-                if (g_class.parent != null) {
+                if (g_class.has_attr ("parent")) {
                     continue;
                 }
             }
@@ -125,13 +127,13 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         }
 
         /* add properties */
-        foreach (var g_param in g_class.properties) {
+        foreach (var g_param in g_class.all_of ("property")) {
             var builder = new PropertyBuilder (g_param);
             v_class.add_property (builder.build ());
         }
 
         /* add signals */
-        foreach (var g_signal in g_class.signals) {
+        foreach (var g_signal in g_class.all_of ("glib:signal")) {
             var builder = new MethodBuilder (g_signal);
             if (! builder.skip ()) {
                 v_class.add_signal (builder.build_signal ());
@@ -152,8 +154,8 @@ public class Builders.ClassBuilder : IdentifierBuilder {
 
     /* check if one or more constructors will be generated for this class */
     private bool no_introspectable_constructors () {
-        foreach (var ctor in g_class.constructors) {
-            if (ctor.introspectable) {
+        foreach (var ctor in g_class.all_of ("constructor")) {
+            if (ctor.get_bool ("introspectable", true)) {
                 return false;
             }
         }

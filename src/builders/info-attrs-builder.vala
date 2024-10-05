@@ -21,30 +21,29 @@ using Vala;
 
 public class Builders.InfoAttrsBuilder {
 
-    private Gir.InfoAttrs g_info_attrs;
+    private Gir.Node g_info_attrs;
 
-    public InfoAttrsBuilder (Gir.InfoAttrs g_info_attrs) {
+    public InfoAttrsBuilder (Gir.Node g_info_attrs) {
         this.g_info_attrs = g_info_attrs;
     }
 
     public void add_info_attrs (Vala.Symbol v_sym) {
         /* version */
-        v_sym.version.since = g_info_attrs.version;
+        v_sym.version.since = g_info_attrs.get_string ("version");
 
         /* deprecated and deprecated_since */
-        if (g_info_attrs.deprecated) {
+        if (g_info_attrs.get_bool ("deprecated", false)) {
             /* omit deprecation attributes when the parent already has them */
-            unowned var parent = g_info_attrs.parent_node as Gir.InfoAttrs;
-            if (parent != null && parent.deprecated) {
+            if (g_info_attrs.parent_node.get_bool ("deprecated", false)) {
                 return;
             }
 
-            v_sym.version.deprecated = g_info_attrs.deprecated;
-            v_sym.version.deprecated_since = g_info_attrs.deprecated_version;
+            v_sym.version.deprecated = true;
+            v_sym.version.deprecated_since = g_info_attrs.get_string ("deprecated-version");
         }
 
         if ("printf-format" in g_info_attrs.attrs) {
-            v_sym.set_attribute ("PrintfFormat", g_info_attrs.attr_get_bool ("printf-format"));
+            v_sym.set_attribute ("PrintfFormat", g_info_attrs.get_bool ("printf-format"));
         }
     }
 }

@@ -21,132 +21,97 @@ using Vala;
 
 public class Builders.EnumBuilder : IdentifierBuilder {
 
-    protected Gir.EnumBase g_enum;
+    protected Gir.Node g_enum;
 
-    public EnumBuilder (Gir.EnumBase g_enum) {
+    public EnumBuilder (Gir.Node g_enum) {
         base (g_enum);
         this.g_enum = g_enum;
     }
 
     public Vala.Enum build_enum () {
-        /* the enum */
-        Vala.Enum v_enum = new Vala.Enum (g_enum.name, g_enum.source);
-        v_enum.access = PUBLIC;
+        /* create the enum */
+        Vala.Enum v_enum = new Vala.Enum (g_enum.get_string ("name"), g_enum.source);
 
-        /* c_name */
-        if (g_enum.c_type != generate_cname ()) {
-            v_enum.set_attribute_string ("CCode", "cname", g_enum.c_type);
-        }
-
-        /* version */
-        new InfoAttrsBuilder (g_enum).add_info_attrs (v_enum);
-
-        /* get_type method */
-        var type_id = g_enum.glib_get_type;
-        if (type_id == null) {
-            v_enum.set_attribute_bool ("CCode", "has_type_id", false);
-        } else {
-            v_enum.set_attribute_string ("CCode", "type_id", type_id + " ()");
-        }
-
-        /* functions */
-        foreach (var g_function in g_enum.functions) {
-            var builder = new MethodBuilder (g_function);
-            if (! builder.skip ()) {
-                v_enum.add_method (builder.build_function ());
-            } 
-        }
-
-        /* methods */
-        foreach (var g_method in g_enum.all_of<Gir.Method> ()) {
-            var builder = new MethodBuilder (g_method);
-            if (! builder.skip ()) {
-                v_enum.add_method (builder.build_method ());
-            }
-        }
-
-        /* cprefix */
-        string? common_prefix = null;
-        foreach (var g_member in g_enum.members) {
-            var name = g_member.c_identifier.ascii_up().replace ("-", "_");
-            calculate_common_prefix (ref common_prefix, name);
-        }
-        v_enum.set_attribute_string ("CCode", "cprefix", common_prefix);
-
-        /* members */
-        foreach (var g_member in g_enum.members) {
-            var name = g_member.c_identifier
-                    .substring (common_prefix.length)
-                    .ascii_up()
-                    .replace ("-", "_");
-            unowned var source = g_member.source;
-            var v_value = new Vala.EnumValue (name, null, source, null);
-            v_enum.add_value (v_value);
-        }
+        build_common (v_enum);
 
         /* flags */
-        v_enum.set_attribute ("Flags", g_enum is Gir.Bitfield);
+        v_enum.set_attribute ("Flags", g_enum.tag == "bitfield");
 
         return v_enum;
     }
 
     public Vala.ErrorDomain build_error_domain () {
         /* create the error domain */
-        Vala.ErrorDomain v_err = new Vala.ErrorDomain (g_enum.name, g_enum.source);
-        v_err.access = PUBLIC;
+        Vala.ErrorDomain v_err = new Vala.ErrorDomain (g_enum.get_string ("name"), g_enum.source);
+        
+        build_common (v_err);
+        
+        return v_err;
+    }
 
-        /* c_name */
-        if (g_enum.c_type != generate_cname ()) {
-            v_err.set_attribute_string ("CCode", "cname", g_enum.c_type);
+    private void build_common (Vala.Symbol v_sym) {
+        v_sym.access = PUBLIC;
+
+        /* cname */
+        var c_type = g_enum.get_string ("c:type");
+        if (c_type != generate_cname ()) {
+            v_sym.set_attribute_string ("CCode", "cname", c_type);
         }
 
         /* version */
-        new InfoAttrsBuilder (g_enum).add_info_attrs (v_err);
+        new InfoAttrsBuilder (g_enum).add_info_attrs (v_sym);
 
         /* get_type method */
-        var type_id = g_enum.glib_get_type;
+        var type_id = g_enum.get_string ("glib:get-type");
         if (type_id == null) {
-            v_err.set_attribute_bool ("CCode", "has_type_id", false);
+            v_sym.set_attribute_bool ("CCode", "has_type_id", false);
         } else {
-            v_err.set_attribute_string ("CCode", "type_id", type_id + " ()");
+            v_sym.set_attribute_string ("CCode", "type_id", type_id + " ()");
         }
 
         /* functions */
-        foreach (var g_function in g_enum.functions) {
+        foreach (var g_function in g_enum.all_of ("function")) {
             var builder = new MethodBuilder (g_function);
             if (! builder.skip ()) {
-                v_err.add_method (builder.build_function ());
+                v_sym.add_method (builder.build_function ());
             } 
         }
 
         /* methods */
-        foreach (var g_method in g_enum.all_of<Gir.Method> ()) {
+        foreach (var g_method in g_enum.all_of ("method")) {
             var builder = new MethodBuilder (g_method);
             if (! builder.skip ()) {
-                v_err.add_method (builder.build_method ());
+                v_sym.add_method (builder.build_method ());
             }
         }
 
         /* cprefix */
         string? common_prefix = null;
-        foreach (var g_member in g_enum.members) {
-            var name = g_member.c_identifier.ascii_up().replace ("-", "_");
+        foreach (var g_member in g_enum.all_of ("member")) {
+            var name = g_member.get_string ("c:identifier")
+                               .ascii_up()
+                               .replace ("-", "_");
             calculate_common_prefix (ref common_prefix, name);
         }
-        v_err.set_attribute_string ("CCode", "cprefix", common_prefix);
+        v_sym.set_attribute_string ("CCode", "cprefix", common_prefix);
 
         /* members */
-        foreach (var g_member in g_enum.members) {
-            var name = g_member.c_identifier
+        foreach (var g_member in g_enum.all_of ("member")) {
+            var name = g_member.get_string ("c:identifier")
                     .substring (common_prefix.length)
                     .ascii_up()
                     .replace ("-", "_");
             unowned var source = g_member.source;
-            var value = new IntegerLiteral(g_member.value);
-            v_err.add_code (new ErrorCode.with_value (name, value, source));
+            if (v_sym is Vala.Enum) {
+                var v_value = new Vala.EnumValue (name, null, source, null);
+                unowned var v_enum = (Vala.Enum) v_sym;
+                v_enum.add_value (v_value);
+            } else {
+                var value = new IntegerLiteral(g_member.get_string ("value"));
+                unowned var v_err = (Vala.ErrorDomain) v_sym;
+                v_err.add_code (new ErrorCode.with_value (name, value, source));
+            }
         }
-
-        return v_err;
     }
 
     /* determine the longest prefix that all members have in common */

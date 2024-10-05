@@ -21,45 +21,47 @@ using Vala;
 
 public class Builders.InterfaceBuilder : IdentifierBuilder {
 
-    private Gir.Interface g_iface;
+    private Gir.Node g_iface;
 
-    public InterfaceBuilder (Gir.Interface g_iface) {
+    public InterfaceBuilder (Gir.Node g_iface) {
         base (g_iface);
         this.g_iface = g_iface;
     }
 
     public Vala.Interface build () {
         /* the interface */
-        Vala.Interface v_iface = new Vala.Interface (g_iface.name, g_iface.source);
+        Vala.Interface v_iface = new Vala.Interface (g_iface.get_string ("name"), g_iface.source);
         v_iface.access = PUBLIC;
 
         /* prerequisite interfaces */
-        foreach (var g_imp in g_iface.prerequisites) {
-            var imp_type = DataTypeBuilder.from_name (g_imp.name, g_imp.source);
-            v_iface.add_prerequisite (imp_type);
+        foreach (var g_prereq in g_iface.all_of ("prerequisite")) {
+            var prereq_type = DataTypeBuilder.from_name (g_prereq.get_string ("name"), g_prereq.source);
+            v_iface.add_prerequisite (prereq_type);
         }
 
         /* when no prerequisites were specified, GLib.Object is the default */
-        if (g_iface.prerequisites.is_empty) {
+        if (! g_iface.has_any ("prerequisite")) {
             v_iface.add_prerequisite (DataTypeBuilder.from_name ("GLib.Object"));
         }
 
-        /* c_name */
-        if (g_iface.c_type != generate_cname ()) {
-            v_iface.set_attribute_string ("CCode", "cname", g_iface.c_type);
+        /* cname */
+        var c_type = g_iface.get_string ("c:type");
+        if (c_type != generate_cname ()) {
+            v_iface.set_attribute_string ("CCode", "cname", c_type);
         }
 
         /* version */
         new InfoAttrsBuilder (g_iface).add_info_attrs (v_iface);
 
         /* type_cname */
-        if (g_iface.glib_type_struct != generate_type_cname ()) {
-            var type_cname = get_ns_prefix () + g_iface.glib_type_struct;
+        var type_struct = g_iface.get_string ("glib:type-struct");
+        if (type_struct != generate_type_cname ()) {
+            var type_cname = get_ns_prefix () + type_struct;
             v_iface.set_attribute_string ("CCode", "type_cname", type_cname);
         }
 
         /* get_type method */
-        var type_id = g_iface.glib_get_type;
+        var type_id = g_iface.get_string ("glib:get-type");
         if (type_id == null) {
             v_iface.set_attribute_bool ("CCode", "has_type_id", false);
         } else {
@@ -67,7 +69,7 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
         }
 
         /* add functions */
-        foreach (var g_function in g_iface.functions) {
+        foreach (var g_function in g_iface.all_of ("function")) {
             var builder = new MethodBuilder (g_function);
             if (! builder.skip ()) {
                 v_iface.add_method (builder.build_function ());
@@ -75,7 +77,7 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
         }
 
         /* add methods */
-        foreach (var g_method in g_iface.methods) {
+        foreach (var g_method in g_iface.all_of ("method")) {
             var builder = new MethodBuilder (g_method);
             if (! builder.skip ()) {
                 v_iface.add_method (builder.build_method ());
@@ -83,7 +85,7 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
         }
 
         /* add virtual methods */
-        foreach (var g_vm in g_iface.virtual_methods) {
+        foreach (var g_vm in g_iface.all_of ("virtual-method")) {
             var builder = new MethodBuilder (g_vm);
             if (! builder.skip ()) {
                 v_iface.add_method (builder.build_virtual_method ());
@@ -91,19 +93,19 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
         }
 
         /* add fields */
-        foreach (var g_field in g_iface.fields) {
+        foreach (var g_field in g_iface.all_of ("field")) {
             var vfield = new FieldBuilder (g_field).build ();
             v_iface.add_field (vfield);
         }
 
         /* add properties */
-        foreach (var g_prop in g_iface.properties) {
+        foreach (var g_prop in g_iface.all_of ("property")) {
             var builder = new PropertyBuilder (g_prop);
             v_iface.add_property (builder.build ());
         }
 
         /* add signals */
-        foreach (var g_signal in g_iface.signals) {
+        foreach (var g_signal in g_iface.all_of ("glib:signal")) {
             var builder = new MethodBuilder (g_signal);
             v_iface.add_signal (builder.build_signal ());
         }

@@ -21,25 +21,25 @@ using Vala;
 
 public class Builders.FieldBuilder {
 
-    private Gir.Field g_field;
+    private Gir.Node g_field;
 
-    public FieldBuilder (Gir.Field g_field) {
+    public FieldBuilder (Gir.Node g_field) {
         this.g_field = g_field;
     }
 
     public bool skip () {
-        return g_field.private
-                || g_field.name == "priv"
-                || g_field.anytype == null
+        return g_field.get_bool ("private")
+                || g_field.get_string ("name") == "priv"
+                || !g_field.has_any ("type", "array")
                 || has_naming_conflict ();
     }
 
     public Vala.Field build () {
         /* type */
-        var v_type = new DataTypeBuilder (g_field.anytype).build ();
+        var v_type = new DataTypeBuilder (g_field.any_of ("type", "array")).build ();
 
         /* create the field */
-        var v_field = new Field (g_field.name, v_type, null, g_field.source);
+        var v_field = new Field (g_field.get_string ("name"), v_type, null, g_field.source);
         v_field.access = PUBLIC;
 
         /* version */
@@ -48,7 +48,7 @@ public class Builders.FieldBuilder {
         /* array attributes */
         if (v_type is Vala.ArrayType) {
             unowned var v_arr_type = (Vala.ArrayType) v_type;
-            add_array_attrs (v_field, v_arr_type, (Gir.Array) g_field.anytype);
+            add_array_attrs (v_field, v_arr_type, g_field.any_of ("array"));
         }
 
         return v_field;
@@ -56,25 +56,26 @@ public class Builders.FieldBuilder {
 
     public void add_array_attrs (Vala.Symbol v_arr_field,
                                  Vala.ArrayType v_arr_type,
-                                 Gir.Array g_arr) {
+                                 Gir.Node g_arr) {
         /* fixed length */
-        if (g_arr.fixed_size != -1) {
+        if (g_arr.has_attr ("fixed-size")) {
             v_arr_type.fixed_length = true;
-            v_arr_type.length = new IntegerLiteral (g_arr.fixed_size.to_string ());
+            v_arr_type.length = new IntegerLiteral (g_arr.get_string ("fixed-size"));
             v_arr_field.set_attribute_bool ("CCode", "array_length", false);
         }
 
         /* length in another field */
-        else if (g_arr.length != -1) {
-            var fields = g_field.parent_node.all_of<Gir.Field> ();
-            var g_length_field = fields[g_arr.length];
-            var g_type = (Gir.TypeRef) g_length_field.anytype;
-
-            v_arr_field.set_attribute_string ("CCode", "array_length_cname", g_length_field.name);
+        else if (g_arr.has_attr ("length")) {
+            var fields = g_field.parent_node.all_of ("field");
+            var g_length_field = fields[g_arr.get_int ("length")];
+            var g_type = g_length_field.any_of ("type");
+            var name = g_length_field.get_string ("name");
+            v_arr_field.set_attribute_string ("CCode", "array_length_cname", name);
 
             /* int is the default and can be omitted */
-            if (g_type.name != "gint") {
-                v_arr_field.set_attribute_string ("CCode", "array_length_type", g_type.name);
+            var g_type_name = g_type.get_string ("name");
+            if (g_type_name != "gint") {
+                v_arr_field.set_attribute_string ("CCode", "array_length_type", g_type_name);
             }
         }
 
@@ -84,7 +85,7 @@ public class Builders.FieldBuilder {
             /* If zero-terminated is missing, there's no length, there's no
              * fixed size, and the name attribute is unset, then zero-terminated
              * is true. */
-            if (g_arr.zero_terminated || g_arr.name == null) {
+            if (g_arr.get_bool ("zero-terminated") || !g_arr.has_attr ("name")) {
                 v_arr_field.set_attribute_bool ("CCode", "array_null_terminated", true);
             }
         }
@@ -92,8 +93,9 @@ public class Builders.FieldBuilder {
 
     /* whatelse has precedence over the field */
     private bool has_naming_conflict () {
+        var name = g_field.get_string ("name");
         foreach (var child in g_field.parent_node.children) {
-            if (child.attrs["name"]?.replace ("-", "_") == g_field.name) {
+            if (child.attrs["name"]?.replace ("-", "_") == name) {
                 return true;
             }
         }

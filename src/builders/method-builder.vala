@@ -21,38 +21,39 @@ using Vala;
 
 public class Builders.MethodBuilder {
 
-    private Gir.Callable g_call;
+    private Gir.Node g_call;
 
-    public MethodBuilder (Gir.Callable g_call) {
+    public MethodBuilder (Gir.Node g_call) {
         this.g_call = g_call;
     }
 
     public Vala.CreationMethod build_constructor () {
-        unowned var g_ctor = (Gir.Constructor) g_call;
-
         /* name */
         var name = get_constructor_name ();
 
         /* create the constructor */
-        var v_cm = new CreationMethod (null, name, g_ctor.source);
+        var v_cm = new CreationMethod (null, name, g_call.source);
         v_cm.access = PUBLIC;
         v_cm.has_construct_function = false;
 
         /* c name */
-        if (g_ctor.name != "new" && (! g_ctor.name.has_prefix ("new_"))) {
-            v_cm.set_attribute_string ("CCode", "cname", g_ctor.c_identifier);
+        var g_call_name = g_call.get_string ("name");
+        if (g_call_name != "new" && (! g_call_name.has_prefix ("new_"))) {
+            v_cm.set_attribute_string ("CCode", "cname", g_call.get_string ("c:identifier"));
         }
 
         /* version and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_cm);
-        if (g_ctor.moved_to != null) {
-            v_cm.version.replacement = g_ctor.moved_to;
+        if (g_call.has_attr ("moved-to")) {
+            v_cm.version.replacement = g_call.get_string ("moved-to");
         }
 
         /* return type annotation */
-        if (g_ctor.parent_node is Gir.Class) {
-            var parent_c_type = ((Gir.Class) g_ctor.parent_node).c_type;
-            var return_c_type = ((Gir.TypeRef) g_ctor.return_value.anytype).c_type;
+        if (g_call.parent_node.tag == "class") {
+            var parent_c_type = g_call.parent_node.get_string ("c:type");
+            var return_c_type = g_call.any_of ("return-value")
+                                      .any_of ("type")?
+                                      .get_string ("c:type");
             if (return_c_type != null &&
                     (parent_c_type == null || return_c_type != parent_c_type + "*")) {
                 v_cm.set_attribute_string ("CCode", "type", return_c_type);
@@ -60,10 +61,10 @@ public class Builders.MethodBuilder {
         }
 
         /* parameters */
-        new ParametersBuilder (g_ctor, v_cm).build_parameters ();
+        new ParametersBuilder (g_call, v_cm).build_parameters ();
 
         /* throws */
-        if (g_ctor.throws) {
+        if (g_call.get_bool ("throws", false)) {
             v_cm.add_error_type (new Vala.ErrorType (null, null));
         }
 
@@ -71,13 +72,11 @@ public class Builders.MethodBuilder {
     }
 
     public Vala.Method build_function () {
-        unowned var g_function = (Gir.Function) g_call;
-        
         /* return type */
-        var v_return_type = build_return_type (g_function.return_value);
+        var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
         /* create a static method */
-        var v_method = new Method (g_function.name, v_return_type, g_function.source);
+        var v_method = new Method (g_call.get_string ("name"), v_return_type, g_call.source);
         v_method.access = PUBLIC;
         v_method.binding = STATIC;
 
@@ -87,21 +86,22 @@ public class Builders.MethodBuilder {
         }
 
         /* c name */
-        if (g_function.c_identifier != generate_cname (g_function)) {
-            v_method.set_attribute_string ("CCode", "cname", g_function.c_identifier);
+        var c_identifier = g_call.get_string ("c:identifier");
+        if (c_identifier != generate_cname (g_call)) {
+            v_method.set_attribute_string ("CCode", "cname", c_identifier);
         }
 
         /* version and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
-        if (g_function.moved_to != null) {
-            v_method.version.replacement = g_function.moved_to;
+        if (g_call.has_attr ("moved-to")) {
+            v_method.version.replacement = g_call.get_string ("moved-to");
         }
 
         /* parameters */
-        new ParametersBuilder (g_function, v_method).build_parameters ();
+        new ParametersBuilder (g_call, v_method).build_parameters ();
 
         /* throws */
-        if (g_function.throws) {
+        if (g_call.get_bool ("throws")) {
             v_method.add_error_type (new Vala.ErrorType (null, null));
         }
 
@@ -109,45 +109,44 @@ public class Builders.MethodBuilder {
     }
 
     public Vala.Method build_method () {
-        unowned var g_method = (Gir.Method) g_call;
-
         /* return type */
-        var v_return_type = build_return_type (g_method.return_value);
+        var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
         /* the method itself */
-        var v_method = new Method (g_method.name, v_return_type, g_method.source);
+        var v_method = new Method (g_call.get_string ("name"), v_return_type, g_call.source);
         v_method.access = PUBLIC;
 
         /* c name */
-        if (g_method.c_identifier != generate_cname (g_method)) {
-            v_method.set_attribute_string ("CCode", "cname", g_method.c_identifier);
+        var c_identifier = g_call.get_string ("c:identifier");
+        if (c_identifier != generate_cname (g_call)) {
+            v_method.set_attribute_string ("CCode", "cname", c_identifier);
         }
 
         /* version and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
-        if (g_method.moved_to != null) {
-            v_method.version.replacement = g_method.moved_to;
+        if (g_call.has_attr ("moved-to")) {
+            v_method.version.replacement = g_call.get_string ("moved-to");
         }
 
         /* parameters */
-        new ParametersBuilder (g_method, v_method).build_parameters ();
+        new ParametersBuilder (g_call, v_method).build_parameters ();
 
         /* throws */
-        if (g_method.throws) {
+        if (g_call.get_bool ("throws")) {
             v_method.add_error_type (new Vala.ErrorType (null, null));
         }
 
         /* async */
-        if (g_method.glib_finish_func != null) {
+        if (g_call.has_attr ("glib:finish-func")) {
             /* mark as async method */
             v_method.coroutine = true;
 
             /* copy the return-type from the finish-func */
-            Gir.Method g_finish_func = get_async_finish_method ();
-            v_method.return_type = build_return_type (g_finish_func.return_value);
+            Gir.Node g_finish_func = get_async_finish_method ();
+            v_method.return_type = build_return_type (g_finish_func.any_of ("return-value"));
 
             /* when the finish-func throws */
-            if ((! g_method.throws) && g_finish_func.throws) {
+            if ((! g_call.get_bool ("throws")) && g_finish_func.get_bool ("throws")) {
                 v_method.add_error_type (new Vala.ErrorType (null, null));
             }
         }
@@ -161,15 +160,13 @@ public class Builders.MethodBuilder {
     }
 
     public Vala.Method build_virtual_method () {
-        unowned var g_vm = (Gir.VirtualMethod) g_call;
-
         /* return type */
-        var v_return_type = build_return_type (g_vm.return_value);
+        var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
         /* the method itself */
-        var v_method = new Method (g_vm.name, v_return_type, g_vm.source);
+        var v_method = new Method (g_call.get_string ("name"), v_return_type, g_call.source);
         v_method.access = PUBLIC;
-        if (g_vm.parent_node is Gir.Interface) {
+        if (g_call.parent_node.tag == "interface") {
             v_method.is_abstract = true;
         } else {
             v_method.is_virtual = true;
@@ -182,26 +179,27 @@ public class Builders.MethodBuilder {
 
         /* version and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
-        if (g_vm.moved_to != null) {
-            v_method.version.replacement = g_vm.moved_to;
+        if (g_call.has_attr ("moved-to")) {
+            v_method.version.replacement = g_call.get_string ("moved-to");
         }
 
         /* "NoWrapper" attribute when no invoker method with the same name */
         var invoker_method = get_invoker_method ();
-        if (invoker_method == null || invoker_method.name != g_vm.name) {
+        var invoker_name = invoker_method.get_string ("name");
+        if (invoker_method == null || invoker_name != g_call.get_string ("name")) {
             v_method.set_attribute ("NoWrapper", true);
         }
 
         /* "vfunc_name" attribute when invoker method has another name */
-        if (invoker_method != null && invoker_method.name != g_vm.name) {
-            v_method.set_attribute_string ("CCode", "vfunc_name", invoker_method.name);
+        if (invoker_method != null && invoker_name != g_call.get_string ("name")) {
+            v_method.set_attribute_string ("CCode", "vfunc_name", invoker_name);
         }
 
         /* parameters */
-        new ParametersBuilder (g_vm, v_method).build_parameters ();
+        new ParametersBuilder (g_call, v_method).build_parameters ();
 
         /* throws */
-        if (g_vm.throws) {
+        if (g_call.get_bool ("throws")) {
             v_method.add_error_type (new Vala.ErrorType (null, null));
         }
 
@@ -209,20 +207,18 @@ public class Builders.MethodBuilder {
     }
 
     public Vala.Delegate build_delegate () {
-        unowned var g_callback = (Gir.Callback) g_call;
-        
         /* return type */
-        var v_return_type = build_return_type (g_callback.return_value);
+        var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
         /* create the delegate */
-        var v_del = new Delegate (g_callback.name, v_return_type, g_callback.source);
+        var v_del = new Delegate (g_call.get_string ("name"), v_return_type, g_call.source);
         v_del.access = PUBLIC;
 
         /* c_name */
-        if (g_callback.parent_node is Gir.Namespace) {
-            var cname = new IdentifierBuilder (g_callback).generate_cname ();
-            if (g_callback.c_type != cname) {
-                v_del.set_attribute_string ("CCode", "cname", g_callback.c_type);
+        if (g_call.parent_node.tag == "namespace") {
+            var cname = new IdentifierBuilder (g_call).generate_cname ();
+            if (g_call.get_string ("c:type") != cname) {
+                v_del.set_attribute_string ("CCode", "cname", g_call.get_string ("c:type"));
             }
         }
 
@@ -235,10 +231,10 @@ public class Builders.MethodBuilder {
         new InfoAttrsBuilder (g_call).add_info_attrs (v_del);
 
         /* parameters */
-        new ParametersBuilder (g_callback, v_del).build_parameters ();
+        new ParametersBuilder (g_call, v_del).build_parameters ();
 
         /* throws */
-        if (g_callback.throws) {
+        if (g_call.get_bool ("throws")) {
             v_del.add_error_type (new Vala.ErrorType (null, null));
         }
 
@@ -246,16 +242,14 @@ public class Builders.MethodBuilder {
     }
 
     public Vala.Signal build_signal () {
-        unowned var g_sig = (Gir.Signal) g_call;
-        
         /* name */
-        var name = g_sig.name.replace ("-", "_");
+        var name = g_call.get_string ("name").replace ("-", "_");
 
         /* return type */
-        var v_return_type = build_return_type (g_sig.return_value);
+        var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
         /* create the signal */
-        var v_sig = new Vala.Signal (name, v_return_type, g_sig.source);
+        var v_sig = new Vala.Signal (name, v_return_type, g_call.source);
         v_sig.access = PUBLIC;
 
         /* array return type attributes */
@@ -267,18 +261,18 @@ public class Builders.MethodBuilder {
         new InfoAttrsBuilder (g_call).add_info_attrs (v_sig);
 
         /* parameters */
-        new ParametersBuilder (g_sig, v_sig).build_parameters ();
+        new ParametersBuilder (g_call, v_sig).build_parameters ();
 
         /* find emitter method */
-        foreach (var g_method in g_sig.parent_node.all_of<Gir.Method> ()) {
-            if (equal_method_names (g_sig, g_method)) {
+        foreach (var g_method in g_call.parent_node.all_of ("method")) {
+            if (equal_method_names (g_call, g_method)) {
                 v_sig.set_attribute ("HasEmitter", true);
             }
         }
         
         /* find virtual emitter method */
-        foreach (var g_vm in g_sig.parent_node.all_of<Gir.VirtualMethod> ()) {
-            if (equal_method_names (g_sig, g_vm)) {
+        foreach (var g_vm in g_call.parent_node.all_of ("virtual-method")) {
+            if (equal_method_names (g_call, g_vm)) {
                 v_sig.is_virtual = true;
             }
         }
@@ -286,19 +280,20 @@ public class Builders.MethodBuilder {
         return v_sig;
     }
 
-    private Vala.DataType build_return_type (Gir.ReturnValue g_return) {
+    private Vala.DataType build_return_type (Gir.Node g_return) {
         /* create the return type */
-        var v_return_type = new DataTypeBuilder (g_return.anytype).build ();
+        var v_return_type = new DataTypeBuilder (g_return.any_of ("type", "array")).build ();
 
         /* nullability */
-        v_return_type.nullable = g_return.nullable || g_return.allow_none;
+        v_return_type.nullable = g_return.get_bool ("nullable") || g_return.get_bool ("allow-none");
 
         /* ownership transfer */
-        v_return_type.value_owned = g_return.transfer_ownership != NONE;
+        var transfer_ownership = g_return.get_string ("transfer-ownership");
+        v_return_type.value_owned = transfer_ownership != "none";
 
         /* ownership transfer of generic type arguments */
         foreach (var type_arg in v_return_type.get_type_arguments ()) {
-            type_arg.value_owned = g_return.transfer_ownership != CONTAINER;
+            type_arg.value_owned = transfer_ownership != "container";
         }
         
         return v_return_type;
@@ -306,27 +301,28 @@ public class Builders.MethodBuilder {
 
     private void add_array_return_type_attributes (Vala.Callable v_method) {
         unowned var v_type = (Vala.ArrayType) v_method.return_type;
-        var g_type = (Gir.Array) g_call.return_value.anytype;
+        var g_type = g_call.any_of ("return-value").any_of ("array");
         var builder = new ParametersBuilder (g_call, v_method);
         builder.add_array_attrs (v_method, v_type, g_type);
         v_type.element_type.value_owned = true;
     }
 
     private string? get_constructor_name () {
-        if (g_call is Gir.Constructor) {
-            if (g_call.name == "new") {
+        var name = g_call.get_string ("name");
+        if (g_call.tag == "constructor") {
+            if (name == "new") {
                 return null;
-            } else if (g_call.name.has_prefix ("new_")) {
-                return g_call.name.substring ("new_".length);
+            } else if (name.has_prefix ("new_")) {
+                return name.substring ("new_".length);
             }
         }
 
-        return g_call.name;
+        return name;
     }
 
     /* return true when this method must be omitted from the vapi */
     public bool skip () {
-        return (! g_call.introspectable)
+        return (! g_call.get_bool ("introspectable", true))
                 || is_invoker_method ()
                 || is_signal_emitter_method ()
                 || is_async_finish_method ()
@@ -335,11 +331,11 @@ public class Builders.MethodBuilder {
 
     /* Find a virtual method with the same name as this method. */
     public bool is_invoker_method () {
-        if (! (g_call is Gir.Method || g_call is Gir.Function)) {
+        if (! (g_call.tag == "method" || g_call.tag == "function")) {
             return false;
         }
 
-        foreach (var vm in g_call.parent_node.all_of<Gir.VirtualMethod> ()) {
+        foreach (var vm in g_call.parent_node.all_of ("virtual-method")) {
             if (equal_method_names (g_call, vm)) {
                 return true;
             }
@@ -349,22 +345,21 @@ public class Builders.MethodBuilder {
     }
 
     /* Find a method or function that invokes this virtual method. */
-    public Gir.Callable? get_invoker_method () {
-        if (! (g_call is Gir.VirtualMethod)) {
+    public Gir.Node? get_invoker_method () {
+        if (! (g_call.tag == "virtual-method")) {
             return null;
         }
 
-        unowned var vm = (Gir.VirtualMethod) g_call;
-        foreach (var m in g_call.parent_node.all_of<Gir.Callable> ()) {
-            if (! (m is Gir.Method || m is Gir.Function)) {
+        foreach (var m in g_call.parent_node.children) {
+            if (! (m.tag == "method" || m.tag == "function")) {
                 continue;
             }
 
-            if (vm.invoker == m.name) {
+            if (g_call.get_string ("invoker") == m.get_string ("name")) {
                 return m;
             }
 
-            if (equal_method_names (m, vm)) {
+            if (equal_method_names (m, g_call)) {
                 return m;
             }
         }
@@ -373,12 +368,12 @@ public class Builders.MethodBuilder {
     }
 
     public bool is_async_finish_method () {
-        if (! (g_call is Gir.Method)) {
+        if (! (g_call.tag == "method")) {
             return false;
         }
 
-        foreach (var m in g_call.parent_node.all_of<Gir.Method> ()) {
-            if (m.glib_finish_func == g_call.name) {
+        foreach (var m in g_call.parent_node.all_of ("method")) {
+            if (m.get_string ("glib:finish-func") == g_call.get_string ("name")) {
                 return true;
             }
         }
@@ -386,10 +381,10 @@ public class Builders.MethodBuilder {
         return false;
     }
 
-    public Gir.Method? get_async_finish_method () {
-        var name = ((Gir.Method) g_call).glib_finish_func;
-        foreach (var m in g_call.parent_node.all_of<Gir.Method> ()) {
-            if (m.name == name) {
+    public Gir.Node? get_async_finish_method () {
+        var name = g_call.get_string ("glib:finish-func");
+        foreach (var m in g_call.parent_node.all_of ("method")) {
+            if (m.get_string ("name") == name) {
                 return m;
             }
         }
@@ -401,11 +396,11 @@ public class Builders.MethodBuilder {
     /* Find a signal with the same name and type signature as this method or
      * virtual method. */
      public bool is_signal_emitter_method () {
-        if (! (g_call is Gir.Method || g_call is Gir.VirtualMethod)) {
+        if (! (g_call.tag == "method" || g_call.tag == "virtual-method")) {
             return false;
         }
 
-        foreach (var s in g_call.parent_node.all_of<Gir.Signal> ()) {
+        foreach (var s in g_call.parent_node.all_of ("glib:signal")) {
             if (equal_method_names (g_call, s)) {
                 return true;
             }
@@ -417,11 +412,13 @@ public class Builders.MethodBuilder {
     /* Find a property with the same name as this method. If found, the property
      * takes precedence. */
      public bool is_property_accessor () {
-        var name = (g_call is Gir.Constructor)
-                ? get_constructor_name () : g_call.name;
+        var name = (g_call.tag == "constructor")
+                        ? get_constructor_name ()
+                        : g_call.get_string ("name");
+        name = name?.replace ("-", "_");
 
-        foreach (var p in g_call.parent_node.all_of<Gir.Property> ()) {
-            if (name?.replace ("-", "_") == p.name.replace ("-", "_")) {
+        foreach (var p in g_call.parent_node.all_of ("property")) {
+            if (name == p.get_string ("name").replace ("-", "_")) {
                 return true;
             }
         }
@@ -429,27 +426,30 @@ public class Builders.MethodBuilder {
         return false;
     }
 
-    private bool equal_method_names (Gir.Callable a, Gir.Callable b) {
-        return a.name.replace ("-", "_") == b.name.replace ("-", "_");
+    private bool equal_method_names (Gir.Node a, Gir.Node b) {
+        var a_name = a.get_string ("name").replace ("-", "_");
+        var b_name = b.get_string ("name").replace ("-", "_");
+        return a_name == b_name;
     }
 
     /* check if this callable has no parameters (ignoring instance parameter) */
     public bool has_parameters () {
-        return g_call.parameters != null
-                && (! g_call.parameters.parameters.is_empty);
+        return g_call.has_any ("parameters")
+                && (! g_call.any_of ("parameters").has_any ("parameter"));
     }
 
     /* generate the C function name from the GIR name and all prefixes */
-    private string generate_cname (Gir.Callable call) {
-        var sb = new StringBuilder (call.name);
+    private string generate_cname (Gir.Node call) {
+        var sb = new StringBuilder (call.get_string ("name"));
         unowned var node = call.parent_node;
         while (node != null) {
             /* use the symbol-prefix if it is defined */
-            var prefix = node.attrs["c:symbol-prefix"] ?? node.attrs["c:symbol-prefixes"];
+            var prefix = node.get_string ("c:symbol-prefix")
+                      ?? node.get_string ("c:symbol-prefixes");
 
             /* for types without a symbol-prefix defined, use the name */
-            if (prefix == null && node.attrs["name"] != null) {
-                prefix = Vala.Symbol.camel_case_to_lower_case (node.attrs["name"]);
+            if (prefix == null && node.has_attr ("name")) {
+                prefix = Vala.Symbol.camel_case_to_lower_case (node.get_string ("name"));
             }
 
             if (prefix != null) {

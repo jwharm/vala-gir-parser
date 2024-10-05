@@ -39,7 +39,7 @@ public class GirParser2 : CodeVisitor {
 
         if (repository != null) {
             /* set package name */
-            string? pkg = repository.package?.name;
+            string? pkg = repository.any_of ("package")?.get_string ("name");
             source_file.package_name = pkg;
             if (context.has_package (pkg)) {
                 /* package already provided elsewhere, stop parsing this GIR
@@ -52,10 +52,10 @@ public class GirParser2 : CodeVisitor {
             }
 
             /* add dependency packages */
-            foreach (var include in repository.includes) {
-                string dep = include.name;
-                if (include.version != null) {
-                    dep += "-" + include.version;
+            foreach (var include in repository.all_of ("include")) {
+                string dep = include.get_string ("name");
+                if (include.has_attr ("version")) {
+                    dep += "-" + include.get_string ("version");
                 }
 
                 context.add_external_package (dep);
@@ -78,8 +78,8 @@ public class GirParser2 : CodeVisitor {
             }
 
             /* build the namespace and everything in it */
-            var builder = new NamespaceBuilder (repository.namespace,
-                                                repository.c_includes);
+            var builder = new NamespaceBuilder (repository.any_of ("namespace"),
+                                                repository.all_of ("c:include"));
             context.root.add_namespace (builder.build ());
         }
     }

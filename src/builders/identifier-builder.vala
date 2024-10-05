@@ -21,40 +21,46 @@ using Vala;
 
 public class Builders.IdentifierBuilder {
 
-    private Gir.Identifier identifier;
+    private Gir.Node identifier;
 
-    public IdentifierBuilder (Gir.Identifier identifier) {
+    public IdentifierBuilder (Gir.Node identifier) {
         this.identifier = identifier;
     }
 
     public virtual bool skip () {
-        return ! identifier.introspectable;
+        return ! identifier.get_bool ("introspectable", true);
     }
 
     /* Get the C prefix of this identifier */
     public string? get_ns_prefix () {
-        var ns = identifier.parent_node as Gir.Namespace;
+        var ns = identifier.parent_node;
 
         /* Return null if this is not a registered type */
         if (ns == null) {
             return null;
         }
 
-        return ns.c_identifier_prefixes ?? ns.c_prefix ?? ns.name;
+        return ns.get_string ("c:identifier-prefixes")
+            ?? ns.get_string ("c:prefix")
+            ?? ns.get_string ("name");
     }
 
     /* Generate C name of an identifier: for example "GtkWindow" */
     public string? generate_cname () {
         var ns_prefix = get_ns_prefix ();
-        return ns_prefix == null ? null : (ns_prefix + identifier.name);
+        if (ns_prefix == null) {
+            return null;
+        }
+
+        return ns_prefix + identifier.get_string ("name");
     }
 
     /* Generate C name of the TypeClass/TypeInterface of a class/interface */
     public string? generate_type_cname () {
-        if (identifier is Gir.Class) {
-            return identifier.name + "Class";
-        } else if (identifier is Gir.Interface) {
-            return identifier.name + "Iface";
+        if (identifier.tag == "class") {
+            return identifier.get_string ("name") + "Class";
+        } else if (identifier.tag == "interface") {
+            return identifier.get_string ("name") + "Iface";
         } else {
             return null;
         }

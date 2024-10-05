@@ -19,6 +19,10 @@
 
 using Gir;
 
+/**
+ * Contains transformations that are applied to the gir tree before metadata is
+ * applied and the Vala AST is generated.
+ */
 namespace Transformations {
 
     public interface Transformation : Object {
@@ -30,27 +34,26 @@ namespace Transformations {
     
         /* determine whether this function should be an instance method */
         public bool can_transform (Gir.Node node) {
-            if (! (node is Function)) {
+            if (node.tag != "function") {
                 return false;
             }
     
-            var function = (Function) node;
-            if (function.parent_node is Gir.Identifier
-                    && function.parameters != null
-                    && (! function.parameters.parameters.is_empty)) {
+            if (node.parent_node.tag != "namespace"
+                    && node.has_any ("parameters")
+                    && node.any_of ("parameters").has_any ("parameter")) {
     
                 /* check if the first parameter is an "instance parameter",
                  * i.e. it has the type of the enclosing type */
-                unowned var parent = (Gir.Identifier) function.parent_node;
-                var self = function.parameters.parameters[0];
-                if ((self.anytype as Gir.TypeRef)?.name != parent.name) {
+                var parent_type = node.parent_node.get_string ("name");
+                var self = node.any_of ("parameters").children[0];
+                var self_type = self.any_of ("type")?.get_string ("name");
+                if (self_type != null && self_type != parent_type) {
                     return false;
                 }
     
                 /* if it's an out parameter, it must be caller-allocated */
-                return self.direction == IN
-                    || self.direction == UNDEFINED // defaults to IN
-                    || self.caller_allocates;
+                return (self.get_string ("direction") ?? "in") == "in"
+                    || self.get_bool ("caller-allocates");
             }
     
             return false;
@@ -58,18 +61,15 @@ namespace Transformations {
     
         /* change a function into an instance method */
         public void apply (ref Gir.Node node) {
-            unowned var function = (Function) node;
-            var first_param = function.parameters.parameters.remove_at (0);
-            var inst_param = first_param.cast_to<InstanceParameter> ();
-            var method = function.cast_to<Method> ();
-            method.parameters.instance_parameter = inst_param;
-            node = method;
+            node.any_of ("parameters").children[0].tag = "instance-parameter";
+            node.tag = "method";
     
-            if (method.parent_node is EnumBase) {
-                /* vapigen seems to never generates a cname for these, probably
-                * because gir <enumeration> elements don't have a "c:symbol-prefix"
-                * attribute. Explicitly remove the cname for now... */
-                method.c_identifier = null;
+            /* vapigen seems to never generates a cname for enums, probably
+            * because gir <enumeration> elements don't have a "c:symbol-prefix"
+            * attribute. Explicitly remove the cname for now... */
+            if (node.parent_node.tag == "enumeration"
+                    || node.parent_node.tag == "bitfield") {
+                node.attrs.remove ("c:identifier");
             }
         }
     }
@@ -79,44 +79,43 @@ namespace Transformations {
         /* determine whether there is one out parameter that could be the
          * return value */
         public bool can_transform (Gir.Node node) {
-            if (! (node is Callable)) {
+            var return_value = node.any_of ("return-value");
+            var parameters = node.any_of ("parameters");
+
+            if (return_value == null || parameters == null) {
                 return false;
             }
+
+            var return_type = return_value.any_of ("type")?.get_string ("name");
+            var has_parameters = parameters.has_any ("parameter");
     
-            unowned var callable = (Callable) node;
-            var returns_void = callable.return_value.anytype is TypeRef
-                    && ((TypeRef) callable.return_value.anytype).name == "none";
-            var has_parameters = callable.parameters != null
-                    && (! callable.parameters.parameters.is_empty);
-    
-            if (! (returns_void && has_parameters)) {
+            if (! (return_type == "none" && has_parameters)) {
                 return false;
             }
     
             /* count the number of out-parameters */
             var num_out_parameters = 0;
-            foreach (var p in callable.parameters.parameters) {
-                if (p.direction == OUT) {
+            foreach (var p in node.any_of ("parameters").all_of ("parameter")) {
+                if (p.get_string ("direction") == "out") {
                     num_out_parameters++;
                 }
             }
     
-            var last_param = callable.parameters.parameters.last ();
+            var last_param = node.any_of ("parameters").children.last ();
             return num_out_parameters == 1
-                && last_param.direction == OUT
-                && (! last_param.nullable);
+                && last_param.get_string ("direction") == "out"
+                && !last_param.get_bool ("nullable");
         }
     
         /* change the out parameter to the return value */
         public void apply (ref Gir.Node node) {
-            unowned var callable = (Callable) node;
-            var last_param = callable.parameters.parameters.last ();
+            var last_param = node.any_of ("parameters").children.last ();
             
             /* set return type to the type of the out-parameter */
-            callable.return_value.anytype = last_param.anytype;
+            node.any_of ("return-value").children = last_param.children;
     
             /* remove the out-parameter */
-            callable.parameters.parameters.remove (last_param);
+            node.any_of ("parameters").children.remove (last_param);
         }
     }
     
@@ -125,21 +124,16 @@ namespace Transformations {
         /* Determine whether the instance parameter is an INOUT parameter.
          * Such a method should be static (i.e. a function). */
         public bool can_transform (Gir.Node node) {
-            if (! (node is Method)) {
-                return false;
-            }
-    
-            unowned var method = (Method) node;
-            return method.parameters.instance_parameter.direction == INOUT;
+            return node.tag == "method"
+                && node.any_of ("parameters")
+                       .any_of ("instance-parameter")
+                       .get_string ("direction") == "inout";
         }
     
         /* change an instance method into a function */
         public void apply (ref Gir.Node node) {
-            unowned var method = (Method) node;
-            method.parameters.parameters.insert (0,
-                method.parameters.instance_parameter.cast_to<Gir.Parameter> ());
-            method.parameters.remove<InstanceParameter> ();
-            node = method.cast_to<Function> ();
+            node.any_of ("parameters").children[0].tag = "parameter";
+            node.tag = "function";
         }
     }
     
@@ -147,19 +141,20 @@ namespace Transformations {
     
         /* determine if this parameter list has a "first vararg" parameter */
         public bool can_transform (Gir.Node node) {
-            if (! (node is Parameters)) {
+            if (node.tag != "parameters") {
                 return false;
             }
     
-            var params = ((Parameters) node).parameters;
+            var params = node.all_of ("parameter");
             return params.size > 1
-                    && params[params.size - 1].varargs != null
-                    && params[params.size - 2].name.has_prefix ("first_");
+                    && params[params.size - 1].has_any ("varargs")
+                    && params[params.size - 2].get_string ("name")
+                                              .has_prefix ("first_");
         }
     
         /* remove the "first vararg" parameter */
         public void apply (ref Gir.Node node) {
-            var params = ((Parameters) node).parameters;
+            var params = node.all_of ("parameter");
             params.remove_at (params.size - 2);
         }
     }
