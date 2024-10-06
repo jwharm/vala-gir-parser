@@ -80,8 +80,8 @@ public class GirMetadata.MetadataProcessor {
             node.set_bool ("introspectable", ! metadata.get_bool (HIDDEN));
         }
 
-        if (metadata.has_argument (COMPACT)) {
-            node.set_bool ("compact", false);
+        if (metadata.has_argument (NEW)) {
+            node.set_bool ("hides", metadata.get_bool (NEW));
         }
 
         if (metadata.has_argument (TYPE)) {
@@ -183,6 +183,10 @@ public class GirMetadata.MetadataProcessor {
             node.set_string ("deprecated-version", deprecated_since);
         }
 
+        if (metadata.has_argument (SINCE)) {
+            node.set_string ("version", metadata.get_string (SINCE));
+        }
+
         if (metadata.has_argument (ARRAY)) {
             var current_type = node.any_of ("type", "array");
             if (current_type == null && node.has_any ("return-value")) {
@@ -205,10 +209,24 @@ public class GirMetadata.MetadataProcessor {
             }
 
             if (array == null) {
-                Report.error (source, "Cannot set array length idx on %s", tag);
+                Report.error (source, "Cannot set array_length_idx on %s", tag);
             } else {
                 var array_length_idx = metadata.get_integer (ARRAY_LENGTH_IDX);
                 array.set_int ("length", array_length_idx);
+            }
+        }
+
+        if (metadata.has_argument (ARRAY_NULL_TERMINATED)) {
+            var array = node.any_of ("array");
+            if (array == null && node.has_any ("return-value")) {
+                array = node.any_of ("return-value").any_of ("array");
+            }
+
+            if (array == null) {
+                Report.error (source, "Cannot set array_null_terminated on %s", tag);
+            } else {
+                var null_terminated = metadata.get_bool (ARRAY_NULL_TERMINATED);
+                array.set_bool ("zero-terminated", null_terminated);
             }
         }
 
@@ -252,12 +270,24 @@ public class GirMetadata.MetadataProcessor {
             node.set_bool ("abstract", metadata.get_bool (ABSTRACT));
         }
 
+        if (metadata.has_argument (COMPACT)) {
+            node.set_bool ("compact", metadata.has_argument (COMPACT));
+        }
+
+        if (metadata.has_argument (SEALED)) {
+            node.set_bool ("final", metadata.has_argument (SEALED));
+        }
+
         if (metadata.has_argument (SCOPE)) {
             node.set_string ("scope", metadata.get_string (SCOPE));
         }
 
         if (metadata.has_argument (STRUCT)) {
             node.set_bool ("struct", metadata.get_bool (STRUCT));
+        }
+
+        if (metadata.has_argument (THROWS)) {
+            node.set_bool ("throws", metadata.get_bool (THROWS));
         }
 
         if (metadata.has_argument (PRINTF_FORMAT)) {
@@ -300,6 +330,15 @@ public class GirMetadata.MetadataProcessor {
             }
         }
 
+        if (metadata.has_argument (DESTROY)) {
+            var destroy = metadata.get_integer (DESTROY);
+            if (node.has_any ("return-value")) {
+                node.any_of ("return-value").set_int ("destroy", destroy);
+            } else {
+                node.set_int ("destroy", destroy);
+            }
+        }
+
         if (metadata.has_argument (ERRORDOMAIN)) {
             /* the value of this attribute isn't actually used, so put a dummy
              * value in it */
@@ -312,10 +351,6 @@ public class GirMetadata.MetadataProcessor {
             node.any_of ("parameters")
                 .any_of ("instance-parameter")
                 .set_string ("transfer-ownership", "full");
-        }
-
-        if (metadata.has_argument (THROWS)) {
-            node.set_bool ("throws", metadata.get_bool (THROWS));
         }
     }
 

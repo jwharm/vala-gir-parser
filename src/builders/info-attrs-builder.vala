@@ -42,6 +42,10 @@ public class Builders.InfoAttrsBuilder {
             v_sym.version.deprecated_since = g_info_attrs.get_string ("deprecated-version");
         }
 
+        if ("hides" in g_info_attrs.attrs) {
+            v_sym.hides = g_info_attrs.get_bool ("hides");
+        }
+
         if ("printf-format" in g_info_attrs.attrs) {
             v_sym.set_attribute ("PrintfFormat", g_info_attrs.get_bool ("printf-format"));
         }
