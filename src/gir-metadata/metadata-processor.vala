@@ -352,6 +352,20 @@ public class GirMetadata.MetadataProcessor {
                 .any_of ("instance-parameter")
                 .set_string ("transfer-ownership", "full");
         }
+
+        if (metadata.has_argument (BASE_TYPE) && node.tag == "glib:boxed") {
+            node.set_string ("parent", metadata.get_string (BASE_TYPE));
+        }
+
+        if (metadata.has_argument (FINISH_NAME)) {
+            var finish_name = metadata.get_string (FINISH_NAME);
+            node.set_string ("glib:finish-func", finish_name);
+        }
+
+        if (metadata.has_argument (FINISH_INSTANCE)) {
+            var finish_instance = metadata.get_string (FINISH_INSTANCE);
+            node.set_string ("glib:finish-instance", finish_instance);
+        }
     }
 
     /* helper function for processing the NAME metadata attribute */

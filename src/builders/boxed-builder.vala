@@ -36,6 +36,12 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         /* compact */
         v_class.set_attribute ("Compact", g_rec.get_bool ("compact", true));
         
+        /* base type */
+        if (g_rec.has_attr ("parent")) {
+            var base_type = DataTypeBuilder.from_name (g_rec.get_string ("parent"), g_rec.source);
+            v_class.add_base_type (base_type);
+        }
+
         /* cname */
         var c_type = g_rec.get_string ("c:type");
         if (c_type != generate_cname ()) {
