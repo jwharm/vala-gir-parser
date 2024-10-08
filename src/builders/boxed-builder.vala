@@ -58,14 +58,13 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         /* version */
         new InfoAttrsBuilder(g_rec).add_info_attrs (v_class);
 
-        /* get_type method */
-        var type_id = g_rec.get_string ("glib:get-type") + " ()";
-        v_class.set_attribute_string ("CCode", "type_id", type_id);
+        /* CCode attributes */
+        set_ccode_attrs (v_class);
 
         /* if copy_function and/or free_function are set */
-        if (g_rec.has_attr ("glib:copy-function") || g_rec.has_attr ("glib:free-function")) {
-            var copy_func = g_rec.get_string ("glib:copy-function") ?? "g_boxed_copy";
-            var free_func = g_rec.get_string ("glib:free-function") ?? "g_boxed_free";
+        if (g_rec.has_attr ("copy-function") || g_rec.has_attr ("free-function")) {
+            var copy_func = g_rec.get_string ("copy-function") ?? "g_boxed_copy";
+            var free_func = g_rec.get_string ("free-function") ?? "g_boxed_free";
             v_class.set_attribute_string ("CCode", "copy_function", copy_func);
             v_class.set_attribute_string ("CCode", "free_function", free_func);
         }

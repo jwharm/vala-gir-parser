@@ -67,13 +67,8 @@ public class Builders.ClassBuilder : IdentifierBuilder {
             v_class.set_attribute_string ("CCode", "type_cname", type_cname);
         }
 
-        /* get_type method */
-        var type_id = g_class.get_string ("glib:get-type");
-        if (type_id == null) {
-            v_class.set_attribute_bool ("CCode", "has_type_id", false);
-        } else {
-            v_class.set_attribute_string ("CCode", "type_id", type_id + " ()");
-        }
+        /* CCode attributes */
+        set_ccode_attrs (v_class);
 
         /* add constructors */
         if (! g_class.get_bool ("abstract")) {

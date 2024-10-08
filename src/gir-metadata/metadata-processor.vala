@@ -271,11 +271,11 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (COMPACT)) {
-            node.set_bool ("compact", metadata.has_argument (COMPACT));
+            node.set_bool ("compact", metadata.get_bool (COMPACT));
         }
 
         if (metadata.has_argument (SEALED)) {
-            node.set_bool ("final", metadata.has_argument (SEALED));
+            node.set_bool ("final", metadata.get_bool (SEALED));
         }
 
         if (metadata.has_argument (SCOPE)) {
@@ -364,7 +364,100 @@ public class GirMetadata.MetadataProcessor {
 
         if (metadata.has_argument (FINISH_INSTANCE)) {
             var finish_instance = metadata.get_string (FINISH_INSTANCE);
-            node.set_string ("glib:finish-instance", finish_instance);
+            node.set_string ("finish-instance", finish_instance);
+        }
+
+        if (metadata.has_argument (SYMBOL_TYPE)) {
+            node.tag = metadata.get_string (SYMBOL_TYPE);
+        }
+
+        if (metadata.has_argument (INSTANCE_IDX)) {
+            node.set_int ("instance-idx", metadata.get_integer (INSTANCE_IDX));
+        }
+
+        if (metadata.has_argument (EXPERIMENTAL)) {
+            node.set_bool ("experimental", metadata.get_bool (EXPERIMENTAL));
+        }
+
+        if (metadata.has_argument (FLOATING)) {
+            node.set_bool ("floating", metadata.get_bool (FLOATING));
+        }
+
+        if (metadata.has_argument (TYPE_ID)) {
+            node.set_string ("glib:get-type", metadata.get_string (TYPE_ID));
+        }
+
+        if (metadata.has_argument (TYPE_GET_FUNCTION)) {
+            var type_get_function = metadata.get_string (TYPE_GET_FUNCTION);
+            node.set_string ("type-get-function", type_get_function);
+        }
+
+        if (metadata.has_argument (COPY_FUNCTION)) {
+            var copy_func = metadata.get_string (COPY_FUNCTION);
+            node.set_string ("copy-function", copy_func);
+        }
+
+        if (metadata.has_argument (FREE_FUNCTION)) {
+            var free_func = metadata.get_string (FREE_FUNCTION);
+            node.set_string ("free-function", free_func);
+        }
+
+        if (metadata.has_argument (REF_FUNCTION)) {
+            var ref_func = metadata.get_string (REF_FUNCTION);
+            node.set_string ("glib:ref-func", ref_func);
+        }
+
+        if (metadata.has_argument (REF_SINK_FUNCTION)) {
+            var ref_sink_func = metadata.get_string (REF_SINK_FUNCTION);
+            node.set_string ("ref-sink-function", ref_sink_func);
+        }
+
+        if (metadata.has_argument (UNREF_FUNCTION)) {
+            var unref_func = metadata.get_string (UNREF_FUNCTION);
+            node.set_string ("glib:unref-func", unref_func);
+        }
+
+        if (metadata.has_argument (RETURN_VOID)) {
+            // TODO: Undo the gir-transformation
+        }
+
+        if (metadata.has_argument (RETURNS_MODIFIED_POINTER)) {
+            var ret_mod_p = metadata.get_bool (RETURNS_MODIFIED_POINTER);
+            node.set_bool ("returns-modified-pointer", ret_mod_p);
+        }
+
+        if (metadata.has_argument (DELEGATE_TARGET_CNAME)) {
+            var cname = metadata.get_string (DELEGATE_TARGET_CNAME);
+            node.set_string ("delegate-target-cname", cname);
+        }
+
+        if (metadata.has_argument (DESTROY_NOTIFY_CNAME)) {
+            var cname = metadata.get_string (DESTROY_NOTIFY_CNAME);
+            node.set_string ("destroy-notify-cname", cname);
+        }
+
+        if (metadata.has_argument (FINISH_VFUNC_NAME)) {
+            var name = metadata.get_string (FINISH_VFUNC_NAME);
+            node.set_string ("finish-vfunc-name", name);
+            node.tag = "virtual-method";
+        }
+
+        if (metadata.has_argument (NO_ACCESSOR_METHOD)) {
+            var no_accessor_method = metadata.get_bool (NO_ACCESSOR_METHOD);
+            node.set_bool ("no-accessor-method", no_accessor_method);
+        }
+
+        if (metadata.has_argument (CNAME)) {
+            node.set_string ("c:type", metadata.get_string (CNAME));
+        }
+
+        if (metadata.has_argument (DELEGATE_TARGET)) {
+            var delegate_target = metadata.get_bool (DELEGATE_TARGET);
+            node.set_bool ("delegate-target", delegate_target);
+        }
+
+        if (metadata.has_argument (CTYPE)) {
+            node.set_string ("c:type", metadata.get_string (CTYPE));
         }
     }
 

@@ -77,7 +77,7 @@ public class Gir.Node {
      * Return true if the attribute map contains this key.
      */
     public bool has_attr (string key) {
-        return attrs.contains (key);
+        return key in attrs;
     }
 
     /**

@@ -94,11 +94,11 @@ public class Builders.NamespaceBuilder {
         foreach (var g_rec in g_ns.all_of ("record")) {
             var builder = new StructBuilder (g_rec);
             if (! builder.skip ()) {
-                if (g_rec.get_string ("glib:get-type") == null) {
-                    v_ns.add_struct (builder.build ());
-                } else {
+                if (g_rec.has_attr ("glib:get-type")) {
                     var boxed_builder = new BoxedBuilder (g_rec);
                     v_ns.add_class (boxed_builder.build ());
+                } else {
+                    v_ns.add_struct (builder.build ());
                 }
             }
         }

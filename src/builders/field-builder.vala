@@ -51,6 +51,22 @@ public class Builders.FieldBuilder {
             add_array_attrs (v_field, v_arr_type, g_field.any_of ("array"));
         }
 
+        /* CCode attributes */
+        if (g_field.has_attr("delegate-target")) {
+            var dlg_target = g_field.get_bool ("delegate-target");
+            v_field.set_attribute_bool ("CCode", "delegate_target", dlg_target);
+        }
+
+        if (g_field.has_attr ("delegate-target-cname")) {
+            var cname = g_field.get_string ("delegate-target-cname");
+            v_field.set_attribute_string ("CCode", "delegate_target_cname", cname);
+        }
+
+        if (g_field.has_attr ("destroy-notify-cname")) {
+            var cname = g_field.get_string ("destroy-notify-cname");
+            v_field.set_attribute_string ("CCode", "destroy_notify_cname", cname);
+        }
+        
         return v_field;
     }
 

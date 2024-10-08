@@ -61,13 +61,8 @@ public class Builders.EnumBuilder : IdentifierBuilder {
         /* version */
         new InfoAttrsBuilder (g_enum).add_info_attrs (v_sym);
 
-        /* get_type method */
-        var type_id = g_enum.get_string ("glib:get-type");
-        if (type_id == null) {
-            v_sym.set_attribute_bool ("CCode", "has_type_id", false);
-        } else {
-            v_sym.set_attribute_string ("CCode", "type_id", type_id + " ()");
-        }
+        /* CCode attributes */
+        set_ccode_attrs (v_sym);
 
         /* functions */
         foreach (var g_function in g_enum.all_of ("function")) {

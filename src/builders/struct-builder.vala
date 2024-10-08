@@ -43,12 +43,7 @@ public class Builders.StructBuilder : IdentifierBuilder {
         new InfoAttrsBuilder (g_rec).add_info_attrs (v_struct);
 
         /* get_type method */
-        var type_id = g_rec.get_string ("glib:get-type");
-        if (type_id == null) {
-            v_struct.set_attribute_bool ("CCode", "has_type_id", false);
-        } else {
-            v_struct.set_attribute_string ("CCode", "type_id", type_id + " ()");
-        }
+        set_ccode_attrs (v_struct);
 
         /* add constructors */
         foreach (var g_ctor in g_rec.all_of ("constructor")) {

@@ -60,13 +60,8 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
             v_iface.set_attribute_string ("CCode", "type_cname", type_cname);
         }
 
-        /* get_type method */
-        var type_id = g_iface.get_string ("glib:get-type");
-        if (type_id == null) {
-            v_iface.set_attribute_bool ("CCode", "has_type_id", false);
-        } else {
-            v_iface.set_attribute_string ("CCode", "type_id", type_id + " ()");
-        }
+        /* CCode attributes */
+        set_ccode_attrs (v_iface);
 
         /* add functions */
         foreach (var g_function in g_iface.all_of ("function")) {

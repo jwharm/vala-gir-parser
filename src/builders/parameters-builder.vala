@@ -109,6 +109,12 @@ public class Builders.ParametersBuilder {
                 v_par.initializer = new Vala.NullLiteral ();
             }
 
+            /* CCode delegate_target attribute */
+            if (g_par.has_attr("delegate-target")) {
+                var dlg_target = g_par.get_bool ("delegate-target");
+                v_par.set_attribute_bool ("CCode", "delegate_target", dlg_target);
+            }
+    
             v_call.add_parameter (v_par);
         }
     }

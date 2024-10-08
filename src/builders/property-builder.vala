@@ -95,6 +95,10 @@ public class Builders.PropertyBuilder {
                 v_prop.set_attribute ("NoAccessorMethod", true);
             }
 
+            if (g_prop.has_attr ("no-accessor-method")) {
+                v_prop.set_attribute ("NoAccessorMethod", true);
+            }
+
             if (v_prop.get_attribute ("NoAccessorMethod") != null) {
                 setter_type.value_owned = false;
             }

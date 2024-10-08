@@ -91,14 +91,6 @@ public class Builders.MethodBuilder {
             v_method.set_attribute_string ("CCode", "cname", c_identifier);
         }
 
-        /* CCode attributes */
-		if (g_call.has_attr ("glib:finish-func")) {
-			v_method.set_attribute_string ("CCode", "finish_name", g_call.get_string ("glib:finish-func"));
-		}
-		if (g_call.has_attr ("glib:finish-instance")) {
-			v_method.set_attribute_string ("CCode", "finish_instance", g_call.get_string ("glib:finish-instance"));
-		}
-
         /* version and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
         if (g_call.has_attr ("moved-to")) {
@@ -196,6 +188,12 @@ public class Builders.MethodBuilder {
         var invoker_name = invoker_method.get_string ("name");
         if (invoker_method == null || invoker_name != g_call.get_string ("name")) {
             v_method.set_attribute ("NoWrapper", true);
+        }
+
+        /* override "NoWrapper" attribute from metadata */
+        if (g_call.has_attr ("no-wrapper")) {
+            var no_wrapper = g_call.get_bool ("no-wrapper");
+            v_method.set_attribute ("NoWrapper", no_wrapper);
         }
 
         /* "vfunc_name" attribute when invoker method has another name */
