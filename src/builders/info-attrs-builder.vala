@@ -43,17 +43,17 @@ public class Builders.InfoAttrsBuilder {
             v_sym.version.deprecated_since = since;
         }
 
-        if ("experimental" in g_info_attrs.attrs) {
+        if (g_info_attrs.has_attr ("experimental")) {
             var experimental = g_info_attrs.get_bool ("experimental");
             v_sym.set_attribute_bool ("Version", "experimental", experimental);
         }
 
-        if ("instance-idx" in g_info_attrs.attrs) {
+        if (g_info_attrs.has_attr ("instance-idx")) {
             var idx = (double) g_info_attrs.get_int ("instance-idx");
             v_sym.set_attribute_double ("CCode", "instance_pos", idx + 0.5);
         }
 
-        if ("hides" in g_info_attrs.attrs) {
+        if (g_info_attrs.has_attr ("hides")) {
             v_sym.hides = g_info_attrs.get_bool ("hides");
         }
 
@@ -81,22 +81,22 @@ public class Builders.InfoAttrsBuilder {
 			v_sym.set_attribute_string ("CCode", "finish_instance", name);
 		}
 
-        if ("feature-test-macro" in g_info_attrs.attrs) {
+        if (g_info_attrs.has_attr ("feature-test-macro")) {
             var macro = g_info_attrs.get_string ("feature-test-macro");
             v_sym.set_attribute_string ("CCode", "feature_test_macro", macro);
         }
 
-        if ("delegate-target" in g_info_attrs.attrs) {
+        if (g_info_attrs.has_attr ("delegate-target")) {
             var dlg_target = g_info_attrs.get_bool ("delegate-target");
             v_sym.set_attribute_bool ("CCode", "delegate_target", dlg_target);
         }
 
-        if ("printf-format" in g_info_attrs.attrs) {
+        if (g_info_attrs.has_attr ("printf-format")) {
             var printf_format = g_info_attrs.get_bool ("printf-format");
             v_sym.set_attribute ("PrintfFormat", printf_format);
         }
 
-        if ("returns-modified-pointer" in g_info_attrs.attrs) {
+        if (g_info_attrs.has_attr ("returns-modified-pointer")) {
             var ret_mod_p = g_info_attrs.get_bool ("returns-modified-pointer");
             v_sym.set_attribute ("ReturnsModifiedPointer", ret_mod_p);
         }
