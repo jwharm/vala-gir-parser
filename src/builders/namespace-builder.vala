@@ -40,33 +40,33 @@ public class Builders.NamespaceBuilder {
 
         /* bitfields */
         foreach (var g_bf in g_ns.all_of ("bitfield")) {
-            if (g_bf.get_bool ("introspectable", true)) {
-                EnumBuilder builder = new EnumBuilder (g_bf);
+            EnumBuilder builder = new EnumBuilder (g_bf);
+            if (! builder.skip ()) {
                 v_ns.add_enum (builder.build_enum ());
             }
         }
 
         /* callbacks */
         foreach (var g_cb in g_ns.all_of ("callback")) {
-            if (g_cb.get_bool ("introspectable", true)) {
-                var builder = new MethodBuilder (g_cb);
+            var builder = new MethodBuilder (g_cb);
+            if (! builder.skip ()) {
                 v_ns.add_delegate (builder.build_delegate ());
             }
         }
 
         /* classes */
         foreach (var g_class in g_ns.all_of ("class")) {
-            if (g_class.get_bool ("introspectable", true)) {
-                ClassBuilder builder = new ClassBuilder (g_class);
+            ClassBuilder builder = new ClassBuilder (g_class);
+            if (! builder.skip ()) {
                 v_ns.add_class (builder.build ());
             }
         }
 
         /* enumerations (and error domains) */
         foreach (var g_enum in g_ns.all_of ("enumeration")) {
-            if (g_enum.get_bool ("introspectable", true)) {
-                var builder = new EnumBuilder (g_enum);
-                if (g_enum.get_string ("glib:error-domain") != null) {
+            var builder = new EnumBuilder (g_enum);
+            if (! builder.skip ()) {
+                if (g_enum.has_attr ("glib:error-domain")) {
                     v_ns.add_error_domain (builder.build_error_domain ());
                 } else {
                     v_ns.add_enum (builder.build_enum ());
@@ -84,8 +84,8 @@ public class Builders.NamespaceBuilder {
 
         /* interfaces */
         foreach (var g_iface in g_ns.all_of ("interface")) {
-            if (g_iface.get_bool ("introspectable", true)) {
-                InterfaceBuilder builder = new InterfaceBuilder (g_iface);
+            InterfaceBuilder builder = new InterfaceBuilder (g_iface);
+            if (! builder.skip ()) {
                 v_ns.add_interface (builder.build ());
             }
         }
