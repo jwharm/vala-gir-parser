@@ -111,6 +111,10 @@ public class Builders.FieldBuilder {
     private bool has_naming_conflict () {
         var name = g_field.get_string ("name");
         foreach (var child in g_field.parent_node.children) {
+            if (child == g_field) {
+                continue;
+            }
+            
             if (child.attrs["name"]?.replace ("-", "_") == name) {
                 return true;
             }
