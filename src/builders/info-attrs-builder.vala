@@ -65,7 +65,11 @@ public class Builders.InfoAttrsBuilder {
 
 		if (g_info_attrs.has_attr ("glib:finish-func")) {
             var finish_func = g_info_attrs.get_string ("glib:finish-func");
-            var expected = g_info_attrs.get_string ("name") + "_finish";
+            var name = g_info_attrs.get_string ("name");
+            if (name.has_suffix ("_async")) {
+                name = name.substring (0, name.length - 6);
+            }
+            var expected = name + "_finish";
             if (finish_func != expected) {
                 v_sym.set_attribute_string ("CCode", "finish_name", finish_func);
             }
