@@ -185,7 +185,7 @@ public class Builders.MethodBuilder {
 
         /* "NoWrapper" attribute when no invoker method with the same name */
         var invoker_method = get_invoker_method ();
-        var invoker_name = invoker_method.get_string ("name");
+        var invoker_name = invoker_method?.get_string ("name");
         if (invoker_method == null || invoker_name != g_call.get_string ("name")) {
             v_method.set_attribute ("NoWrapper", true);
         }
