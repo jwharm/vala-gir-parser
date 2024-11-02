@@ -16,6 +16,20 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * The Gir.Node class represents an element from a GIR XML file. It contains:
+ *- A parent Node
+ *- A `Map<string, string>` of attributes (`name`, `c:type`, etc)
+ *- A `List<Node>` of child nodes
+ *- The text contents of the XML element (for example in a `Gir.Doc` node)
+ *- A Vala `SourceReference` with the location in the GIR XML file (for error
+ *  reporting)
+ *
+ * There are also utility functions to read and update attributes and child
+ * nodes, to quickly create a new node with attributes, or transform a GIR tree
+ * to string or XML format.
+ */
 public class Gir.Node {
     public weak Node? parent_node = null;
     public string tag;

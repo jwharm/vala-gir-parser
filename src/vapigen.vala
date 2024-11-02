@@ -20,7 +20,7 @@
  *  Jürg Billeter <j@bitron.ch>
  */
 
-/* Copied from Vala 0.56 for testing purposes */
+/* Copied from Vala 0.56 */
 
 using GLib;
 using Vala;

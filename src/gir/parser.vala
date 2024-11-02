@@ -19,6 +19,10 @@
 
 using Vala;
 
+/**
+ * The Gir.Parser class reads a GIR XML file and outputs a tree of Gir.Node
+ * objects.
+ */
 public class Gir.Parser {
     private SourceFile source_file;
     private SourceLocation begin;

@@ -22,6 +22,8 @@
  * 	Luca Bruno <lucabru@src.gnome.org>
  */
 
+/* Copied from Vala 0.56 */
+
 using Vala;
 
 public enum GirMetadata.ArgumentType {
