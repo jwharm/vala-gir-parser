@@ -112,7 +112,7 @@ public class GirMetadata.MetadataProcessor {
             }
         }
 
-        if (metadata.has_argument (CHEADER_FILENAME) && node.tag == "namespace") {
+        if (metadata.has_argument (CHEADER_FILENAME) && tag == "namespace") {
             var repo = node.parent_node;
             repo.remove ("c:include");
 
@@ -134,7 +134,7 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (OWNED)) {
-            if (node.tag == "parameter") {
+            if (tag == "parameter") {
                 node.set_string ("transfer-ownership", "full");
             } else if (node.has_any ("return-value")) {
                 node.any_of ("return-value")
@@ -143,7 +143,7 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (UNOWNED)) {
-            if (node.tag == "parameter") {
+            if (tag == "parameter") {
                 node.set_string ("transfer-ownership", "none");
             } else if (node.has_any ("return-value")) {
                 node.any_of ("return-value")
@@ -160,7 +160,7 @@ public class GirMetadata.MetadataProcessor {
 
         if (metadata.has_argument (NULLABLE)) {
             var nullable = metadata.get_bool (NULLABLE);
-            if (node.tag == "parameter") {
+            if (tag == "parameter") {
                 node.set_bool ("nullable", nullable);
             } else if (node.has_any ("return-value")) {
                 node.any_of ("return-value")
@@ -230,7 +230,7 @@ public class GirMetadata.MetadataProcessor {
             }
         }
 
-        if (metadata.has_argument (DEFAULT) && node.tag == "parameter") {
+        if (metadata.has_argument (DEFAULT) && tag == "parameter") {
             /* TODO: parse expression from string after building the Vala AST */
             node.set_string ("default", metadata.get_string (DEFAULT));
         }
@@ -340,12 +340,11 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (ERRORDOMAIN)) {
-            /* the value of this attribute isn't actually used, so put a dummy
-             * value in it */
-            node.set_string ("glib:error-domain", "DUMMY");
+            var error_domain = metadata.get_string (ERRORDOMAIN);
+            node.set_string ("glib:error-domain", error_domain);
         }
 
-        if (metadata.has_argument (DESTROYS_INSTANCE) && node.tag == "method") {
+        if (metadata.has_argument (DESTROYS_INSTANCE) && tag == "method") {
             /* a method destroys its instance when ownership is transferred to
              * the instance parameter */
             node.any_of ("parameters")
@@ -353,7 +352,8 @@ public class GirMetadata.MetadataProcessor {
                 .set_string ("transfer-ownership", "full");
         }
 
-        if (metadata.has_argument (BASE_TYPE) && node.tag == "glib:boxed") {
+        if (metadata.has_argument (BASE_TYPE)
+                && (tag == "alias" || tag == "glib:boxed")) {
             node.set_string ("parent", metadata.get_string (BASE_TYPE));
         }
 
@@ -490,9 +490,9 @@ public class GirMetadata.MetadataProcessor {
         Gir.Node current_node = repository;
         foreach (string name in path.split(".")) {
             if (! move_down_gir_tree (ref current_node, name)) {
-                var new_ns = Gir.Node.create ("namespace", source, "name", name);
-                current_node.add (new_ns);
-                current_node = new_ns;
+                var ns = Gir.Node.create ("namespace", source, "name", name);
+                current_node.add (ns);
+                current_node = ns;
             }
         }
 
@@ -518,33 +518,33 @@ public class GirMetadata.MetadataProcessor {
         return false;
     }
 
-	private void push_metadata (string? name, string tag) {
-		metadata_stack.add (get_current_metadata (name, tag));
-	}
+    private void push_metadata (string? name, string tag) {
+        metadata_stack.add (get_current_metadata (name, tag));
+    }
 
     private Metadata peek_metadata () {
         return metadata_stack.last ();
     }
 
-	private void pop_metadata () {
-		metadata_stack.remove_at (metadata_stack.size - 1);
-	}
+    private void pop_metadata () {
+        metadata_stack.remove_at (metadata_stack.size - 1);
+    }
 
-	private Metadata get_current_metadata (string? name, string tag) {
+    private Metadata get_current_metadata (string? name, string tag) {
         var selector = tag.replace ("glib:", "");
 
-		/* Give a transparent union the generic name "union" */
-		if (selector == "union" && name == null) {
-			name = "union";
-		}
+        /* Give a transparent union the generic name "union" */
+        if (selector == "union" && name == null) {
+            name = "union";
+        }
 
-		if (name == null) {
-			return Metadata.empty;
-		}
-		
+        if (name == null) {
+            return Metadata.empty;
+        }
+        
         var child_selector = selector.replace ("-", "_");
-		var child_name = name.replace ("-", "_");
+        var child_name = name.replace ("-", "_");
         var result = peek_metadata ().match_child (child_name, child_selector);
-		return result;
-	}
+        return result;
+    }
 }

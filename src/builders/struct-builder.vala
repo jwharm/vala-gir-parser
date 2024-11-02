@@ -39,7 +39,7 @@ public class Builders.StructBuilder : IdentifierBuilder {
             v_struct.set_attribute_string ("CCode", "cname", c_type);
         }
 
-        /* version */
+        /* attributes */
         new InfoAttrsBuilder (g_rec).add_info_attrs (v_struct);
 
         /* get_type method */

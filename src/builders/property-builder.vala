@@ -133,7 +133,7 @@ public class Builders.PropertyBuilder {
             v_arr_type.element_type.value_owned = true;
         }
 
-        /* version */
+        /* attributes */
         new InfoAttrsBuilder (g_prop).add_info_attrs (v_prop);
 
         /* there is no information about the internal ownership, so assume

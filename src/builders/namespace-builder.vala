@@ -62,7 +62,7 @@ public class Builders.NamespaceBuilder {
             }
         }
 
-        /* enumerations (and error domains) */
+        /* enumerations and error domains */
         foreach (var g_enum in g_ns.all_of ("enumeration")) {
             var builder = new EnumBuilder (g_enum);
             if (! builder.skip ()) {

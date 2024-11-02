@@ -58,7 +58,7 @@ public class Builders.EnumBuilder : IdentifierBuilder {
             v_sym.set_attribute_string ("CCode", "cname", c_type);
         }
 
-        /* version */
+        /* attributes */
         new InfoAttrsBuilder (g_enum).add_info_attrs (v_sym);
 
         /* CCode attributes */

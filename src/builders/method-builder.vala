@@ -42,7 +42,7 @@ public class Builders.MethodBuilder {
             v_cm.set_attribute_string ("CCode", "cname", g_call.get_string ("c:identifier"));
         }
 
-        /* version and deprecation */
+        /* attributes and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_cm);
         if (g_call.has_attr ("moved-to")) {
             v_cm.version.replacement = g_call.get_string ("moved-to");
@@ -91,7 +91,7 @@ public class Builders.MethodBuilder {
             v_method.set_attribute_string ("CCode", "cname", c_identifier);
         }
 
-        /* version and deprecation */
+        /* attributes and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
         if (g_call.has_attr ("moved-to")) {
             v_method.version.replacement = g_call.get_string ("moved-to");
@@ -109,6 +109,11 @@ public class Builders.MethodBuilder {
     }
 
     public Vala.Method build_method () {
+        /* check if the method is set to "virtual" in metadata */
+        if (g_call.get_bool ("virtual")) {
+            return build_virtual_method ();
+        }
+
         /* return type */
         var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
@@ -122,7 +127,7 @@ public class Builders.MethodBuilder {
             v_method.set_attribute_string ("CCode", "cname", c_identifier);
         }
 
-        /* version and deprecation */
+        /* attributes and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
         if (g_call.has_attr ("moved-to")) {
             v_method.version.replacement = g_call.get_string ("moved-to");
@@ -160,6 +165,11 @@ public class Builders.MethodBuilder {
     }
 
     public Vala.Method build_virtual_method () {
+        /* check if the method is set to "virtual"=false in metadata */
+        if (! g_call.get_bool ("virtual", true)) {
+            return build_method ();
+        }
+
         /* return type */
         var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
@@ -177,7 +187,7 @@ public class Builders.MethodBuilder {
             add_array_return_type_attributes (v_method);
         }
 
-        /* version and deprecation */
+        /* attributes and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
         if (g_call.has_attr ("moved-to")) {
             v_method.version.replacement = g_call.get_string ("moved-to");
@@ -233,7 +243,7 @@ public class Builders.MethodBuilder {
             add_array_return_type_attributes (v_del);
         }
 
-        /* version */
+        /* attributes */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_del);
 
         /* parameters */
@@ -263,7 +273,7 @@ public class Builders.MethodBuilder {
             add_array_return_type_attributes (v_sig);
         }
 
-        /* version */
+        /* attributes */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_sig);
 
         /* parameters */

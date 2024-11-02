@@ -48,7 +48,9 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         }
 
         /* compact */
-        v_class.set_attribute ("Compact", g_class.get_bool ("compact"));
+        if (g_class.has_attr ("compact")) {
+            v_class.set_attribute ("Compact", g_class.get_bool ("compact"));
+        }
 
         /* cname */
         var c_type = g_class.get_string ("c:type");
@@ -56,7 +58,7 @@ public class Builders.ClassBuilder : IdentifierBuilder {
             v_class.set_attribute_string ("CCode", "cname", c_type);
         }
 
-        /* version */
+        /* attributes */
         new InfoAttrsBuilder (g_class).add_info_attrs (v_class);
 
         /* type_cname */

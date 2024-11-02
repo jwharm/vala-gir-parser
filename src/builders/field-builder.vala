@@ -42,7 +42,7 @@ public class Builders.FieldBuilder {
         var v_field = new Field (g_field.get_string ("name"), v_type, null, g_field.source);
         v_field.access = PUBLIC;
 
-        /* version */
+        /* attributes */
         new InfoAttrsBuilder (g_field).add_info_attrs (v_field);
 
         /* array attributes */

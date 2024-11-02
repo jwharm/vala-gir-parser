@@ -53,6 +53,11 @@ public class Builders.InfoAttrsBuilder {
             v_sym.set_attribute_double ("CCode", "instance_pos", idx + 0.5);
         }
 
+        if (g_info_attrs.has_attr ("type-get-function")) {
+            var get_type = g_info_attrs.get_string ("type-get-function");
+            v_sym.set_attribute_string ("CCode", "type_get_function", get_type);
+        }
+
         if (g_info_attrs.has_attr ("hides")) {
             v_sym.hides = g_info_attrs.get_bool ("hides");
         }
@@ -98,6 +103,11 @@ public class Builders.InfoAttrsBuilder {
         if (g_info_attrs.has_attr ("printf-format")) {
             var printf_format = g_info_attrs.get_bool ("printf-format");
             v_sym.set_attribute ("PrintfFormat", printf_format);
+        }
+
+        if (g_info_attrs.has_attr ("sentinel")) {
+            var sentinel = g_info_attrs.get_string ("sentinel");
+            v_sym.set_attribute_string ("CCode", "sentinel", sentinel);
         }
 
         if (g_info_attrs.has_attr ("returns-modified-pointer")) {

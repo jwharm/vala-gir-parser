@@ -50,7 +50,7 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
             v_iface.set_attribute_string ("CCode", "cname", c_type);
         }
 
-        /* version */
+        /* attributes */
         new InfoAttrsBuilder (g_iface).add_info_attrs (v_iface);
 
         /* type_cname */

@@ -55,7 +55,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
             v_class.set_attribute_string ("CCode", "lower_case_csuffix", symbol_prefix);
         }
 
-        /* version */
+        /* attributes */
         new InfoAttrsBuilder(g_rec).add_info_attrs (v_class);
 
         /* CCode attributes */
