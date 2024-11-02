@@ -1,7 +1,7 @@
 # vala-gir-parser
 
-Reimplementation of vapigen: a tool to generate VAPI files from GIR files. The
-tool is designed with a focus on easy maintainability.
+Reimplementation of the Vala GIR parser and VAPI generator: a new backend for
+`vapigen`. The tool is designed with a focus on easy maintainability.
 
 ## Build and usage
 
@@ -59,7 +59,8 @@ collection).
 Before generating a VAPI, a few transformations are applied to the GIR node
 tree. For example, methods with one out-parameter that return void, are updated
 to return the out-parameter value. Next, all instructions from the GIR Metadata
-file (when available for this GIR file) are applied to the GIR node tree.
+file (when available for this GIR file) are applied to the GIR node tree. (This
+part is still work in progress.)
 
 ### VAPI generator
 
@@ -68,8 +69,9 @@ into Vala symbols. For example, `ClassBuilder` generates a Vala Class with all
 its fields, methods etc. from a GIR class. The `NamespaceBuilder` class ties the
 output of all the builders together into a new namespace.
 
-The existing `vapigen` utility is still used to read command line arguments,
-kick-off the parser process, and write the results into a VAPI file.
+Because `vapigen` is used to read command line arguments, kick-off the parser
+process, and write the results into a VAPI file, that functionality is not
+impacted.
 
 ## Contributing
 
