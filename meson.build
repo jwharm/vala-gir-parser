@@ -15,6 +15,7 @@ dependencies = [
 sources = files(
 		'src/gir-parser.vala',
 		'src/vapigen.vala',
+		'src/builders/alias-builder.vala',
 		'src/builders/boxed-builder.vala',
 		'src/builders/class-builder.vala',
 		'src/builders/constant-builder.vala',
