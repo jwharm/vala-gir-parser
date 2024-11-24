@@ -134,12 +134,6 @@ namespace Gir {
             /* remove the out-parameter */
             node.any_of ("parameters").children.remove (last_param);
         }
-
-        public static int test (int? a, int? b) {
-            if (a == null) return -1;
-            if (b == null) return -2;
-            return a+b;
-        }
     }
 
     public class RefInstanceParam : Object, Transformation {
