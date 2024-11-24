@@ -27,7 +27,7 @@ public class Builders.ConstantBuilder {
         this.g_constant = g_constant;
     }
 
-    public Vala.Constant build () {
+    public Constant build () {
         /* type */
         var type = new DataTypeBuilder (g_constant.any_of ("type", "array")).build ();
 

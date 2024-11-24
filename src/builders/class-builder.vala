@@ -28,9 +28,9 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         this.g_class = g_class;
     }
 
-    public Vala.Class build () {
+    public Class build () {
         /* the class */
-        Vala.Class v_class = new Vala.Class (g_class.get_string ("name"), g_class.source);
+        Class v_class = new Class (g_class.get_string ("name"), g_class.source);
         v_class.access = PUBLIC;
         v_class.is_abstract = g_class.get_bool ("abstract");
         v_class.is_sealed = g_class.get_bool ("final");

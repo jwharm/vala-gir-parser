@@ -28,9 +28,9 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
         this.g_iface = g_iface;
     }
 
-    public Vala.Interface build () {
+    public Interface build () {
         /* the interface */
-        Vala.Interface v_iface = new Vala.Interface (g_iface.get_string ("name"), g_iface.source);
+        Interface v_iface = new Interface (g_iface.get_string ("name"), g_iface.source);
         v_iface.access = PUBLIC;
 
         /* prerequisite interfaces */

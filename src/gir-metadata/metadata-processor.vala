@@ -134,20 +134,22 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (OWNED)) {
+            var transfer = metadata.get_bool (OWNED) ? "full" : "none";
             if (tag == "parameter") {
-                node.set_string ("transfer-ownership", "full");
+                node.set_string ("transfer-ownership", transfer);
             } else if (node.has_any ("return-value")) {
                 node.any_of ("return-value")
-                    .set_string ("transfer-ownership", "full");
+                    .set_string ("transfer-ownership", transfer);
             }
         }
 
         if (metadata.has_argument (UNOWNED)) {
+            var transfer = metadata.get_bool (UNOWNED) ? "none" : "full";
             if (tag == "parameter") {
-                node.set_string ("transfer-ownership", "none");
+                node.set_string ("transfer-ownership", transfer);
             } else if (node.has_any ("return-value")) {
                 node.any_of ("return-value")
-                    .set_string ("transfer-ownership", "none");
+                    .set_string ("transfer-ownership", transfer);
             }
         }
 

@@ -28,9 +28,9 @@ public class Builders.StructBuilder : IdentifierBuilder {
         this.g_rec = g_rec;
     }
 
-    public Vala.Struct build () {
+    public Struct build () {
         /* the struct */
-        Vala.Struct v_struct = new Vala.Struct (g_rec.get_string ("name"), g_rec.source);
+        Struct v_struct = new Struct (g_rec.get_string ("name"), g_rec.source);
         v_struct.access = PUBLIC;
 
         /* c_name */

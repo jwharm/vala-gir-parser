@@ -22,9 +22,9 @@ using Vala;
 public class Builders.ParametersBuilder {
 
     private Gir.Node? g_call;
-    private Vala.Callable? v_call;
+    private Callable? v_call;
 
-    public ParametersBuilder (Gir.Node? g_call, Vala.Callable? v_call) {
+    public ParametersBuilder (Gir.Node? g_call, Callable? v_call) {
         this.g_call = g_call;
         this.v_call = v_call;
     }
@@ -78,8 +78,8 @@ public class Builders.ParametersBuilder {
             v_par = new Vala.Parameter (g_par.get_string ("name"), v_type, g_par.source);
 
             /* array parameter */
-            if (v_type is Vala.ArrayType) {
-                unowned var v_arr_type = (Vala.ArrayType) v_type;
+            if (v_type is ArrayType) {
+                unowned var v_arr_type = (ArrayType) v_type;
                 add_array_attrs (v_par, v_arr_type, g_par.any_of ("array"));
                 v_arr_type.element_type.value_owned = true;
             }
@@ -106,7 +106,7 @@ public class Builders.ParametersBuilder {
 
             /* null-initializer for GCancellable parameters */
             if (v_type.to_string () == "GLib.Cancellable?") {
-                v_par.initializer = new Vala.NullLiteral ();
+                v_par.initializer = new NullLiteral ();
             }
 
             /* CCode delegate_target attribute */
@@ -119,8 +119,8 @@ public class Builders.ParametersBuilder {
         }
     }
 
-    public void add_array_attrs (Vala.Symbol v_sym,
-                                 Vala.ArrayType v_type,
+    public void add_array_attrs (Symbol v_sym,
+                                 ArrayType v_type,
                                  Gir.Node g_arr) {
         /* don't emit array attributes for a GLib.GenericArray */
         if (g_arr.get_string ("name") == "GLib.PtrArray") {

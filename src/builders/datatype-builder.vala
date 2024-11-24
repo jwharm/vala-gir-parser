@@ -21,15 +21,15 @@ using Vala;
 
 public class Builders.DataTypeBuilder {
 
-    private Gir.Node g_anytype;
+    private Gir.Node? g_anytype;
 
-    public DataTypeBuilder (Gir.Node g_anytype) {
+    public DataTypeBuilder (Gir.Node? g_anytype) {
         this.g_anytype = g_anytype;
     }
 
-    /* Create Vala.DataType from a Gir AnyType, which is either 
+    /* Create Vala DataType from a Gir AnyType, which is either 
      * an <array> or <type> element. */
-    public Vala.DataType build () {
+    public DataType build () {
         if (g_anytype == null) {
             Report.error (null, "expected <array> or <type>");
             return new VoidType ();
@@ -49,8 +49,8 @@ public class Builders.DataTypeBuilder {
         return new ArrayType (v_type, 1, g_anytype.source);
     }
 
-    /* Create Vala.DataType from a Gir <type> element. */
-    private Vala.DataType build_type (string name,
+    /* Create Vala DataType from a Gir <type> element. */
+    private DataType build_type (string name,
                                       Vala.List<Gir.Node> g_inner_type,
                                       SourceReference? source) {
         string? builtin = to_builtin_type (name);
@@ -68,9 +68,9 @@ public class Builders.DataTypeBuilder {
 
         return v_type;
     }
-    
-    /* Create Vala.DataType from a string (for example "Gio.File"). */
-    public static Vala.DataType from_name (string name,
+
+    /* Create Vala DataType from a string (for example "Gio.File"). */
+    public static DataType from_name (string name,
                                            SourceReference? source = null) {
         if (name == "none") {
             return new VoidType (source);
@@ -150,6 +150,13 @@ public class Builders.DataTypeBuilder {
         }
     }
 
+    /* Check if this data type is a SimpleType (numeric, size or offset). */
+    public bool is_simple_type () {
+        return g_anytype?.tag == "type"
+            && (to_builtin_type (g_anytype.get_string ("name")) ?? "string")
+                    != "string";
+    }
+    
     /* Generate a string representation for a Gir <type> or <array> so they
      * can be easily compared for equality. */
     public static string generate_string (Gir.Node? g_anytype) {

@@ -17,6 +17,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+using Builders;
+
 /**
  * Contains transformations that are applied to the gir tree before metadata
  * is applied and the Vala AST is generated.
@@ -83,8 +85,8 @@ namespace Gir {
 
     public class OutArgToReturnValue : Object, Transformation {
 
-        /* determine if there is one out parameter that could be the return
-         * value */
+        /* determine if there is one real-non-null-struct out parameter that
+           should be the return value */
         public bool can_transform (Node node) {
             var return_value = node.any_of ("return-value");
             var parameters = node.any_of ("parameters");
@@ -109,7 +111,12 @@ namespace Gir {
             }
 
             var last_param = node.any_of ("parameters").children.last ();
+            var type = last_param.any_of ("type");
+            var is_simple_type = new DataTypeBuilder (type).is_simple_type ();
             return num_out_parameters == 1
+                && type != null
+                && !is_simple_type
+                && last_param.get_bool ("caller-allocates", true)
                 && last_param.get_string ("direction") == "out"
                 && last_param.get_bool ("nullable") == false;
         }
@@ -121,8 +128,17 @@ namespace Gir {
             /* set return type to the type of the out-parameter */
             node.any_of ("return-value").children = last_param.children;
 
+            /* mark return type explicitly as non-nullable */
+            node.any_of ("return-value").set_bool ("nullable", false);
+
             /* remove the out-parameter */
             node.any_of ("parameters").children.remove (last_param);
+        }
+
+        public static int test (int? a, int? b) {
+            if (a == null) return -1;
+            if (b == null) return -2;
+            return a+b;
         }
     }
 

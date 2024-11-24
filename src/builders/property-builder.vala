@@ -27,7 +27,7 @@ public class Builders.PropertyBuilder {
         this.g_prop = g_prop;
     }
 
-    public Vala.Property build () {
+    public Property build () {
         /* data type */
         var v_type = new DataTypeBuilder (g_prop.any_of ("type", "array")).build ();
         v_type.value_owned = g_prop.get_string ("transfer-ownership") != "none";
@@ -36,7 +36,7 @@ public class Builders.PropertyBuilder {
         var name = g_prop.get_string ("name").replace ("-", "_");
 
         /* create the property */
-        var v_prop = new Vala.Property (name, v_type, null, null, g_prop.source);
+        var v_prop = new Property (name, v_type, null, null, g_prop.source);
         v_prop.access = PUBLIC;
         v_prop.is_abstract = g_prop.parent_node.tag == "interface";
 
@@ -125,8 +125,8 @@ public class Builders.PropertyBuilder {
         }
 
         /* array attributes */
-        if (v_type is Vala.ArrayType) {
-            unowned var v_arr_type = (Vala.ArrayType) v_type;
+        if (v_type is ArrayType) {
+            unowned var v_arr_type = (ArrayType) v_type;
             var g_arr_type = g_prop.any_of ("array");
             var builder = new ParametersBuilder (null, null);
             builder.add_array_attrs (v_prop, v_arr_type, g_arr_type);

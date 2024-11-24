@@ -34,7 +34,7 @@ public class Builders.FieldBuilder {
                 || has_naming_conflict ();
     }
 
-    public Vala.Field build () {
+    public Field build () {
         /* type */
         var v_type = new DataTypeBuilder (g_field.any_of ("type", "array")).build ();
 
@@ -46,8 +46,8 @@ public class Builders.FieldBuilder {
         new InfoAttrsBuilder (g_field).add_info_attrs (v_field);
 
         /* array attributes */
-        if (v_type is Vala.ArrayType) {
-            unowned var v_arr_type = (Vala.ArrayType) v_type;
+        if (v_type is ArrayType) {
+            unowned var v_arr_type = (ArrayType) v_type;
             add_array_attrs (v_field, v_arr_type, g_field.any_of ("array"));
         }
 
@@ -70,8 +70,8 @@ public class Builders.FieldBuilder {
         return v_field;
     }
 
-    public void add_array_attrs (Vala.Symbol v_arr_field,
-                                 Vala.ArrayType v_arr_type,
+    public void add_array_attrs (Symbol v_arr_field,
+                                 ArrayType v_arr_type,
                                  Gir.Node g_arr) {
         /* fixed length */
         if (g_arr.has_attr ("fixed-size")) {

@@ -27,9 +27,9 @@ public class Builders.NamespaceBuilder {
         this.g_ns = ns;
     }
 
-    public Vala.Namespace build () {
+    public Namespace build () {
         /* create the namespace */
-        Vala.Namespace v_ns = new Vala.Namespace (g_ns.get_string ("name"), g_ns.source);
+        Namespace v_ns = new Namespace (g_ns.get_string ("name"), g_ns.source);
 
         /* attributes */
         v_ns.set_attribute_string ("CCode", "cheader_filename", get_cheader_filename ());
@@ -109,6 +109,11 @@ public class Builders.NamespaceBuilder {
         foreach (var g_constant in g_ns.all_of ("constant")) {
             var builder = new ConstantBuilder (g_constant);
             v_ns.add_constant (builder.build ());
+        }
+
+        /* aliases */
+        foreach (var g_alias in g_ns.all_of ("alias")) {
+            new AliasBuilder (g_ns, v_ns, g_alias).build ();
         }
 
         return v_ns;

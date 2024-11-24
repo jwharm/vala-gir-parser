@@ -27,7 +27,7 @@ public class Builders.MethodBuilder {
         this.g_call = g_call;
     }
 
-    public Vala.CreationMethod build_constructor () {
+    public CreationMethod build_constructor () {
         /* name */
         var name = get_constructor_name ();
 
@@ -71,7 +71,7 @@ public class Builders.MethodBuilder {
         return v_cm;
     }
 
-    public Vala.Method build_function () {
+    public Method build_function () {
         /* return type */
         var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
@@ -81,7 +81,7 @@ public class Builders.MethodBuilder {
         v_method.binding = STATIC;
 
         /* array return type attributes */
-        if (v_return_type is Vala.ArrayType) {
+        if (v_return_type is ArrayType) {
             add_array_return_type_attributes (v_method);
         }
 
@@ -108,7 +108,7 @@ public class Builders.MethodBuilder {
         return v_method;
     }
 
-    public Vala.Method build_method () {
+    public Method build_method () {
         /* check if the method is set to "virtual" in metadata */
         if (g_call.get_bool ("virtual")) {
             return build_virtual_method ();
@@ -157,14 +157,14 @@ public class Builders.MethodBuilder {
         }
 
         /* array return type attributes */
-        if (v_return_type is Vala.ArrayType) {
+        if (v_return_type is ArrayType) {
             add_array_return_type_attributes (v_method);
         }
 
         return v_method;
     }
 
-    public Vala.Method build_virtual_method () {
+    public Method build_virtual_method () {
         /* check if the method is set to "virtual"=false in metadata */
         if (! g_call.get_bool ("virtual", true)) {
             return build_method ();
@@ -183,7 +183,7 @@ public class Builders.MethodBuilder {
         }
 
         /* array return type attributes */
-        if (v_return_type is Vala.ArrayType) {
+        if (v_return_type is ArrayType) {
             add_array_return_type_attributes (v_method);
         }
 
@@ -222,7 +222,7 @@ public class Builders.MethodBuilder {
         return v_method;
     }
 
-    public Vala.Delegate build_delegate () {
+    public Delegate build_delegate () {
         /* return type */
         var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
@@ -239,7 +239,7 @@ public class Builders.MethodBuilder {
         }
 
         /* array return type attributes */
-        if (v_return_type is Vala.ArrayType) {
+        if (v_return_type is ArrayType) {
             add_array_return_type_attributes (v_del);
         }
 
@@ -269,7 +269,7 @@ public class Builders.MethodBuilder {
         v_sig.access = PUBLIC;
 
         /* array return type attributes */
-        if (v_return_type is Vala.ArrayType) {
+        if (v_return_type is ArrayType) {
             add_array_return_type_attributes (v_sig);
         }
 
@@ -296,12 +296,28 @@ public class Builders.MethodBuilder {
         return v_sig;
     }
 
-    private Vala.DataType build_return_type (Gir.Node g_return) {
+    private DataType build_return_type (Gir.Node g_return) {
         /* create the return type */
-        var v_return_type = new DataTypeBuilder (g_return.any_of ("type", "array")).build ();
+        var g_anytype = g_return.any_of ("type", "array");
+        var v_return_type = new DataTypeBuilder (g_anytype).build ();
 
         /* nullability */
-        v_return_type.nullable = g_return.get_bool ("nullable") || g_return.get_bool ("allow-none");
+        v_return_type.nullable = false;
+
+        if (g_return.has_attr ("nullable")) {
+            v_return_type.nullable = g_return.get_bool ("nullable");
+        } else if (g_return.has_attr ("allow-none")) {
+            v_return_type.nullable = g_return.get_bool ("allow-none");
+        } else if (g_anytype.tag == "array") {
+            v_return_type.nullable = true;
+        }
+
+        /* FIXME:
+         * Functions which return structs currently generate incorrect C code
+         * since valac thinks the struct is actually an out argument.  Mark
+         * the return values of functions returning structs as nullable in order
+         * to prevent valac from adding extra arguments.
+         */
 
         /* ownership transfer */
         var transfer_ownership = g_return.get_string ("transfer-ownership");
@@ -315,8 +331,8 @@ public class Builders.MethodBuilder {
         return v_return_type;
     }
 
-    private void add_array_return_type_attributes (Vala.Callable v_method) {
-        unowned var v_type = (Vala.ArrayType) v_method.return_type;
+    private void add_array_return_type_attributes (Callable v_method) {
+        unowned var v_type = (ArrayType) v_method.return_type;
         var g_type = g_call.any_of ("return-value").any_of ("array");
         var builder = new ParametersBuilder (g_call, v_method);
         builder.add_array_attrs (v_method, v_type, g_type);
@@ -465,7 +481,7 @@ public class Builders.MethodBuilder {
 
             /* for types without a symbol-prefix defined, use the name */
             if (prefix == null && node.has_attr ("name")) {
-                prefix = Vala.Symbol.camel_case_to_lower_case (node.get_string ("name"));
+                prefix = Symbol.camel_case_to_lower_case (node.get_string ("name"));
             }
 
             if (prefix != null) {

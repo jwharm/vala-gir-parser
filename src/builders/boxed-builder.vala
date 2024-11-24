@@ -28,9 +28,9 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         this.g_rec = g_rec;
     }
 
-    public Vala.Class build () {
+    public Class build () {
         /* create a Vala compact class for boxed types */
-        Vala.Class v_class = new Vala.Class (g_rec.get_string ("name"), g_rec.source);
+        Class v_class = new Class (g_rec.get_string ("name"), g_rec.source);
         v_class.access = PUBLIC;
 
         /* compact */
@@ -48,40 +48,11 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
             v_class.set_attribute_string ("CCode", "cname", c_type);
         }
 
-        /* csuffix */
-        var expected_prefix = Symbol.camel_case_to_lower_case (g_rec.get_string ("name"));
-        var symbol_prefix = g_rec.get_string ("c:symbol-prefix");
-        if (symbol_prefix != expected_prefix) {
-            v_class.set_attribute_string ("CCode", "lower_case_csuffix", symbol_prefix);
-        }
-
         /* attributes */
         new InfoAttrsBuilder(g_rec).add_info_attrs (v_class);
 
         /* CCode attributes */
         set_ccode_attrs (v_class);
-
-        /* if copy_function and/or free_function are set */
-        if (g_rec.has_attr ("copy-function") || g_rec.has_attr ("free-function")) {
-            var copy_func = g_rec.get_string ("copy-function") ?? "g_boxed_copy";
-            var free_func = g_rec.get_string ("free-function") ?? "g_boxed_free";
-            v_class.set_attribute_string ("CCode", "copy_function", copy_func);
-            v_class.set_attribute_string ("CCode", "free_function", free_func);
-        }
-        /* else, try to find a ref_function and unref_function */
-        else {
-            var ref_func = find_method_with_suffix ("_ref");
-            var unref_func = find_method_with_suffix ("_unref");
-            if (ref_func != null && unref_func != null) {
-                v_class.set_attribute_string ("CCode", "ref_function", ref_func);
-                v_class.set_attribute_string ("CCode", "unref_function", unref_func);
-            }
-            /* else, default to g_boxed_copy and g_boxed_free */
-            else {
-                v_class.set_attribute_string ("CCode", "copy_function", "g_boxed_copy");
-                v_class.set_attribute_string ("CCode", "free_function", "g_boxed_free");
-            }
-        }
 
         /* add constructors */
         foreach (var g_ctor in g_rec.all_of ("constructor")) {
@@ -116,15 +87,5 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         }
 
         return v_class;
-    }
-
-    private string? find_method_with_suffix (string suffix) {
-        foreach (var g_method in g_rec.all_of ("method")) {
-            if (g_method.has_attr ("c:identifier")
-                    && g_method.get_string ("c:identifier").has_suffix (suffix)) {
-                return g_method.get_string ("c:identifier");
-            }
-        }
-        return null;
     }
 }

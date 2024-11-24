@@ -28,9 +28,9 @@ public class Builders.EnumBuilder : IdentifierBuilder {
         this.g_enum = g_enum;
     }
 
-    public Vala.Enum build_enum () {
+    public Enum build_enum () {
         /* create the enum */
-        Vala.Enum v_enum = new Vala.Enum (g_enum.get_string ("name"), g_enum.source);
+        Enum v_enum = new Enum (g_enum.get_string ("name"), g_enum.source);
 
         build_common (v_enum);
 
@@ -40,16 +40,16 @@ public class Builders.EnumBuilder : IdentifierBuilder {
         return v_enum;
     }
 
-    public Vala.ErrorDomain build_error_domain () {
+    public ErrorDomain build_error_domain () {
         /* create the error domain */
-        Vala.ErrorDomain v_err = new Vala.ErrorDomain (g_enum.get_string ("name"), g_enum.source);
+        ErrorDomain v_err = new ErrorDomain (g_enum.get_string ("name"), g_enum.source);
         
         build_common (v_err);
         
         return v_err;
     }
 
-    private void build_common (Vala.Symbol v_sym) {
+    private void build_common (Symbol v_sym) {
         v_sym.access = PUBLIC;
 
         /* cname */
@@ -97,13 +97,13 @@ public class Builders.EnumBuilder : IdentifierBuilder {
                     .ascii_up()
                     .replace ("-", "_");
             unowned var source = g_member.source;
-            if (v_sym is Vala.Enum) {
+            if (v_sym is Enum) {
                 var v_value = new Vala.EnumValue (name, null, source, null);
-                unowned var v_enum = (Vala.Enum) v_sym;
+                unowned var v_enum = (Enum) v_sym;
                 v_enum.add_value (v_value);
             } else {
                 var value = new IntegerLiteral(g_member.get_string ("value"));
-                unowned var v_err = (Vala.ErrorDomain) v_sym;
+                unowned var v_err = (ErrorDomain) v_sym;
                 v_err.add_code (new ErrorCode.with_value (name, value, source));
             }
         }

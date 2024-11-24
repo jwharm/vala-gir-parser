@@ -27,7 +27,7 @@ public class Builders.InfoAttrsBuilder {
         this.g_info_attrs = g_info_attrs;
     }
 
-    public void add_info_attrs (Vala.Symbol v_sym) {
+    public void add_info_attrs (Symbol v_sym) {
         /* version */
         v_sym.version.since = g_info_attrs.get_string ("version");
 
@@ -62,8 +62,8 @@ public class Builders.InfoAttrsBuilder {
             v_sym.hides = g_info_attrs.get_bool ("hides");
         }
 
-        if (g_info_attrs.get_bool ("floating") && v_sym is Vala.Method) {
-            unowned var v_method = (Vala.Method) v_sym;
+        if (g_info_attrs.get_bool ("floating") && v_sym is Method) {
+            unowned var v_method = (Method) v_sym;
             v_method.returns_floating_reference = true;
             v_method.return_type.value_owned = true;
         }
