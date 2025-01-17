@@ -67,8 +67,8 @@ public class Builders.IdentifierBuilder {
         }
 
         /* ref_sink_function */
-        if (g_identifier.has_attr ("ref-sink-function")) {
-            var ref_sink = g_identifier.get_string ("ref-sink-function");
+        if (g_identifier.has_attr ("vala:ref-sink-function")) {
+            var ref_sink = g_identifier.get_string ("vala:ref-sink-function");
             v_sym.set_attribute_string ("CCode", "ref_sink_function", ref_sink);
         }
 

@@ -43,26 +43,26 @@ public class Builders.InfoAttrsBuilder {
             v_sym.version.deprecated_since = since;
         }
 
-        if (g_info_attrs.has_attr ("experimental")) {
-            var experimental = g_info_attrs.get_bool ("experimental");
+        if (g_info_attrs.has_attr ("vala:experimental")) {
+            var experimental = g_info_attrs.get_bool ("vala:experimental");
             v_sym.set_attribute_bool ("Version", "experimental", experimental);
         }
 
-        if (g_info_attrs.has_attr ("instance-idx")) {
-            var idx = (double) g_info_attrs.get_int ("instance-idx");
+        if (g_info_attrs.has_attr ("vala:instance-idx")) {
+            var idx = (double) g_info_attrs.get_int ("vala:instance-idx");
             v_sym.set_attribute_double ("CCode", "instance_pos", idx + 0.5);
         }
 
-        if (g_info_attrs.has_attr ("type-get-function")) {
-            var get_type = g_info_attrs.get_string ("type-get-function");
+        if (g_info_attrs.has_attr ("vala:type-get-function")) {
+            var get_type = g_info_attrs.get_string ("vala:type-get-function");
             v_sym.set_attribute_string ("CCode", "type_get_function", get_type);
         }
 
-        if (g_info_attrs.has_attr ("hides")) {
-            v_sym.hides = g_info_attrs.get_bool ("hides");
+        if (g_info_attrs.has_attr ("vala:hides")) {
+            v_sym.hides = g_info_attrs.get_bool ("vala:hides");
         }
 
-        if (g_info_attrs.get_bool ("floating") && v_sym is Method) {
+        if (g_info_attrs.get_bool ("vala:floating") && v_sym is Method) {
             unowned var v_method = (Method) v_sym;
             v_method.returns_floating_reference = true;
             v_method.return_type.value_owned = true;
@@ -80,13 +80,13 @@ public class Builders.InfoAttrsBuilder {
             }
 		}
 
-        if (g_info_attrs.has_attr ("finish-vfunc-name")) {
-            var name = g_info_attrs.get_string ("finish-vfunc-name");
+        if (g_info_attrs.has_attr ("vala:finish-vfunc-name")) {
+            var name = g_info_attrs.get_string ("vala:finish-vfunc-name");
 			v_sym.set_attribute_string ("CCode", "finish_vfunc_name", name);
 		}
 
-        if (g_info_attrs.has_attr ("finish-instance")) {
-            var name = g_info_attrs.get_string ("finish-instance");
+        if (g_info_attrs.has_attr ("vala:finish-instance")) {
+            var name = g_info_attrs.get_string ("vala:finish-instance");
 			v_sym.set_attribute_string ("CCode", "finish_instance", name);
 		}
 
@@ -95,23 +95,24 @@ public class Builders.InfoAttrsBuilder {
             v_sym.set_attribute_string ("CCode", "feature_test_macro", macro);
         }
 
-        if (g_info_attrs.has_attr ("delegate-target")) {
-            var dlg_target = g_info_attrs.get_bool ("delegate-target");
+        if (g_info_attrs.has_attr ("vala:delegate-target")) {
+            var dlg_target = g_info_attrs.get_bool ("vala:delegate-target");
             v_sym.set_attribute_bool ("CCode", "delegate_target", dlg_target);
         }
 
-        if (g_info_attrs.has_attr ("printf-format")) {
-            var printf_format = g_info_attrs.get_bool ("printf-format");
+        if (g_info_attrs.has_attr ("vala:printf-format")) {
+            var printf_format = g_info_attrs.get_bool ("vala:printf-format");
             v_sym.set_attribute ("PrintfFormat", printf_format);
         }
 
-        if (g_info_attrs.has_attr ("sentinel")) {
-            var sentinel = g_info_attrs.get_string ("sentinel");
+        /* "sentinel" is the terminator value of a varargs parameter list */
+        if (g_info_attrs.has_attr ("vala:sentinel")) {
+            var sentinel = g_info_attrs.get_string ("vala:sentinel");
             v_sym.set_attribute_string ("CCode", "sentinel", sentinel);
         }
 
-        if (g_info_attrs.has_attr ("returns-modified-pointer")) {
-            var ret_mod_p = g_info_attrs.get_bool ("returns-modified-pointer");
+        if (g_info_attrs.has_attr ("vala:returns-modified-pointer")) {
+            var ret_mod_p = g_info_attrs.get_bool ("vala:returns-modified-pointer");
             v_sym.set_attribute ("ReturnsModifiedPointer", ret_mod_p);
         }
     }

@@ -48,8 +48,8 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         }
 
         /* compact */
-        if (g_class.has_attr ("compact")) {
-            v_class.set_attribute ("Compact", g_class.get_bool ("compact"));
+        if (g_class.has_attr ("vala:compact")) {
+            v_class.set_attribute ("Compact", g_class.get_bool ("vala:compact"));
         }
 
         /* cname */

@@ -95,7 +95,7 @@ public class Builders.PropertyBuilder {
                 v_prop.set_attribute ("NoAccessorMethod", true);
             }
 
-            if (g_prop.has_attr ("no-accessor-method")) {
+            if (g_prop.has_attr ("vala:no-accessor-method")) {
                 v_prop.set_attribute ("NoAccessorMethod", true);
             }
 

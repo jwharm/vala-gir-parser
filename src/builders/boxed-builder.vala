@@ -34,7 +34,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         v_class.access = PUBLIC;
 
         /* compact */
-        v_class.set_attribute ("Compact", g_rec.get_bool ("compact", true));
+        v_class.set_attribute ("Compact", g_rec.get_bool ("vala:compact", true));
         
         /* base type */
         if (g_rec.has_attr ("parent")) {

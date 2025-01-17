@@ -92,7 +92,7 @@ public class Builders.NamespaceBuilder {
 
         /* records */
         foreach (var g_rec in g_ns.all_of ("record")) {
-            if (g_rec.has_attr ("glib:get-type") && !g_rec.get_bool ("struct")) {
+            if (g_rec.has_attr ("glib:get-type") && !g_rec.get_bool ("vala:struct")) {
                 var builder = new BoxedBuilder (g_rec);
                 if (! builder.skip ()) {
                     v_ns.add_class (builder.build ());

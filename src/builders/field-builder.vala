@@ -52,18 +52,18 @@ public class Builders.FieldBuilder {
         }
 
         /* CCode attributes */
-        if (g_field.has_attr("delegate-target")) {
-            var dlg_target = g_field.get_bool ("delegate-target");
+        if (g_field.has_attr("vala:delegate-target")) {
+            var dlg_target = g_field.get_bool ("vala:delegate-target");
             v_field.set_attribute_bool ("CCode", "delegate_target", dlg_target);
         }
 
-        if (g_field.has_attr ("delegate-target-cname")) {
-            var cname = g_field.get_string ("delegate-target-cname");
+        if (g_field.has_attr ("vala:delegate-target-cname")) {
+            var cname = g_field.get_string ("vala:delegate-target-cname");
             v_field.set_attribute_string ("CCode", "delegate_target_cname", cname);
         }
 
-        if (g_field.has_attr ("destroy-notify-cname")) {
-            var cname = g_field.get_string ("destroy-notify-cname");
+        if (g_field.has_attr ("vala:destroy-notify-cname")) {
+            var cname = g_field.get_string ("vala:destroy-notify-cname");
             v_field.set_attribute_string ("CCode", "destroy_notify_cname", cname);
         }
         
@@ -115,7 +115,7 @@ public class Builders.FieldBuilder {
                 continue;
             }
             
-            if (child.attrs["name"]?.replace ("-", "_") == name) {
+            if (child.get_string("name")?.replace ("-", "_") == name) {
                 return true;
             }
         }

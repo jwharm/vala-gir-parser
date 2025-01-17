@@ -38,7 +38,7 @@ public class GirMetadata.MetadataProcessor {
         string[] relevant_types = {
             "alias", "bitfield", "glib:boxed", "callback", "constructor",
             "class", "enumeration", "function", "instance-parameter",
-            "interface", "method", "namespace", "parameter", "record",
+            "interface", "member", "method", "namespace", "parameter", "record",
             "glib:signal", "union", "virtual-method"
         };
         
@@ -53,7 +53,9 @@ public class GirMetadata.MetadataProcessor {
 
         /* no need to process child nodes when the parent node is skipped */
         if (node.get_bool ("introspectable", true)) {
-            foreach (var child_node in node.children) {
+            /* don't use a foreach loop: the list can change during iteration */
+            for (int i = 0; i < node.children.size; i++) {
+                var child_node = node.children[i];
                 process_node (ref child_node);
             }
         }
@@ -81,14 +83,13 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (NEW)) {
-            node.set_bool ("hides", metadata.get_bool (NEW));
+            node.set_bool ("vala:hides", metadata.get_bool (NEW));
         }
 
         if (metadata.has_argument (TYPE)) {
             node.remove ("type", "array");
             var type_node = Gir.Node.create ("type", source,
-                "name", metadata.get_string (TYPE),
-                "expression", "1");
+                "name", metadata.get_string (TYPE));
             node.add (type_node);
         }
 
@@ -105,8 +106,7 @@ public class GirMetadata.MetadataProcessor {
                 string type_args = metadata.get_string (TYPE_ARGUMENTS);
                 foreach (var type_arg in type_args.split (",")) {
                     var type_node = Gir.Node.create ("type", source,
-                        "name", type_arg,
-                        "expression", "1");
+                        "name", type_arg);
                     current_type.add (type_node);
                 }
             }
@@ -232,9 +232,8 @@ public class GirMetadata.MetadataProcessor {
             }
         }
 
-        if (metadata.has_argument (DEFAULT) && tag == "parameter") {
-            /* TODO: parse expression from string after building the Vala AST */
-            node.set_string ("default", metadata.get_string (DEFAULT));
+        if (metadata.has_argument (DEFAULT)) {
+            node.set_expression ("vala:default", metadata.get_expression (DEFAULT));
         }
 
         if (metadata.has_argument (OUT)) {
@@ -265,7 +264,7 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (VIRTUAL)) {
-            node.set_bool ("virtual", metadata.get_bool (VIRTUAL));
+            node.set_bool ("vala:virtual", metadata.get_bool (VIRTUAL));
         }
 
         if (metadata.has_argument (ABSTRACT)) {
@@ -273,7 +272,7 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (COMPACT)) {
-            node.set_bool ("compact", metadata.get_bool (COMPACT));
+            node.set_bool ("vala:compact", metadata.get_bool (COMPACT));
         }
 
         if (metadata.has_argument (SEALED)) {
@@ -285,7 +284,7 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (STRUCT)) {
-            node.set_bool ("struct", metadata.get_bool (STRUCT));
+            node.set_bool ("vala:struct", metadata.get_bool (STRUCT));
         }
 
         if (metadata.has_argument (THROWS)) {
@@ -294,7 +293,7 @@ public class GirMetadata.MetadataProcessor {
 
         if (metadata.has_argument (PRINTF_FORMAT)) {
             var printf_format = metadata.get_bool (PRINTF_FORMAT);
-            node.set_bool ("printf-format", printf_format);
+            node.set_bool ("vala:printf-format", printf_format);
         }
 
         if (metadata.has_argument (ARRAY_LENGTH_FIELD)) {
@@ -320,7 +319,7 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (SENTINEL)) {
-            node.set_bool ("sentinel", metadata.get_bool (SENTINEL));
+            node.set_bool ("vala:sentinel", metadata.get_bool (SENTINEL));
         }
 
         if (metadata.has_argument (CLOSURE)) {
@@ -366,7 +365,7 @@ public class GirMetadata.MetadataProcessor {
 
         if (metadata.has_argument (FINISH_INSTANCE)) {
             var finish_instance = metadata.get_string (FINISH_INSTANCE);
-            node.set_string ("finish-instance", finish_instance);
+            node.set_string ("vala:finish-instance", finish_instance);
         }
 
         if (metadata.has_argument (SYMBOL_TYPE)) {
@@ -374,15 +373,15 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (INSTANCE_IDX)) {
-            node.set_int ("instance-idx", metadata.get_integer (INSTANCE_IDX));
+            node.set_int ("vala:instance-idx", metadata.get_integer (INSTANCE_IDX));
         }
 
         if (metadata.has_argument (EXPERIMENTAL)) {
-            node.set_bool ("experimental", metadata.get_bool (EXPERIMENTAL));
+            node.set_bool ("vala:experimental", metadata.get_bool (EXPERIMENTAL));
         }
 
         if (metadata.has_argument (FLOATING)) {
-            node.set_bool ("floating", metadata.get_bool (FLOATING));
+            node.set_bool ("vala:floating", metadata.get_bool (FLOATING));
         }
 
         if (metadata.has_argument (TYPE_ID)) {
@@ -391,7 +390,7 @@ public class GirMetadata.MetadataProcessor {
 
         if (metadata.has_argument (TYPE_GET_FUNCTION)) {
             var type_get_function = metadata.get_string (TYPE_GET_FUNCTION);
-            node.set_string ("type-get-function", type_get_function);
+            node.set_string ("vala:type-get-function", type_get_function);
         }
 
         if (metadata.has_argument (COPY_FUNCTION)) {
@@ -411,7 +410,7 @@ public class GirMetadata.MetadataProcessor {
 
         if (metadata.has_argument (REF_SINK_FUNCTION)) {
             var ref_sink_func = metadata.get_string (REF_SINK_FUNCTION);
-            node.set_string ("ref-sink-function", ref_sink_func);
+            node.set_string ("vala:ref-sink-function", ref_sink_func);
         }
 
         if (metadata.has_argument (UNREF_FUNCTION)) {
@@ -425,28 +424,28 @@ public class GirMetadata.MetadataProcessor {
 
         if (metadata.has_argument (RETURNS_MODIFIED_POINTER)) {
             var ret_mod_p = metadata.get_bool (RETURNS_MODIFIED_POINTER);
-            node.set_bool ("returns-modified-pointer", ret_mod_p);
+            node.set_bool ("vala:returns-modified-pointer", ret_mod_p);
         }
 
         if (metadata.has_argument (DELEGATE_TARGET_CNAME)) {
             var cname = metadata.get_string (DELEGATE_TARGET_CNAME);
-            node.set_string ("delegate-target-cname", cname);
+            node.set_string ("vala:delegate-target-cname", cname);
         }
 
         if (metadata.has_argument (DESTROY_NOTIFY_CNAME)) {
             var cname = metadata.get_string (DESTROY_NOTIFY_CNAME);
-            node.set_string ("destroy-notify-cname", cname);
+            node.set_string ("vala:destroy-notify-cname", cname);
         }
 
         if (metadata.has_argument (FINISH_VFUNC_NAME)) {
             var name = metadata.get_string (FINISH_VFUNC_NAME);
-            node.set_string ("finish-vfunc-name", name);
+            node.set_string ("vala:finish-vfunc-name", name);
             node.tag = "virtual-method";
         }
 
         if (metadata.has_argument (NO_ACCESSOR_METHOD)) {
             var no_accessor_method = metadata.get_bool (NO_ACCESSOR_METHOD);
-            node.set_bool ("no-accessor-method", no_accessor_method);
+            node.set_bool ("vala:no-accessor-method", no_accessor_method);
         }
 
         if (metadata.has_argument (CNAME)) {
@@ -455,7 +454,7 @@ public class GirMetadata.MetadataProcessor {
 
         if (metadata.has_argument (DELEGATE_TARGET)) {
             var delegate_target = metadata.get_bool (DELEGATE_TARGET);
-            node.set_bool ("delegate-target", delegate_target);
+            node.set_bool ("vala:delegate-target", delegate_target);
         }
 
         if (metadata.has_argument (CTYPE)) {

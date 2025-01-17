@@ -110,7 +110,7 @@ public class Builders.MethodBuilder {
 
     public Method build_method () {
         /* check if the method is set to "virtual" in metadata */
-        if (g_call.get_bool ("virtual")) {
+        if (g_call.get_bool ("vala:virtual")) {
             return build_virtual_method ();
         }
 
@@ -166,7 +166,7 @@ public class Builders.MethodBuilder {
 
     public Method build_virtual_method () {
         /* check if the method is set to "virtual"=false in metadata */
-        if (! g_call.get_bool ("virtual", true)) {
+        if (! g_call.get_bool ("vala:virtual", true)) {
             return build_method ();
         }
 
@@ -308,15 +308,15 @@ public class Builders.MethodBuilder {
             v_return_type.nullable = g_return.get_bool ("nullable");
         } else if (g_return.has_attr ("allow-none")) {
             v_return_type.nullable = g_return.get_bool ("allow-none");
-        } else if (g_anytype.tag == "array") {
-            v_return_type.nullable = true;
         }
 
         /* FIXME:
          * Functions which return structs currently generate incorrect C code
-         * since valac thinks the struct is actually an out argument.  Mark
-         * the return values of functions returning structs as nullable in order
-         * to prevent valac from adding extra arguments.
+         * because valac assumes the struct is actually an out argument.
+         * The return value of functions returning structs must be marked as
+         * nullable to prevent valac from generating an out argument in C.
+         * To determine if the return value is a struct, the symbol first needs
+         * to be resolved.
          */
 
         /* ownership transfer */
