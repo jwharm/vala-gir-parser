@@ -32,11 +32,13 @@ public class Builders.NamespaceBuilder {
         Namespace v_ns = new Namespace (g_ns.get_string ("name"), g_ns.source);
 
         /* attributes */
-        v_ns.set_attribute_string ("CCode", "cheader_filename", get_cheader_filename ());
-        v_ns.set_attribute_string ("CCode", "gir_namespace", g_ns.get_string ("name"));
-        v_ns.set_attribute_string ("CCode", "gir_version", g_ns.get_string ("version"));
-        v_ns.set_attribute_string ("CCode", "cprefix", g_ns.get_string ("c:identifier-prefixes"));
-        v_ns.set_attribute_string ("CCode", "lower_case_cprefix", g_ns.get_string ("c:symbol-prefixes") + "_");
+        if (g_ns.parent_node.tag == "repository") {
+            v_ns.set_attribute_string ("CCode", "cheader_filename", get_cheader_filename ());
+            v_ns.set_attribute_string ("CCode", "gir_namespace", g_ns.get_string ("name"));
+            v_ns.set_attribute_string ("CCode", "gir_version", g_ns.get_string ("version"));
+            v_ns.set_attribute_string ("CCode", "cprefix", g_ns.get_string ("c:identifier-prefixes"));
+            v_ns.set_attribute_string ("CCode", "lower_case_cprefix", g_ns.get_string ("c:symbol-prefixes") + "_");
+        }
 
         /* bitfields */
         foreach (var g_bf in g_ns.all_of ("bitfield")) {
@@ -60,6 +62,12 @@ public class Builders.NamespaceBuilder {
             if (! builder.skip ()) {
                 v_ns.add_class (builder.build ());
             }
+        }
+
+        /* constants */
+        foreach (var g_constant in g_ns.all_of ("constant")) {
+            var builder = new ConstantBuilder (g_constant);
+            v_ns.add_constant (builder.build ());
         }
 
         /* enumerations and error domains */
@@ -105,10 +113,10 @@ public class Builders.NamespaceBuilder {
             }
         }
 
-        /* constants */
-        foreach (var g_constant in g_ns.all_of ("constant")) {
-            var builder = new ConstantBuilder (g_constant);
-            v_ns.add_constant (builder.build ());
+        /* nested namespaces */
+        foreach (var g_child_ns in g_ns.all_of ("namespace")) {
+            var builder = new NamespaceBuilder (g_child_ns);
+            v_ns.add_namespace (builder.build ());
         }
 
         /* aliases */
