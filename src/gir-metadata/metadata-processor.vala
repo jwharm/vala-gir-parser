@@ -47,7 +47,7 @@ public class GirMetadata.MetadataProcessor {
             apply_metadata (ref node, node.tag);
         }
 
-        if (node.tag == "namespace") {
+        if (node.tag == "namespace" && node.parent_node.tag == "repository") {
             pop_metadata ();
         }
 
