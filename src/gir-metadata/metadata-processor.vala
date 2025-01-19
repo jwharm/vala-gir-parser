@@ -53,10 +53,14 @@ public class GirMetadata.MetadataProcessor {
 
         /* no need to process child nodes when the parent node is skipped */
         if (node.get_bool ("introspectable", true)) {
-            /* don't use a foreach loop: the list can change during iteration */
             for (int i = 0; i < node.children.size; i++) {
                 var child_node = node.children[i];
                 process_node (ref child_node);
+
+                /* when a child node was reparented, stay on the same index */
+                if (child_node.parent_node != node) {
+                    i--;
+                }
             }
         }
         
