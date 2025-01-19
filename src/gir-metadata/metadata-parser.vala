@@ -117,18 +117,22 @@ public class GirMetadata.Argument {
 }
 
 public class GirMetadata.MetadataSet : Metadata {
-    public MetadataSet (string? selector = null) {
-        base ("", selector);
+    public MetadataSet (string? selector, SourceReference? source_reference = null) {
+        base ("", selector, source_reference);
     }
 
     public void add_sibling (Metadata metadata) {
         foreach (var child in metadata.children) {
             add_child (child);
         }
+
         // merge arguments and take precedence
         foreach (var key in metadata.args.get_keys ()) {
             args[key] = metadata.args[key];
         }
+
+        // extend the source reference
+        source_reference.end = metadata.source_reference.end;
     }
 }
 
@@ -161,18 +165,19 @@ public class GirMetadata.Metadata {
 
     public string to_string (int indent = 0) {
         StringBuilder sb = new StringBuilder ();
-        sb.append (string.nfill (indent, ' '));
-        sb.append (pattern);
+        sb.append (string.nfill (indent, ' ')).append (pattern);
         foreach (var key in args.get_keys ()) {
             string nick = key.to_string ()
                              .replace ("GIR_METADATA_ARGUMENT_TYPE_", "")
                              .down ();
-            sb.append (" ").append(nick);
+            sb.append (" ").append(nick).append("=").append(args[key].expression.to_string ());
         }
+
         sb.append("\n");
         foreach (var child in children) {
             sb.append (child.to_string(indent + 2));
         }
+        
         return sb.str;
     }
 
@@ -192,7 +197,7 @@ public class GirMetadata.Metadata {
                     var ms = result as MetadataSet;
                     if (ms == null) {
                         // second match
-                        ms = new MetadataSet (selector);
+                        ms = new MetadataSet (selector, metadata.source_reference);
                         ms.add_sibling (result);
                     }
                     ms.add_sibling (metadata);
