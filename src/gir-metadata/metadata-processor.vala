@@ -38,8 +38,8 @@ public class GirMetadata.MetadataProcessor {
         string[] relevant_types = {
             "alias", "bitfield", "glib:boxed", "callback", "constructor",
             "class", "enumeration", "function", "instance-parameter",
-            "interface", "member", "method", "namespace", "parameter", "record",
-            "glib:signal", "union", "virtual-method"
+            "interface", "member", "method", "namespace", "parameter",
+            "property", "record", "glib:signal", "union", "virtual-method"
         };
         
         if (node.tag in relevant_types) {
@@ -187,6 +187,7 @@ public class GirMetadata.MetadataProcessor {
         if (metadata.has_argument (DEPRECATED_SINCE)) {
             var deprecated_since = metadata.get_string (DEPRECATED_SINCE);
             node.set_string ("deprecated-version", deprecated_since);
+            node.set_bool ("deprecated", true);
         }
 
         if (metadata.has_argument (SINCE)) {
@@ -215,7 +216,7 @@ public class GirMetadata.MetadataProcessor {
             }
 
             if (array == null) {
-                Report.error (source, "Cannot set array_length_idx on %s", tag);
+                Report.warning (source, "Cannot set array_length_idx on %s", tag);
             } else {
                 var array_length_idx = metadata.get_integer (ARRAY_LENGTH_IDX);
                 array.set_int ("length", array_length_idx);
@@ -323,7 +324,7 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (SENTINEL)) {
-            node.set_bool ("vala:sentinel", metadata.get_bool (SENTINEL));
+            node.set_string ("vala:sentinel", metadata.get_string (SENTINEL));
         }
 
         if (metadata.has_argument (CLOSURE)) {
