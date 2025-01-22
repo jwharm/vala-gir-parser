@@ -126,7 +126,9 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         /* add properties */
         foreach (var g_param in g_class.all_of ("property")) {
             var builder = new PropertyBuilder (g_param);
-            v_class.add_property (builder.build ());
+            if (! builder.skip ()) {
+                v_class.add_property (builder.build ());
+            }
         }
 
         /* add signals */

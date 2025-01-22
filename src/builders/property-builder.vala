@@ -143,6 +143,11 @@ public class Builders.PropertyBuilder {
         return v_prop;
     }
 
+    /* return true when this property must be omitted from the vapi */
+    public bool skip () {
+        return ! g_prop.get_bool ("introspectable", true);
+    }
+
     private Gir.Node? find_method (string? name) {
         if (name != null) {
             foreach (var m in g_prop.parent_node.all_of ("method")) {

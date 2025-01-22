@@ -96,7 +96,9 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
         /* add properties */
         foreach (var g_prop in g_iface.all_of ("property")) {
             var builder = new PropertyBuilder (g_prop);
-            v_iface.add_property (builder.build ());
+            if (! builder.skip ()) {
+                v_iface.add_property (builder.build ());
+            }
         }
 
         /* add signals */
