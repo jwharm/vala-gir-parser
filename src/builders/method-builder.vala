@@ -416,7 +416,8 @@ public class Builders.MethodBuilder {
     public Gir.Node? get_async_finish_method () {
         var name = g_call.get_string ("glib:finish-func");
         foreach (var m in g_call.parent_node.all_of ("method")) {
-            if (m.get_string ("name") == name) {
+            if (m.get_string ("name") == name
+                    || m.get_string ("c:identifier") == name) {
                 return m;
             }
         }
