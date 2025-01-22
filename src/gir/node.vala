@@ -53,15 +53,11 @@ public class Gir.Node {
         this.tag = tag;
         this.content = content;
         this.attrs = new HashMap<string, Expression> (str_hash, str_equal);
-        this.children = children;
+        this.set_children (children);
         this.source = source;
 
         foreach (var key in attrs.get_keys ()) {
             this.attrs[key] = new StringLiteral (attrs[key]);
-        }
-
-        foreach (var child in children) {
-            child.parent_node = this;
         }
     }
 
@@ -112,6 +108,13 @@ public class Gir.Node {
                     children.remove_at (i);
                 }
             }
+        }
+    }
+
+    public void set_children(Vala.List<Node> children) {
+        this.children = children;
+        foreach (var child in children) {
+            child.parent_node = this;
         }
     }
 
@@ -178,8 +181,12 @@ public class Gir.Node {
     /**
      * Set the Vala expression value of this key.
      */
-     public void set_expression (string key, Expression expression) {
-        attrs[key] = expression;
+     public void set_expression (string key, Expression? expression) {
+        if (expression == null) {
+            attrs.remove (key);
+        } else {
+            attrs[key] = expression;
+        }
     }
 
     /**
@@ -192,8 +199,12 @@ public class Gir.Node {
     /**
      * Set the string value of this key.
      */
-    public void set_string (string key, string val) {
-        set_expression (key, new StringLiteral (val));
+    public void set_string (string key, string? val) {
+        if (val == null) {
+            attrs.remove (key);
+        } else {
+            set_expression (key, new StringLiteral (val));
+        }
     }
 
     /**
@@ -243,7 +254,8 @@ public class Gir.Node {
                .append (tag);
 
         foreach (var key in attrs.get_keys ()) {
-            builder.append (@" $key=\"$(get_string (key))\"");
+            string value = get_string (key) ?? "";
+            builder.append (@" $key=\"$value\"");
         }
 
         foreach (var child in children) {
@@ -268,7 +280,8 @@ public class Gir.Node {
         /* attributes */
         if (attrs.size <= 2) {
             foreach (var key in attrs.get_keys ()) {
-                builder.append (@" $key=\"$(get_string (key))\"");
+                string value = get_string (key) ?? "";
+                builder.append (@" $key=\"$value\"");
             }
         } else {
             int attr_indent = indent + 1 + tag.length;
@@ -279,7 +292,8 @@ public class Gir.Node {
                            .append (string.nfill (attr_indent, ' '));
                 }
                 
-                builder.append (@" $key=\"$(get_string (key))\"");
+                string value = get_string (key) ?? "";
+                builder.append (@" $key=\"$value\"");
             }
         }
 
@@ -294,11 +308,11 @@ public class Gir.Node {
         /* child elements */
         foreach (var child in children) {
             builder.append ("\n")
-                   .append (child.to_string (indent + 2));
+                   .append (child.to_xml (indent + 2));
         }
 
         /* text content */
-        if (content != "") {
+        if (content != null && content != "") {
             string escaped = content.replace ("&", "&amp;")
                                     .replace ("\"", "&quot;")
                                     .replace ("<", "&lt;")

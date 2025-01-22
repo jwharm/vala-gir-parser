@@ -126,7 +126,7 @@ namespace Gir {
             var last_param = node.any_of ("parameters").children.last ();
             
             /* set return type to the type of the out-parameter */
-            node.any_of ("return-value").children = last_param.children;
+            node.any_of ("return-value").set_children (last_param.children);
 
             /* mark return type explicitly as non-nullable */
             node.any_of ("return-value").set_bool ("nullable", false);
