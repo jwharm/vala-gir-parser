@@ -1,28 +1,25 @@
-/* valagirparser.vala
- *
+/* vala-gir-parser
+ * Copyright (C) 2024-2025 Jan-Willem Harmannij
+ * 
+ * Parts of this file were copied from Vala 0.56:
  * Copyright (C) 2008-2012  Jürg Billeter
  * Copyright (C) 2011-2014  Luca Bruno
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
-
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
-
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  *
- * Author:
- * 	Jürg Billeter <j@bitron.ch>
- * 	Luca Bruno <lucabru@src.gnome.org>
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-
-/* Copied from Vala 0.56 */
 
 using Vala;
 
@@ -156,7 +153,9 @@ public class GirMetadata.Metadata {
     public Vala.Map<ArgumentType,Argument> args = new HashMap<ArgumentType,Argument> ();
     public ArrayList<Metadata> children = new ArrayList<Metadata> ();
 
-    public Metadata (string pattern, string? selector = null, SourceReference? source_reference = null) {
+    public Metadata (string pattern,
+                     string? selector = null,
+                     SourceReference? source_reference = null) {
         this.pattern = pattern;
         this.pattern_spec = new PatternSpec (pattern);
         this.selector = selector;
@@ -219,7 +218,8 @@ public class GirMetadata.Metadata {
     public Metadata match_child (string name, string? selector = null) {
         var result = Metadata.empty;
         foreach (var metadata in children) {
-            if ((selector == null || metadata.selector == null || metadata.selector == selector) && metadata.pattern_spec.match_string (name)) {
+            if ((selector == null || metadata.selector == null || metadata.selector == selector)
+                    && metadata.pattern_spec.match_string (name)) {
                 metadata.used = true;
                 if (result == Metadata.empty) {
                     // first match
@@ -526,8 +526,9 @@ public class GirMetadata.MetadataParser {
             }
 
             if (current != ASSIGN) {
-                // threat as `true'
-                metadata.add_argument (arg_type, new Argument (new BooleanLiteral (true, get_src (begin)), get_src (begin)));
+                // treat as `true'
+                metadata.add_argument (arg_type, new Argument (
+                    new BooleanLiteral (true, get_src (begin)), get_src (begin)));
                 continue;
             }
             next ();
