@@ -165,19 +165,50 @@ public class GirMetadata.Metadata {
 
     public string to_string (int indent = 0) {
         StringBuilder sb = new StringBuilder ();
-        sb.append (string.nfill (indent, ' ')).append (pattern);
+        /* indent */
+        sb.append (string.nfill (indent, ' '));
+        if (indent > 0) {
+            sb.append(".");
+        }
+
+        /* pattern and selector */
+        sb.append (pattern);
+        if (selector != null) {
+            sb.append ("#")
+              .append (selector);
+        }
+
+        /* arguments */
         foreach (var key in args.get_keys ()) {
             string nick = key.to_string ()
                              .replace ("GIR_METADATA_ARGUMENT_TYPE_", "")
                              .down ();
-            sb.append (" ").append(nick).append("=").append(args[key].expression.to_string ());
+            sb.append (" ")
+              .append (nick);
+            var value = args[key].expression.to_string ();
+            if (value != "true") { /* omit "=true" */
+                sb.append ("=")
+                  .append (value);
+            }
         }
 
-        sb.append("\n");
-        foreach (var child in children) {
-            sb.append (child.to_string(indent + 2));
+        /* children */
+        if (children.size == 1) { /* single child on same line */
+            sb.append (".")
+              .append (children[0].to_string ());
+        } else {
+            if (pattern == "") { /* hide the empty root node */
+                foreach (var child in children) {
+                    sb.append (child.to_string (indent));
+                }
+            } else {
+                sb.append ("\n");
+                foreach (var child in children) {
+                    sb.append (child.to_string (indent + 2));
+                }
+            }
         }
-        
+
         return sb.str;
     }
 
