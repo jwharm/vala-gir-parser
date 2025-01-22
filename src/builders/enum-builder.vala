@@ -122,10 +122,7 @@ public class Builders.EnumBuilder : IdentifierBuilder {
             }
         }
 
-        while (prefix.length > 0 &&
-            (! prefix.has_suffix ("_") ||
-                /* enum values may not consist solely of digits */
-                cname.get_char (prefix.length).isdigit ())) {
+        while (prefix.length > 0 && (! prefix.has_suffix ("_"))) {
             prefix = prefix.substring (0, prefix.length - 1);
         }
     }
