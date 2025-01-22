@@ -131,8 +131,8 @@ public class GirMetadata.MetadataSet : Metadata {
             args[key] = metadata.args[key];
         }
 
-        // extend the source reference
-        source_reference.end = metadata.source_reference.end;
+        // copy the source reference
+        source_reference = metadata.source_reference;
     }
 }
 
