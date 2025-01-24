@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2024-2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -269,7 +269,11 @@ public class GirMetadata.MetadataProcessor {
         }
 
         if (metadata.has_argument (VIRTUAL)) {
-            node.set_bool ("vala:virtual", metadata.get_bool (VIRTUAL));
+            if (metadata.get_bool (VIRTUAL)) {
+                node.tag = "virtual-method";
+            } else {
+                node.tag = "method";
+            }
         }
 
         if (metadata.has_argument (ABSTRACT)) {
@@ -383,6 +387,11 @@ public class GirMetadata.MetadataProcessor {
 
         if (metadata.has_argument (EXPERIMENTAL)) {
             node.set_bool ("vala:experimental", metadata.get_bool (EXPERIMENTAL));
+        }
+
+        if (metadata.has_argument (FEATURE_TEST_MACRO)) {
+            var macro = metadata.get_string (FEATURE_TEST_MACRO);
+            node.set_string ("vala:feature-test-macro", macro);
         }
 
         if (metadata.has_argument (FLOATING)) {

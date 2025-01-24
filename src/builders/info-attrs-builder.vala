@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2024-2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -31,6 +31,11 @@ public class Builders.InfoAttrsBuilder {
         /* version */
         v_sym.version.since = g_info_attrs.get_string ("version");
 
+        /* replacement */
+        if (g_info_attrs.has_attr ("moved-to")) {
+            v_sym.version.replacement = g_info_attrs.get_string ("moved-to");
+        }
+
         /* deprecated and deprecated_since */
         if (g_info_attrs.get_bool ("deprecated")) {
             /* omit deprecation attributes when the parent already has them */
@@ -42,6 +47,30 @@ public class Builders.InfoAttrsBuilder {
             var since = g_info_attrs.get_string ("deprecated-version");
             v_sym.version.deprecated_since = since;
         }
+
+        /* finish-func */
+		if (g_info_attrs.has_attr ("glib:finish-func")) {
+            var finish_func = g_info_attrs.get_string ("glib:finish-func");
+            var name = g_info_attrs.get_string ("name");
+            if (name.has_suffix ("_async")) {
+                name = name.substring (0, name.length - 6);
+            }
+            var expected = name + "_finish";
+            if (finish_func != expected) {
+                v_sym.set_attribute_string ("CCode", "finish_name", finish_func);
+            }
+		}
+
+        /* custom (vala-specific) metadata attributes */
+        if (g_info_attrs.has_attr ("vala:finish-vfunc-name")) {
+            var name = g_info_attrs.get_string ("vala:finish-vfunc-name");
+			v_sym.set_attribute_string ("CCode", "finish_vfunc_name", name);
+		}
+
+        if (g_info_attrs.has_attr ("vala:finish-instance")) {
+            var name = g_info_attrs.get_string ("vala:finish-instance");
+			v_sym.set_attribute_string ("CCode", "finish_instance", name);
+		}
 
         if (g_info_attrs.has_attr ("vala:experimental")) {
             var experimental = g_info_attrs.get_bool ("vala:experimental");
@@ -68,31 +97,9 @@ public class Builders.InfoAttrsBuilder {
             v_method.return_type.value_owned = true;
         }
 
-		if (g_info_attrs.has_attr ("glib:finish-func")) {
-            var finish_func = g_info_attrs.get_string ("glib:finish-func");
-            var name = g_info_attrs.get_string ("name");
-            if (name.has_suffix ("_async")) {
-                name = name.substring (0, name.length - 6);
-            }
-            var expected = name + "_finish";
-            if (finish_func != expected) {
-                v_sym.set_attribute_string ("CCode", "finish_name", finish_func);
-            }
-		}
-
-        if (g_info_attrs.has_attr ("vala:finish-vfunc-name")) {
-            var name = g_info_attrs.get_string ("vala:finish-vfunc-name");
-			v_sym.set_attribute_string ("CCode", "finish_vfunc_name", name);
-		}
-
-        if (g_info_attrs.has_attr ("vala:finish-instance")) {
-            var name = g_info_attrs.get_string ("vala:finish-instance");
-			v_sym.set_attribute_string ("CCode", "finish_instance", name);
-		}
-
-        if (g_info_attrs.has_attr ("feature-test-macro")) {
-            var macro = g_info_attrs.get_string ("feature-test-macro");
-            v_sym.set_attribute_string ("CCode", "feature_test_macro", macro);
+        if (g_info_attrs.has_attr ("vala:feature-test-macro")) {
+            var macro = g_info_attrs.get_string ("vala:feature-test-macro");
+            v_sym.set_attribute_string ("CCode", "vala:feature_test_macro", macro);
         }
 
         if (g_info_attrs.has_attr ("vala:delegate-target")) {

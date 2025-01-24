@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2024-2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -44,9 +44,6 @@ public class Builders.MethodBuilder {
 
         /* attributes and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_cm);
-        if (g_call.has_attr ("moved-to")) {
-            v_cm.version.replacement = g_call.get_string ("moved-to");
-        }
 
         /* return type annotation */
         if (g_call.parent_node.tag == "class") {
@@ -93,9 +90,6 @@ public class Builders.MethodBuilder {
 
         /* attributes and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
-        if (g_call.has_attr ("moved-to")) {
-            v_method.version.replacement = g_call.get_string ("moved-to");
-        }
 
         /* parameters */
         new ParametersBuilder (g_call, v_method).build_parameters ();
@@ -109,11 +103,6 @@ public class Builders.MethodBuilder {
     }
 
     public Method build_method () {
-        /* check if the method is set to "virtual" in metadata */
-        if (g_call.get_bool ("vala:virtual")) {
-            return build_virtual_method ();
-        }
-
         /* return type */
         var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
@@ -129,9 +118,6 @@ public class Builders.MethodBuilder {
 
         /* attributes and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
-        if (g_call.has_attr ("moved-to")) {
-            v_method.version.replacement = g_call.get_string ("moved-to");
-        }
 
         /* parameters */
         new ParametersBuilder (g_call, v_method).build_parameters ();
@@ -165,11 +151,6 @@ public class Builders.MethodBuilder {
     }
 
     public Method build_virtual_method () {
-        /* check if the method is set to "virtual"=false in metadata */
-        if (! g_call.get_bool ("vala:virtual", true)) {
-            return build_method ();
-        }
-
         /* return type */
         var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
@@ -189,9 +170,6 @@ public class Builders.MethodBuilder {
 
         /* attributes and deprecation */
         new InfoAttrsBuilder (g_call).add_info_attrs (v_method);
-        if (g_call.has_attr ("moved-to")) {
-            v_method.version.replacement = g_call.get_string ("moved-to");
-        }
 
         /* "NoWrapper" attribute when no invoker method with the same name */
         var invoker_method = get_invoker_method ();
@@ -363,7 +341,7 @@ public class Builders.MethodBuilder {
 
     /* Find a virtual method with the same name as this method. */
     public bool is_invoker_method () {
-        if (! (g_call.tag == "method" || g_call.tag == "function")) {
+        if (g_call.tag != "method" && g_call.tag != "function") {
             return false;
         }
 
@@ -378,12 +356,12 @@ public class Builders.MethodBuilder {
 
     /* Find a method or function that invokes this virtual method. */
     public Gir.Node? get_invoker_method () {
-        if (! (g_call.tag == "virtual-method")) {
+        if (g_call.tag != "virtual-method") {
             return null;
         }
 
         foreach (var m in g_call.parent_node.children) {
-            if (! (m.tag == "method" || m.tag == "function")) {
+            if (m.tag != "method" && m.tag != "function") {
                 continue;
             }
 
@@ -400,7 +378,7 @@ public class Builders.MethodBuilder {
     }
 
     public bool is_async_finish_method () {
-        if (! (g_call.tag == "method")) {
+        if (g_call.tag != "method") {
             return false;
         }
 
@@ -429,7 +407,7 @@ public class Builders.MethodBuilder {
     /* Find a signal with the same name and type signature as this method or
      * virtual method. */
      public bool is_signal_emitter_method () {
-        if (! (g_call.tag == "method" || g_call.tag == "virtual-method")) {
+        if (g_call.tag != "method" && g_call.tag != "virtual-method") {
             return false;
         }
 
@@ -463,12 +441,6 @@ public class Builders.MethodBuilder {
         var a_name = a.get_string ("name").replace ("-", "_");
         var b_name = b.get_string ("name").replace ("-", "_");
         return a_name == b_name;
-    }
-
-    /* check if this callable has no parameters (ignoring instance parameter) */
-    public bool has_parameters () {
-        return g_call.has_any ("parameters")
-                && (! g_call.any_of ("parameters").has_any ("parameter"));
     }
 
     /* generate the C function name from the GIR name and all prefixes */
