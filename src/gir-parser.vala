@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2024-2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -22,6 +22,15 @@ using Builders;
 using GirMetadata;
 using Vala;
 
+/**
+ * This class replaces the existing GirParser class. It is named "GirParser2"
+ * to avoid naming conflicts (because the original GirParser is imported from
+ * libvala).
+ *
+ * The GirParser class is a CodeVisitor that implements `visit_source_file` for
+ * files with a ".gir" extension. It will parse the gir file, apply metadata,
+ * and generate the VAPI AST in the current CodeContext.
+ */
 public class GirParser2 : CodeVisitor {
 
     public void parse(CodeContext context) {
