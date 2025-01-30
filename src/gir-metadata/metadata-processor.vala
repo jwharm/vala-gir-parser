@@ -18,6 +18,7 @@
  */
 
 using Vala;
+using Builders;
 
 public class GirMetadata.MetadataProcessor {
 
@@ -92,9 +93,10 @@ public class GirMetadata.MetadataProcessor {
 
         if (metadata.has_argument (TYPE)) {
             node.remove ("type", "array");
-            var type_node = Gir.Node.create ("type", source,
-                "name", metadata.get_string (TYPE));
-            node.add (type_node);
+            var expr = metadata.get_string (TYPE);
+            var datatype = DataTypeBuilder.from_expression (expr);
+            datatype.source_reference = source;
+            node.add (DataTypeBuilder.vala_datatype_to_gir (datatype));
         }
 
         if (metadata.has_argument (TYPE_ARGUMENTS)) {
@@ -109,9 +111,10 @@ public class GirMetadata.MetadataProcessor {
             } else {
                 string type_args = metadata.get_string (TYPE_ARGUMENTS);
                 foreach (var type_arg in type_args.split (",")) {
-                    var type_node = Gir.Node.create ("type", source,
-                        "name", type_arg);
-                    current_type.add (type_node);
+                    var datatype = DataTypeBuilder.from_expression (type_arg);
+                    datatype.source_reference = source;
+                    var new_type = DataTypeBuilder.vala_datatype_to_gir (datatype);
+                    current_type.add (new_type);
                 }
             }
         }

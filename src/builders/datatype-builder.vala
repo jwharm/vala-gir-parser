@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2024-2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -71,7 +71,7 @@ public class Builders.DataTypeBuilder {
 
     /* Create Vala DataType from a string (for example "Gio.File"). */
     public static DataType from_name (string name,
-                                           SourceReference? source = null) {
+                                      SourceReference? source = null) {
         if (name == "none") {
             return new VoidType (source);
         }
@@ -162,5 +162,74 @@ public class Builders.DataTypeBuilder {
     public static string generate_string (Gir.Node? g_anytype) {
         return (g_anytype == null) ? "null"
                 : new DataTypeBuilder (g_anytype).build ().to_string ();
+    }
+
+    /* Parse a Vala.Expression (of a type) into a Vala.DataType. */
+    public static DataType? from_expression (string expression) {
+        string expr = expression;
+        
+        /* Remove quotes */
+        if (expr.length > 2 && expr.has_prefix ("\"") && expr.has_suffix ("\"")) {
+            expr = expr.substring (1, expr.length - 2);
+        }
+
+        /* Setup a temporary code context */
+        var context = new CodeContext ();
+        CodeContext.push (context);
+        context.report.enable_warnings = false;
+
+        /* The Vala parser expects a SourceFile. Invent one in-memory. */
+        var content = expr + " field;";
+        var source_file = new SourceFile (context, SourceFileType.NONE,
+                                          "temp.vala", content, false);
+        context.add_source_file (source_file);
+
+        /* Invoke the Vala parser */
+        new Parser ().parse (context);
+        CodeContext.pop();
+        
+        if (context.report.get_errors () > 0) {
+            return null;
+        }
+
+        /* Get the datatype from the AST */
+        var fields = context.root.get_fields ();
+        return fields.size == 0 ? null : fields[0].variable_type;
+    }
+
+    /* Create a GIR <type> or <array> node for a Vala Datatype */
+    public static Gir.Node vala_datatype_to_gir (DataType v_datatype) {
+        var g_type = Gir.Node.create ("type", v_datatype.source_reference);
+        g_type.set_bool ("nullable", v_datatype.nullable);
+
+        if (v_datatype is UnresolvedType) {
+            var v_symbol = ((UnresolvedType) v_datatype).unresolved_symbol;
+            g_type.set_string ("name", v_symbol?.to_string ());
+        } else {
+            g_type.set_string ("name", v_datatype.type_symbol?.to_string ());
+        }
+
+        if (v_datatype.value_owned) {
+            g_type.set_string ("transfer-ownership", "full");
+        } else {
+            g_type.set_string ("transfer-ownership", "none");
+        }
+
+        /* array */
+        if (v_datatype is ArrayType) {
+            var v_inner = ((ArrayType) v_datatype).element_type;
+            g_type.tag = "array";
+            g_type.add (vala_datatype_to_gir (v_inner));
+            return g_type;
+        }
+
+        /* generic type arguments */
+        if (v_datatype.is_generic ()) {
+            foreach (var v_type_arg in v_datatype.get_type_arguments ()) {
+                g_type.add (vala_datatype_to_gir (v_type_arg));
+            }
+        }
+
+        return g_type;
     }
 }
