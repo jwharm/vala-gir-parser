@@ -21,9 +21,11 @@ using Vala;
 
 public class Builders.FieldBuilder {
 
+    private Symbol v_parent_sym;
     private Gir.Node g_field;
 
-    public FieldBuilder (Gir.Node g_field) {
+    public FieldBuilder (Symbol v_parent_sym, Gir.Node g_field) {
+        this.v_parent_sym = v_parent_sym;
         this.g_field = g_field;
     }
 
@@ -34,13 +36,14 @@ public class Builders.FieldBuilder {
                 || has_naming_conflict ();
     }
 
-    public Field build () {
+    public Symbol build () {
         /* type */
         var v_type = new DataTypeBuilder (g_field.any_of ("type", "array")).build ();
 
         /* create the field */
         var v_field = new Field (g_field.get_string ("name"), v_type, null, g_field.source);
         v_field.access = PUBLIC;
+        v_parent_sym.add_field (v_field);
 
         /* attributes */
         new InfoAttrsBuilder (g_field).add_info_attrs (v_field);

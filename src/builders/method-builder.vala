@@ -21,13 +21,15 @@ using Vala;
 
 public class Builders.MethodBuilder {
 
+    private Symbol v_parent_sym;
     private Gir.Node g_call;
 
-    public MethodBuilder (Gir.Node g_call) {
+    public MethodBuilder (Symbol v_parent_sym, Gir.Node g_call) {
+        this.v_parent_sym = v_parent_sym;
         this.g_call = g_call;
     }
 
-    public CreationMethod build_constructor () {
+    public Symbol build_constructor () {
         /* name */
         var name = get_constructor_name ();
 
@@ -35,6 +37,7 @@ public class Builders.MethodBuilder {
         var v_cm = new CreationMethod (null, name, g_call.source);
         v_cm.access = PUBLIC;
         v_cm.has_construct_function = false;
+        v_parent_sym.add_method (v_cm);
 
         /* c name */
         var g_call_name = g_call.get_string ("name");
@@ -68,7 +71,7 @@ public class Builders.MethodBuilder {
         return v_cm;
     }
 
-    public Method build_function () {
+    public Symbol build_function () {
         /* return type */
         var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
@@ -76,6 +79,7 @@ public class Builders.MethodBuilder {
         var v_method = new Method (g_call.get_string ("name"), v_return_type, g_call.source);
         v_method.access = PUBLIC;
         v_method.binding = STATIC;
+        v_parent_sym.add_method (v_method);
 
         /* array return type attributes */
         if (v_return_type is ArrayType) {
@@ -102,13 +106,14 @@ public class Builders.MethodBuilder {
         return v_method;
     }
 
-    public Method build_method () {
+    public Symbol build_method () {
         /* return type */
         var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
         /* the method itself */
         var v_method = new Method (g_call.get_string ("name"), v_return_type, g_call.source);
         v_method.access = PUBLIC;
+        v_parent_sym.add_method (v_method);
 
         /* c name */
         var c_identifier = g_call.get_string ("c:identifier");
@@ -150,13 +155,15 @@ public class Builders.MethodBuilder {
         return v_method;
     }
 
-    public Method build_virtual_method () {
+    public Symbol build_virtual_method () {
         /* return type */
         var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
         /* the method itself */
         var v_method = new Method (g_call.get_string ("name"), v_return_type, g_call.source);
         v_method.access = PUBLIC;
+        v_parent_sym.add_method (v_method);
+
         if (g_call.parent_node.tag == "interface") {
             v_method.is_abstract = true;
         } else {
@@ -200,17 +207,18 @@ public class Builders.MethodBuilder {
         return v_method;
     }
 
-    public Delegate build_delegate () {
+    public Symbol build_delegate () {
         /* return type */
         var v_return_type = build_return_type (g_call.any_of ("return-value"));
 
         /* create the delegate */
         var v_del = new Delegate (g_call.get_string ("name"), v_return_type, g_call.source);
         v_del.access = PUBLIC;
+        v_parent_sym.add_delegate (v_del);
 
         /* c_name */
         if (g_call.parent_node.tag == "namespace") {
-            var cname = new IdentifierBuilder (g_call).generate_cname ();
+            var cname = new IdentifierBuilder (v_parent_sym, g_call).generate_cname ();
             if (g_call.get_string ("c:type") != cname) {
                 v_del.set_attribute_string ("CCode", "cname", g_call.get_string ("c:type"));
             }
@@ -235,7 +243,7 @@ public class Builders.MethodBuilder {
         return v_del;
     }
 
-    public Vala.Signal build_signal () {
+    public Symbol build_signal () {
         /* name */
         var name = g_call.get_string ("name").replace ("-", "_");
 
@@ -245,6 +253,7 @@ public class Builders.MethodBuilder {
         /* create the signal */
         var v_sig = new Vala.Signal (name, v_return_type, g_call.source);
         v_sig.access = PUBLIC;
+        v_parent_sym.add_signal (v_sig);
 
         /* array return type attributes */
         if (v_return_type is ArrayType) {
@@ -274,6 +283,7 @@ public class Builders.MethodBuilder {
         return v_sig;
     }
 
+    /* Generate the Vala DataType of this method's return type */
     private DataType build_return_type (Gir.Node g_return) {
         /* create the return type */
         var g_anytype = g_return.any_of ("type", "array");
@@ -281,21 +291,25 @@ public class Builders.MethodBuilder {
 
         /* nullability */
         v_return_type.nullable = false;
-
         if (g_return.has_attr ("nullable")) {
             v_return_type.nullable = g_return.get_bool ("nullable");
         } else if (g_return.has_attr ("allow-none")) {
             v_return_type.nullable = g_return.get_bool ("allow-none");
         }
 
-        /* FIXME:
-         * Functions which return structs currently generate incorrect C code
+        /* Functions which return structs currently generate incorrect C code
          * because valac assumes the struct is actually an out argument.
          * The return value of functions returning structs must be marked as
          * nullable to prevent valac from generating an out argument in C.
          * To determine if the return value is a struct, the symbol first needs
-         * to be resolved.
-         */
+         * to be resolved. */
+        else {
+            var name = DataTypeBuilder.vala_datatype_name (v_return_type);
+            var symbol = IdentifierBuilder.lookup (v_parent_sym.scope, name);
+            if (symbol is Struct && !((Struct) symbol).is_simple_type ()) {
+                v_return_type.nullable = true;
+            }
+        }
 
         /* ownership transfer */
         var transfer_ownership = g_return.get_string ("transfer-ownership");
@@ -309,6 +323,7 @@ public class Builders.MethodBuilder {
         return v_return_type;
     }
 
+    /* Set array attributes on a method that returns an array type */
     private void add_array_return_type_attributes (Callable v_method) {
         unowned var v_type = (ArrayType) v_method.return_type;
         var g_type = g_call.any_of ("return-value").any_of ("array");
@@ -317,6 +332,8 @@ public class Builders.MethodBuilder {
         v_type.element_type.value_owned = true;
     }
 
+    /* Return `null` if the constructor is named "new", otherwise return the
+     * constructor name without the "new_" prefix (if any) */
     private string? get_constructor_name () {
         var name = g_call.get_string ("name");
         if (g_call.tag == "constructor") {
@@ -377,6 +394,7 @@ public class Builders.MethodBuilder {
         return null;
     }
 
+    /* Check if this method is the glib:finish-func of an async method */
     public bool is_async_finish_method () {
         if (g_call.tag != "method") {
             return false;
@@ -391,6 +409,7 @@ public class Builders.MethodBuilder {
         return false;
     }
 
+    /* Find the glib:finish-func of this async method */
     public Gir.Node? get_async_finish_method () {
         var name = g_call.get_string ("glib:finish-func");
         foreach (var m in g_call.parent_node.all_of ("method")) {
@@ -437,13 +456,14 @@ public class Builders.MethodBuilder {
         return false;
     }
 
+    /* Compare method and signal names (treating "-" and "_" as equal) */
     private bool equal_method_names (Gir.Node a, Gir.Node b) {
         var a_name = a.get_string ("name").replace ("-", "_");
         var b_name = b.get_string ("name").replace ("-", "_");
         return a_name == b_name;
     }
 
-    /* generate the C function name from the GIR name and all prefixes */
+    /* Generate the C function name from the GIR name and all prefixes */
     private string generate_cname (Gir.Node call) {
         var sb = new StringBuilder (call.get_string ("name"));
         unowned var node = call.parent_node;

@@ -19,27 +19,18 @@
 
 using Vala;
 
-public class Builders.AliasBuilder {
+public class Builders.AliasBuilder : IdentifierBuilder {
 
-    private Gir.Node g_ns;
-    private Namespace v_ns;
     private Gir.Node g_alias;
 
-    public AliasBuilder (Gir.Node g_ns, Namespace v_ns, Gir.Node g_alias) {
-        this.g_ns = g_ns;
-        this.v_ns = v_ns;
+    public AliasBuilder (Symbol v_parent_sym, Gir.Node g_alias) {
+        base (v_parent_sym, g_alias);
         this.g_alias = g_alias;
     }
 
-    public void build () {
+    public Symbol build () {
         var type_name = g_alias.any_of ("type")?.get_string ("name");
-        if (type_name == null) {
-            Report.warning (g_alias.source, "Unsupported alias %s",
-                    g_alias.get_string ("name"));
-            return;
-        }
-
-        var target = lookup (type_name);
+        var target = lookup (v_parent_sym.scope, type_name);
         var builder = new DataTypeBuilder (g_alias.any_of ("type"));
         var base_type = builder.build ();
         var simple_type = builder.is_simple_type ();
@@ -56,24 +47,13 @@ public class Builders.AliasBuilder {
             simple_type = true;
         }
 
-        if (target == null || target is Struct) {
-            var g_rec = Gir.Node.create ("record", g_alias.source,
-                    "name", g_alias.get_string ("name"),
-                    "glib:get-type", target?.get_attribute_string ("CCode", "type_id"),
-                    null);
-            var v_struct = new StructBuilder (g_rec).build ();
-            v_struct.base_type = base_type;
-            v_struct.set_simple_type (simple_type);
-            v_ns.add_struct (v_struct);
-        }
-        
-        else if (target is Class) {
+        if (target is Class) {
             var g_class = Gir.Node.create ("class", g_alias.source,
                     "name", g_alias.get_string ("name"),
                     "parent", type_name,
                     "glib:get-type", target.get_attribute_string ("CCode", "type_id"),
                     null);
-            v_ns.add_class (new ClassBuilder (g_class).build ());
+            return new ClassBuilder (v_parent_sym, g_class).build ();
         }
         
         else if (target is Interface) {
@@ -84,7 +64,7 @@ public class Builders.AliasBuilder {
             g_ifc.add (Gir.Node.create ("prerequisite", g_alias.source,
                     "name", type_name,
                     null));
-            v_ns.add_interface (new InterfaceBuilder (g_ifc).build ());
+            return new InterfaceBuilder (v_parent_sym, g_ifc).build ();
         }
         
         else if (target is Delegate) {
@@ -110,26 +90,42 @@ public class Builders.AliasBuilder {
                 v_dlg.add_attribute (attribute);
             }
 
-            v_ns.add_delegate (v_dlg);
+            v_parent_sym.add_delegate (v_dlg);
+            return v_dlg;
         }
-        
-        else {
-            Report.warning (g_alias.source,
-                            "alias `%s' for `%s' is not supported",
-                            g_alias.get_string ("name"),
-                            target.get_full_name ());
+
+        else { /* target == null || target is Struct */
+            var g_rec = Gir.Node.create ("record", g_alias.source,
+                    "name", g_alias.get_string ("name"),
+                    "glib:get-type", target?.get_attribute_string ("CCode", "type_id"),
+                    null);
+            var v_struct = (Struct) new StructBuilder (v_parent_sym, g_rec).build ();
+            v_struct.base_type = base_type;
+            v_struct.set_simple_type (simple_type);
+            return v_struct;
         }
     }
 
-    /* Find a symbol in the Vala AST */
-    private Symbol? lookup (string name) {
-        for (Scope s = v_ns.scope; s != null; s = s.parent_scope) {
-            var sym = s.lookup (name);
-            if (sym != null) {
-                return sym;
-            }
+    public override bool skip () {
+        if (base.skip ()) {
+            return true;
         }
 
-        return null;
-    }
+        var type_name = g_alias.any_of ("type")?.get_string ("name");
+        if (type_name == null) {
+            Report.warning (g_alias.source, "Unsupported alias `%s'",
+                    g_alias.get_string ("name"));
+            return true;
+        }
+
+        var target = lookup (v_parent_sym.scope, type_name);
+        if (! (target == null || target is Struct || target is Class
+                    || target is Interface || target is Delegate)) {
+            Report.warning (g_alias.source, "alias for `%s' is not supported",
+                    target.get_full_name ());
+            return true;
+        }
+
+        return false;
+   }
 }

@@ -23,15 +23,16 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
 
     private Gir.Node g_rec;
 
-    public BoxedBuilder (Gir.Node g_rec) {
-        base (g_rec);
+    public BoxedBuilder (Symbol v_parent_sym, Gir.Node g_rec) {
+        base (v_parent_sym, g_rec);
         this.g_rec = g_rec;
     }
 
-    public Class build () {
+    public Symbol build () {
         /* create a Vala compact class for boxed types */
         Class v_class = new Class (g_rec.get_string ("name"), g_rec.source);
         v_class.access = PUBLIC;
+        v_parent_sym.add_class (v_class);
 
         /* compact */
         v_class.set_attribute ("Compact", g_rec.get_bool ("vala:compact", true));
@@ -56,33 +57,33 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
 
         /* add constructors */
         foreach (var g_ctor in g_rec.all_of ("constructor")) {
-            var builder = new MethodBuilder (g_ctor);
+            var builder = new MethodBuilder (v_class, g_ctor);
             if (! builder.skip ()) {
-                v_class.add_method (builder.build_constructor ());
+                builder.build_constructor ();
             }
         }
 
         /* add functions */
         foreach (var g_function in g_rec.all_of ("function")) {
-            var builder = new MethodBuilder (g_function);
+            var builder = new MethodBuilder (v_class, g_function);
             if (! builder.skip ()) {
-                v_class.add_method (builder.build_function ());
-            } 
+                builder.build_function ();
+            }
         }
 
         /* add methods */
         foreach (var g_method in g_rec.all_of ("method")) {
-            var builder = new MethodBuilder (g_method);
+            var builder = new MethodBuilder (v_class, g_method);
             if (! builder.skip ()) {
-                v_class.add_method (builder.build_method ());
-            } 
+                builder.build_method ();
+            }
         }
 
         /* add fields */
         foreach (var g_field in g_rec.all_of ("field")) {
-            var field_builder = new FieldBuilder (g_field);
+            var field_builder = new FieldBuilder (v_class, g_field);
             if (! field_builder.skip ()) {
-                v_class.add_field (field_builder.build ());
+                field_builder.build ();
             }
         }
 

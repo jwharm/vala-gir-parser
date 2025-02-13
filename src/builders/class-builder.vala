@@ -23,17 +23,18 @@ public class Builders.ClassBuilder : IdentifierBuilder {
 
     private Gir.Node g_class;
 
-    public ClassBuilder (Gir.Node g_class) {
-        base (g_class);
+    public ClassBuilder (Symbol v_parent_sym, Gir.Node g_class) {
+        base (v_parent_sym, g_class);
         this.g_class = g_class;
     }
 
-    public Class build () {
+    public Symbol build () {
         /* the class */
         Class v_class = new Class (g_class.get_string ("name"), g_class.source);
         v_class.access = PUBLIC;
         v_class.is_abstract = g_class.get_bool ("abstract");
         v_class.is_sealed = g_class.get_bool ("final");
+        v_parent_sym.add_class (v_class);
 
         /* parent class */
         if (g_class.has_attr ("parent")) {
@@ -75,35 +76,35 @@ public class Builders.ClassBuilder : IdentifierBuilder {
         /* add constructors */
         if (! g_class.get_bool ("abstract")) {
             foreach (var g_ctor in g_class.all_of ("constructor")) {
-                var builder = new MethodBuilder (g_ctor);
+                var builder = new MethodBuilder (v_class, g_ctor);
                 if (! builder.skip ()) {
-                    v_class.add_method (builder.build_constructor ());
+                    builder.build_constructor ();
                 }
             }
         }
 
         /* add functions */
         foreach (var g_function in g_class.all_of ("function")) {
-            var builder = new MethodBuilder (g_function);
+            var builder = new MethodBuilder (v_class, g_function);
             if (! builder.skip ()) {
-                v_class.add_method (builder.build_function ());
-            } 
+                builder.build_function ();
+            }
         }
 
         /* add methods */
         foreach (var g_method in g_class.all_of ("method")) {
-            var builder = new MethodBuilder (g_method);
+            var builder = new MethodBuilder (v_class, g_method);
             if (! builder.skip ()) {
-                v_class.add_method (builder.build_method ());
-            } 
+                builder.build_method ();
+            }
         }
 
         /* add virtual methods */
         foreach (var g_vm in g_class.all_of ("virtual-method")) {
-            var builder = new MethodBuilder (g_vm);
+            var builder = new MethodBuilder (v_class, g_vm);
             if (! builder.skip ()) {
-                v_class.add_method (builder.build_virtual_method ());
-            } 
+                builder.build_virtual_method ();
+            }
         }
 
         /* add fields, but skip the parent instance pointer */
@@ -117,25 +118,25 @@ public class Builders.ClassBuilder : IdentifierBuilder {
                 }
             }
 
-            var builder = new FieldBuilder (g_field);
+            var builder = new FieldBuilder (v_class, g_field);
             if (! builder.skip ()) {
-                v_class.add_field (builder.build ());
+                builder.build ();
             }
         }
 
         /* add properties */
         foreach (var g_param in g_class.all_of ("property")) {
-            var builder = new PropertyBuilder (g_param);
+            var builder = new PropertyBuilder (v_class, g_param);
             if (! builder.skip ()) {
-                v_class.add_property (builder.build ());
+                builder.build ();
             }
         }
 
         /* add signals */
         foreach (var g_signal in g_class.all_of ("glib:signal")) {
-            var builder = new MethodBuilder (g_signal);
+            var builder = new MethodBuilder (v_class, g_signal);
             if (! builder.skip ()) {
-                v_class.add_signal (builder.build_signal ());
+                builder.build_signal ();
             }
         }
 

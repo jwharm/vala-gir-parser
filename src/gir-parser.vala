@@ -87,8 +87,8 @@ public class GirParser2 : CodeVisitor {
             }
 
             /* build the namespace and everything in it */
-            var builder = new NamespaceBuilder (repository.any_of ("namespace"));
-            context.root.add_namespace (builder.build ());
+            var g_ns = repository.any_of ("namespace");
+            new NamespaceBuilder (context.root, g_ns).build ();
         }
     }
 

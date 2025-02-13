@@ -21,9 +21,11 @@ using Vala;
 
 public class Builders.IdentifierBuilder {
 
+    protected Symbol v_parent_sym;
     private Gir.Node g_identifier;
 
-    public IdentifierBuilder (Gir.Node identifier) {
+    public IdentifierBuilder (Symbol v_parent_sym, Gir.Node identifier) {
+        this.v_parent_sym = v_parent_sym;
         this.g_identifier = identifier;
     }
 
@@ -142,6 +144,20 @@ public class Builders.IdentifierBuilder {
                 return g_method.get_string ("c:identifier");
             }
         }
+        return null;
+    }
+
+    /* Find a symbol in the Vala AST */
+    public static Symbol? lookup (Scope scope, string? name) {
+        if (name != null) {
+            for (Scope s = scope; s != null; s = s.parent_scope) {
+                var sym = s.lookup (name);
+                if (sym != null) {
+                    return sym;
+                }
+            }
+        }
+
         return null;
     }
 }

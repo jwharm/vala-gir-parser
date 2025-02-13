@@ -21,15 +21,17 @@ using Vala;
 
 public class Builders.NamespaceBuilder {
 
+    private Symbol v_parent_sym;
     private Gir.Node g_ns;
 
-    public NamespaceBuilder (Gir.Node ns) {
+    public NamespaceBuilder (Symbol v_parent_sym, Gir.Node ns) {
+        this.v_parent_sym = v_parent_sym;
         this.g_ns = ns;
     }
 
     public Namespace build () {
-        /* create the namespace */
         Namespace v_ns = new Namespace (g_ns.get_string ("name"), g_ns.source);
+        v_parent_sym.add_namespace (v_ns);
 
         /* attributes */
         if (g_ns.parent_node.tag == "repository") {
@@ -42,86 +44,85 @@ public class Builders.NamespaceBuilder {
 
         /* bitfields */
         foreach (var g_bf in g_ns.all_of ("bitfield")) {
-            EnumBuilder builder = new EnumBuilder (g_bf);
+            EnumBuilder builder = new EnumBuilder (v_ns, g_bf);
             if (! builder.skip ()) {
-                v_ns.add_enum (builder.build_enum ());
+                builder.build ();
             }
         }
 
         /* callbacks */
         foreach (var g_cb in g_ns.all_of ("callback")) {
-            var builder = new MethodBuilder (g_cb);
+            var builder = new MethodBuilder (v_ns, g_cb);
             if (! builder.skip ()) {
-                v_ns.add_delegate (builder.build_delegate ());
+                builder.build_delegate ();
             }
         }
 
         /* classes */
         foreach (var g_class in g_ns.all_of ("class")) {
-            ClassBuilder builder = new ClassBuilder (g_class);
+            ClassBuilder builder = new ClassBuilder (v_ns, g_class);
             if (! builder.skip ()) {
-                v_ns.add_class (builder.build ());
+                builder.build ();
             }
-        }
-
-        /* constants */
-        foreach (var g_constant in g_ns.all_of ("constant")) {
-            var builder = new ConstantBuilder (g_constant);
-            v_ns.add_constant (builder.build ());
         }
 
         /* enumerations and error domains */
         foreach (var g_enum in g_ns.all_of ("enumeration")) {
-            var builder = new EnumBuilder (g_enum);
+            var builder = new EnumBuilder (v_ns, g_enum);
             if (! builder.skip ()) {
-                if (g_enum.has_attr ("glib:error-domain")) {
-                    v_ns.add_error_domain (builder.build_error_domain ());
-                } else {
-                    v_ns.add_enum (builder.build_enum ());
-                }
+                builder.build ();
             }
-        }
-
-        /* functions */
-        foreach (var g_function in g_ns.all_of ("function")) {
-            var builder = new MethodBuilder (g_function);
-            if (! builder.skip ()) {
-                v_ns.add_method (builder.build_function ());
-            } 
         }
 
         /* interfaces */
         foreach (var g_iface in g_ns.all_of ("interface")) {
-            InterfaceBuilder builder = new InterfaceBuilder (g_iface);
+            InterfaceBuilder builder = new InterfaceBuilder (v_ns, g_iface);
             if (! builder.skip ()) {
-                v_ns.add_interface (builder.build ());
+                builder.build ();
             }
         }
 
         /* records */
         foreach (var g_rec in g_ns.all_of ("record")) {
             if (g_rec.has_attr ("glib:get-type") && !g_rec.get_bool ("vala:struct")) {
-                var builder = new BoxedBuilder (g_rec);
+                var builder = new BoxedBuilder (v_ns, g_rec);
                 if (! builder.skip ()) {
-                    v_ns.add_class (builder.build ());
+                    builder.build ();
                 }
             } else {
-                var builder = new StructBuilder (g_rec);
+                var builder = new StructBuilder (v_ns, g_rec);
                 if (! builder.skip ()) {
-                    v_ns.add_struct (builder.build ());
+                    builder.build ();
                 }
             }
         }
 
         /* nested namespaces */
         foreach (var g_child_ns in g_ns.all_of ("namespace")) {
-            var builder = new NamespaceBuilder (g_child_ns);
-            v_ns.add_namespace (builder.build ());
+            var builder = new NamespaceBuilder (v_ns, g_child_ns);
+            builder.build ();
         }
 
         /* aliases */
         foreach (var g_alias in g_ns.all_of ("alias")) {
-            new AliasBuilder (g_ns, v_ns, g_alias).build ();
+            var builder = new AliasBuilder (v_ns, g_alias);
+            if (! builder.skip ()) {
+                builder.build ();
+            }
+        }
+
+        /* functions */
+        foreach (var g_function in g_ns.all_of ("function")) {
+            var builder = new MethodBuilder (v_ns, g_function);
+            if (! builder.skip ()) {
+                builder.build_function ();
+            } 
+        }
+
+        /* constants */
+        foreach (var g_constant in g_ns.all_of ("constant")) {
+            var builder = new ConstantBuilder (v_ns, g_constant);
+            builder.build ();
         }
 
         return v_ns;

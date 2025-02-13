@@ -21,19 +21,22 @@ using Vala;
 
 public class Builders.ConstantBuilder {
 
+    private Symbol v_parent_sym;
     private Gir.Node g_constant;
 
-    public ConstantBuilder (Gir.Node g_constant) {
+    public ConstantBuilder (Symbol v_parent_sym, Gir.Node g_constant) {
+        this.v_parent_sym = v_parent_sym;
         this.g_constant = g_constant;
     }
 
-    public Constant build () {
+    public Symbol build () {
         /* type */
         var type = new DataTypeBuilder (g_constant.any_of ("type", "array")).build ();
 
         /* create the const field */
         var v_const = new Constant (g_constant.get_string ("name"), type, null, g_constant.source);
         v_const.access = PUBLIC;
+        v_parent_sym.add_constant (v_const);
 
         /* cname */
         v_const.set_attribute_string ("CCode", "cname", g_constant.get_string ("c:type"));

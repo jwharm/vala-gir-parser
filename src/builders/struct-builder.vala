@@ -23,15 +23,16 @@ public class Builders.StructBuilder : IdentifierBuilder {
 
     private Gir.Node g_rec;
 
-    public StructBuilder (Gir.Node g_rec) {
-        base (g_rec);
+    public StructBuilder (Symbol v_parent_sym, Gir.Node g_rec) {
+        base (v_parent_sym, g_rec);
         this.g_rec = g_rec;
     }
 
-    public Struct build () {
+    public Symbol build () {
         /* the struct */
         Struct v_struct = new Struct (g_rec.get_string ("name"), g_rec.source);
         v_struct.access = PUBLIC;
+        v_parent_sym.add_struct (v_struct);
 
         /* c_name */
         var c_type = g_rec.get_string ("c:type");
@@ -47,25 +48,25 @@ public class Builders.StructBuilder : IdentifierBuilder {
 
         /* add constructors */
         foreach (var g_ctor in g_rec.all_of ("constructor")) {
-            var builder = new MethodBuilder (g_ctor);
+            var builder = new MethodBuilder (v_struct, g_ctor);
             if (! builder.skip ()) {
-                v_struct.add_method (builder.build_constructor ());
+                builder.build_constructor ();
             } 
         }
 
         /* add functions */
         foreach (var g_function in g_rec.all_of ("function")) {
-            var builder = new MethodBuilder (g_function);
+            var builder = new MethodBuilder (v_struct, g_function);
             if (! builder.skip ()) {
-                v_struct.add_method (builder.build_function ());
+                builder.build_function ();
             } 
         }
 
         /* add methods */
         foreach (var g_method in g_rec.all_of ("method")) {
-            var builder = new MethodBuilder (g_method);
+            var builder = new MethodBuilder (v_struct, g_method);
             if (! builder.skip ()) {
-                v_struct.add_method (builder.build_method ());
+                builder.build_method ();
             } 
         }
 
@@ -77,9 +78,9 @@ public class Builders.StructBuilder : IdentifierBuilder {
                 continue;
             }
 
-            var field_builder = new FieldBuilder (g_field);
+            var field_builder = new FieldBuilder (v_struct, g_field);
             if (! field_builder.skip ()) {
-                v_struct.add_field (field_builder.build ());
+                field_builder.build ();
             }
         }
 
@@ -87,7 +88,6 @@ public class Builders.StructBuilder : IdentifierBuilder {
     }
 
     public override bool skip () {
-        return (base.skip ())
-                || g_rec.has_attr ("glib:is-gtype-struct-for");
+        return (base.skip ()) || g_rec.has_attr ("glib:is-gtype-struct-for");
     }
 }

@@ -21,13 +21,15 @@ using Vala;
 
 public class Builders.PropertyBuilder {
 
+    private Symbol v_parent_sym;
     private Gir.Node g_prop;
 
-    public PropertyBuilder (Gir.Node g_prop) {
+    public PropertyBuilder (Symbol v_parent_sym, Gir.Node g_prop) {
+        this.v_parent_sym = v_parent_sym;
         this.g_prop = g_prop;
     }
 
-    public Property build () {
+    public Symbol build () {
         /* data type */
         var v_type = new DataTypeBuilder (g_prop.any_of ("type", "array")).build ();
         v_type.value_owned = g_prop.get_string ("transfer-ownership") != "none";
@@ -39,6 +41,7 @@ public class Builders.PropertyBuilder {
         var v_prop = new Property (name, v_type, null, null, g_prop.source);
         v_prop.access = PUBLIC;
         v_prop.is_abstract = g_prop.parent_node.tag == "interface";
+        v_parent_sym.add_property (v_prop);
 
         var prop_readable = g_prop.get_bool ("readable", true);
         var prop_writable = g_prop.get_bool ("writable", false);
@@ -55,7 +58,7 @@ public class Builders.PropertyBuilder {
                 getter_type.value_owned = transfer_ownership != "none";
 
                 /* if the getter is virtual, then the property is virtual */
-                if (new MethodBuilder (getter).is_invoker_method ()) {
+                if (new MethodBuilder (v_parent_sym, getter).is_invoker_method ()) {
                     v_prop.is_virtual = true;
                 }
 

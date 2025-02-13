@@ -21,35 +21,28 @@ using Vala;
 
 public class Builders.EnumBuilder : IdentifierBuilder {
 
-    protected Gir.Node g_enum;
+    private Gir.Node g_enum;
 
-    public EnumBuilder (Gir.Node g_enum) {
-        base (g_enum);
+    public EnumBuilder (Symbol v_parent_sym, Gir.Node g_enum) {
+        base (v_parent_sym, g_enum);
         this.g_enum = g_enum;
     }
 
-    public Enum build_enum () {
-        /* create the enum */
-        Enum v_enum = new Enum (g_enum.get_string ("name"), g_enum.source);
+    public Symbol build () {
+        Symbol v_sym;
 
-        build_common (v_enum);
+        /* create error domain */
+        if (g_enum.has_attr ("glib:error-domain")) {
+            v_sym = new ErrorDomain (g_enum.get_string ("name"), g_enum.source);
+            v_parent_sym.add_error_domain ((ErrorDomain) v_sym);
+        }
+        /* create enum */
+        else {
+            v_sym = new Enum (g_enum.get_string ("name"), g_enum.source);
+            v_sym.set_attribute ("Flags", g_enum.tag == "bitfield");
+            v_parent_sym.add_enum ((Enum) v_sym);
+        }
 
-        /* flags */
-        v_enum.set_attribute ("Flags", g_enum.tag == "bitfield");
-
-        return v_enum;
-    }
-
-    public ErrorDomain build_error_domain () {
-        /* create the error domain */
-        ErrorDomain v_err = new ErrorDomain (g_enum.get_string ("name"), g_enum.source);
-        
-        build_common (v_err);
-        
-        return v_err;
-    }
-
-    private void build_common (Symbol v_sym) {
         v_sym.access = PUBLIC;
 
         /* cname */
@@ -66,17 +59,17 @@ public class Builders.EnumBuilder : IdentifierBuilder {
 
         /* functions */
         foreach (var g_function in g_enum.all_of ("function")) {
-            var builder = new MethodBuilder (g_function);
+            var builder = new MethodBuilder (v_sym, g_function);
             if (! builder.skip ()) {
-                v_sym.add_method (builder.build_function ());
+                builder.build_function ();
             } 
         }
 
         /* methods */
         foreach (var g_method in g_enum.all_of ("method")) {
-            var builder = new MethodBuilder (g_method);
+            var builder = new MethodBuilder (v_sym, g_method);
             if (! builder.skip ()) {
-                v_sym.add_method (builder.build_method ());
+                builder.build_method ();
             }
         }
 
@@ -107,6 +100,8 @@ public class Builders.EnumBuilder : IdentifierBuilder {
                 v_err.add_code (new ErrorCode.with_value (name, value, source));
             }
         }
+
+        return v_sym;
     }
 
     /* determine the longest prefix that all members have in common */

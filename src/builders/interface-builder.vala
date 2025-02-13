@@ -23,15 +23,16 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
 
     private Gir.Node g_iface;
 
-    public InterfaceBuilder (Gir.Node g_iface) {
-        base (g_iface);
+    public InterfaceBuilder (Symbol v_parent_sym, Gir.Node g_iface) {
+        base (v_parent_sym, g_iface);
         this.g_iface = g_iface;
     }
 
-    public Interface build () {
+    public Symbol build () {
         /* the interface */
         Interface v_iface = new Interface (g_iface.get_string ("name"), g_iface.source);
         v_iface.access = PUBLIC;
+        v_parent_sym.add_interface (v_iface);
 
         /* prerequisite interfaces */
         foreach (var g_prereq in g_iface.all_of ("prerequisite")) {
@@ -65,46 +66,45 @@ public class Builders.InterfaceBuilder : IdentifierBuilder {
 
         /* add functions */
         foreach (var g_function in g_iface.all_of ("function")) {
-            var builder = new MethodBuilder (g_function);
+            var builder = new MethodBuilder (v_iface, g_function);
             if (! builder.skip ()) {
-                v_iface.add_method (builder.build_function ());
-            } 
+                builder.build_function ();
+            }
         }
 
         /* add methods */
         foreach (var g_method in g_iface.all_of ("method")) {
-            var builder = new MethodBuilder (g_method);
+            var builder = new MethodBuilder (v_iface, g_method);
             if (! builder.skip ()) {
-                v_iface.add_method (builder.build_method ());
-            } 
+                builder.build_method ();
+            }
         }
 
         /* add virtual methods */
         foreach (var g_vm in g_iface.all_of ("virtual-method")) {
-            var builder = new MethodBuilder (g_vm);
+            var builder = new MethodBuilder (v_iface, g_vm);
             if (! builder.skip ()) {
-                v_iface.add_method (builder.build_virtual_method ());
-            } 
+                builder.build_virtual_method ();
+            }
         }
 
         /* add fields */
         foreach (var g_field in g_iface.all_of ("field")) {
-            var vfield = new FieldBuilder (g_field).build ();
-            v_iface.add_field (vfield);
+            new FieldBuilder (v_iface, g_field).build ();
         }
 
         /* add properties */
         foreach (var g_prop in g_iface.all_of ("property")) {
-            var builder = new PropertyBuilder (g_prop);
+            var builder = new PropertyBuilder (v_iface, g_prop);
             if (! builder.skip ()) {
-                v_iface.add_property (builder.build ());
+                builder.build ();
             }
         }
 
         /* add signals */
         foreach (var g_signal in g_iface.all_of ("glib:signal")) {
-            var builder = new MethodBuilder (g_signal);
-            v_iface.add_signal (builder.build_signal ());
+            var builder = new MethodBuilder (v_iface, g_signal);
+            builder.build_signal ();
         }
 
         return v_iface;

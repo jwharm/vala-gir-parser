@@ -201,13 +201,7 @@ public class Builders.DataTypeBuilder {
     public static Gir.Node vala_datatype_to_gir (DataType v_datatype) {
         var g_type = Gir.Node.create ("type", v_datatype.source_reference);
         g_type.set_bool ("nullable", v_datatype.nullable);
-
-        if (v_datatype is UnresolvedType) {
-            var v_symbol = ((UnresolvedType) v_datatype).unresolved_symbol;
-            g_type.set_string ("name", v_symbol?.to_string ());
-        } else {
-            g_type.set_string ("name", v_datatype.type_symbol?.to_string ());
-        }
+        g_type.set_string ("name", vala_datatype_name (v_datatype));
 
         if (v_datatype.value_owned) {
             g_type.set_string ("transfer-ownership", "full");
@@ -231,5 +225,15 @@ public class Builders.DataTypeBuilder {
         }
 
         return g_type;
+    }
+
+    /* Get the name of a Vala Datatype */
+    public static string? vala_datatype_name (DataType v_datatype) {
+        if (v_datatype is UnresolvedType) {
+            var v_symbol = ((UnresolvedType) v_datatype).unresolved_symbol;
+            return v_symbol?.to_string ();
+        } else {
+            return v_datatype.type_symbol?.to_string ();
+        }
     }
 }
