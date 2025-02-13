@@ -161,23 +161,14 @@ Example: Graphene.Rect.alloc
 
 The following items are still on the backlog:
 
-### Returned structs are not nullable
-When a function returns a struct, valac will generate incorrect C code because
-it assumes the struct is actually an out argument. To prevent this, the return
-value must be marked as nullable. I haven't yet implemented this.
-
-Example: Graphene.Box.init, and many other Graphene functions
-
 ### `return_void` metadata not implemented yet
 When a function returns void and has a trailing out argument, it's
 automatically changed into a return value. This is an automatic transformation
 in the GIR data. The `return_void` metadata rule should revert this, but I
 haven't yet implemented this.
 
-### Complex type signatures in metadata not implemented yet
-The current GIR parser allows to override the type of a parameter, field or
-constant declaration with a metadata `type` rule that uses Vala syntax (e.g.
-`unowned List<string?>`). This hasn't been implemented yet.
+### `base_type` metadata rule for aliases
+The `base_type` metadata rule doesn't work yet for aliases.
 
 ### Correctly handle special C types
 The current GIR parser contains special treatment for `off_t`, `time_t`,
