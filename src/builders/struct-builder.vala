@@ -21,21 +21,21 @@ using Vala;
 
 public class Builders.StructBuilder : IdentifierBuilder {
 
-    private Gir.Node g_rec;
+    private Gir.Record g_rec;
 
-    public StructBuilder (Symbol v_parent_sym, Gir.Node g_rec) {
+    public StructBuilder (Symbol v_parent_sym, Gir.Record g_rec) {
         base (v_parent_sym, g_rec);
         this.g_rec = g_rec;
     }
 
     public Symbol build () {
         /* the struct */
-        Struct v_struct = new Struct (g_rec.get_string ("name"), g_rec.source);
+        Struct v_struct = new Struct (g_rec.name, g_rec.source);
         v_struct.access = PUBLIC;
         v_parent_sym.add_struct (v_struct);
 
         /* c_name */
-        var c_type = g_rec.get_string ("c:type");
+        var c_type = g_rec.c_type;
         if (c_type != generate_cname ()) {
             v_struct.set_attribute_string ("CCode", "cname", c_type);
         }
@@ -47,7 +47,7 @@ public class Builders.StructBuilder : IdentifierBuilder {
         set_ccode_attrs (v_struct);
 
         /* add constructors */
-        foreach (var g_ctor in g_rec.all_of ("constructor")) {
+        foreach (var g_ctor in g_rec.constructors) {
             var builder = new MethodBuilder (v_struct, g_ctor);
             if (! builder.skip ()) {
                 builder.build_constructor ();
@@ -55,7 +55,7 @@ public class Builders.StructBuilder : IdentifierBuilder {
         }
 
         /* add functions */
-        foreach (var g_function in g_rec.all_of ("function")) {
+        foreach (var g_function in g_rec.functions) {
             var builder = new MethodBuilder (v_struct, g_function);
             if (! builder.skip ()) {
                 builder.build_function ();
@@ -63,7 +63,7 @@ public class Builders.StructBuilder : IdentifierBuilder {
         }
 
         /* add methods */
-        foreach (var g_method in g_rec.all_of ("method")) {
+        foreach (var g_method in g_rec.methods) {
             var builder = new MethodBuilder (v_struct, g_method);
             if (! builder.skip ()) {
                 builder.build_method ();
@@ -72,9 +72,9 @@ public class Builders.StructBuilder : IdentifierBuilder {
 
         /* add fields */
         int i = 0;
-        foreach (var g_field in g_rec.all_of ("field")) {
+        foreach (var g_field in g_rec.fields) {
             /* exclude first (parent) field */
-            if (i++ == 0 && g_rec.has_attr ("glib:is-gtype-struct-for")) {
+            if (i++ == 0 && g_rec.glib_is_gtype_struct_for != null) {
                 continue;
             }
 
@@ -88,6 +88,6 @@ public class Builders.StructBuilder : IdentifierBuilder {
     }
 
     public override bool skip () {
-        return (base.skip ()) || g_rec.has_attr ("glib:is-gtype-struct-for");
+        return (base.skip ()) || g_rec.glib_is_gtype_struct_for != null;
     }
 }

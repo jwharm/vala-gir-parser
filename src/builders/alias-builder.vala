@@ -21,17 +21,17 @@ using Vala;
 
 public class Builders.AliasBuilder : IdentifierBuilder {
 
-    private Gir.Node g_alias;
+    private Gir.Alias g_alias;
 
-    public AliasBuilder (Symbol v_parent_sym, Gir.Node g_alias) {
+    public AliasBuilder (Symbol v_parent_sym, Gir.Alias g_alias) {
         base (v_parent_sym, g_alias);
         this.g_alias = g_alias;
     }
 
     public Symbol build () {
-        var type_name = g_alias.any_of ("type")?.get_string ("name");
+        var type_name = g_alias.anytype?.name;
         var target = lookup (v_parent_sym.scope, type_name);
-        var builder = new DataTypeBuilder (g_alias.any_of ("type"));
+        var builder = new DataTypeBuilder (g_alias.anytype);
         var base_type = builder.build ();
         var simple_type = builder.is_simple_type ();
 
@@ -48,8 +48,8 @@ public class Builders.AliasBuilder : IdentifierBuilder {
         }
 
         if (target is Class) {
-            var g_class = Gir.Node.create ("class", g_alias.source,
-                    "name", g_alias.get_string ("name"),
+            var g_class = Gir.Node.create<Gir.Class> (g_alias.source,
+                    "name", g_alias.name,
                     "parent", type_name,
                     "glib:get-type", target.get_attribute_string ("CCode", "type_id"),
                     null);
@@ -58,10 +58,10 @@ public class Builders.AliasBuilder : IdentifierBuilder {
         
         else if (target is Interface) {
             /* this is not a correct alias, but what can we do otherwise? */
-            var g_ifc = Gir.Node.create ("interface", g_alias.source,
-                    "name", g_alias.get_string ("name"),
+            var g_ifc = Gir.Node.create<Gir.Interface> (g_alias.source,
+                    "name", g_alias.name,
                     null);
-            g_ifc.add (Gir.Node.create ("prerequisite", g_alias.source,
+            g_ifc.add (Gir.Node.create<Gir.Prerequisite> (g_alias.source,
                     "name", type_name,
                     null));
             return new InterfaceBuilder (v_parent_sym, g_ifc).build ();
@@ -71,7 +71,7 @@ public class Builders.AliasBuilder : IdentifierBuilder {
             /* duplicate the aliased delegate */
             var orig = (Delegate) target;
 
-            var v_dlg = new Delegate (g_alias.get_string ("name"),
+            var v_dlg = new Delegate (g_alias.name,
                                       orig.return_type.copy (),
                                       g_alias.source);
             v_dlg.access = orig.access;
@@ -95,8 +95,8 @@ public class Builders.AliasBuilder : IdentifierBuilder {
         }
 
         else { /* target == null || target is Struct */
-            var g_rec = Gir.Node.create ("record", g_alias.source,
-                    "name", g_alias.get_string ("name"),
+            var g_rec = Gir.Node.create<Gir.Record> (g_alias.source,
+                    "name", g_alias.name,
                     "glib:get-type", target?.get_attribute_string ("CCode", "type_id"),
                     null);
             var v_struct = (Struct) new StructBuilder (v_parent_sym, g_rec).build ();
@@ -111,10 +111,10 @@ public class Builders.AliasBuilder : IdentifierBuilder {
             return true;
         }
 
-        var type_name = g_alias.any_of ("type")?.get_string ("name");
+        var type_name = g_alias.anytype?.name;
         if (type_name == null) {
             Report.warning (g_alias.source, "Unsupported alias `%s'",
-                    g_alias.get_string ("name"));
+                    g_alias.name);
             return true;
         }
 

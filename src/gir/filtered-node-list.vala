@@ -20,21 +20,21 @@
 using Vala;
 
  /**
- * Provides a view over a list of Nodes, that only contains elements with a
- * specific tag.
+ * Provides a view over a list of Nodes, that only contains elements of a
+ * specific type.
  * 
  * Modifications to a FilteredNodeList will be applied to the backing list.
  * If the backing list is read-only, then the view is read-only as well.
  * 
  * Because the view does not maintain any additional state, most operations
  * traverse the backing list from the start, looking for elements with the
- * required tag. As a result, most operations have linear time complexity.
+ * required type. As a result, most operations have linear time complexity.
  * 
  * The view relies on the backing list to perform out-of-bounds checks.
  */
-public class FilteredNodeList : Vala.List<Gir.Node> {
+public class FilteredNodeList<G> : Vala.List<G> {
     private Vala.List<Gir.Node> data;
-    private string tag;
+    private GLib.Type type;
     
     /**
      * Counts the number of elements with the specified type that exist in the
@@ -53,39 +53,40 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
     }
     
     /**
-     * Create a new FilteredNodeList for the specified tag.
+     * Create a new FilteredNodeList for the specified type. The type must be
+     * a (subclass of) Gir.Node.
      */
-    public FilteredNodeList (owned Vala.List<Gir.Node> backing_list,
-                             string tag) {
+    public FilteredNodeList (owned Vala.List<Gir.Node> backing_list) {
         this.data = backing_list;
-        this.tag = tag;
+        this.type = typeof (G);
+        assert (this.type.is_a (typeof (Gir.Node)));
     }
 
     /**
      * {@inheritDoc}
      */
      public override Type get_element_type () {
-        return typeof (Gir.Node);
+        return this.type;
     }
     
     /**
      * {@inheritDoc}
      */
-    public override Iterator<Gir.Node> iterator () {
-        return new NodeListIterator (data, tag);
+    public override Iterator<G> iterator () {
+        return new NodeListIterator<G> (data);
     }
     
     /**
      * {@inheritDoc}
      */
-    public override bool contains (Gir.Node item) {
-        return data.contains (item);
+    public override bool contains (G item) {
+        return data.contains ((Gir.Node) item);
     }
     
     /**
      * {@inheritDoc}
      */
-    public override int index_of (Gir.Node item) {
+    public override int index_of (G item) {
         int index = -1;
         var iter = iterator ();
         while (iter.next ()) {
@@ -102,7 +103,7 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
     /**
      * {@inheritDoc}
      */
-    public override Gir.Node get (int index) {
+    public override G get (int index) {
         var iter = iterator ();
         for (int i = -1; i < index; i++) {
             iter.next ();
@@ -114,8 +115,8 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
     /**
      * {@inheritDoc}
      */
-    public override void set (int index, Gir.Node item) {
-        var iter = (NodeListIterator) iterator ();
+    public override void set (int index, G item) {
+        var iter = (NodeListIterator<G>) iterator ();
         for (int i = -1; i < index; i++) {
             iter.next ();
         }
@@ -126,15 +127,15 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
     /**
      * {@inheritDoc}
      */
-    public override bool add (Gir.Node item) {
-        return data.add (item);
+    public override bool add (G item) {
+        return data.add ((Gir.Node) item);
     }
     
     /**
      * {@inheritDoc}
      */
-    public override void insert (int index, Gir.Node item) {
-        var iter = (NodeListIterator) iterator ();
+    public override void insert (int index, G item) {
+        var iter = (NodeListIterator<G>) iterator ();
         for (int i = 0; i < index; i++) {
             iter.next ();
         }
@@ -145,20 +146,20 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
     /**
      * {@inheritDoc}
      */
-    public override bool remove (Gir.Node item) {
-        return data.remove (item);
+    public override bool remove (G item) {
+        return data.remove ((Gir.Node) item);
     }
     
     /**
      * {@inheritDoc}
      */
-    public override Gir.Node remove_at (int index) {
+    public override G remove_at (int index) {
         var iter = iterator ();
         for (int i = -1; i < index; i++) {
             iter.next ();
         }
         
-        Gir.Node item = iter.get ();
+        G item = iter.get ();
         iter.remove ();
         return item;
     }
@@ -176,7 +177,7 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
     /**
      * {@inheritDoc}
      */
-    public override bool add_all (Collection<Gir.Node> collection) {
+    public override bool add_all (Collection<G> collection) {
         if (collection.is_empty) {
             return false;
         }
@@ -188,9 +189,9 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
         return true;
     }
     
-    private class NodeListIterator : Vala.Iterator<Gir.Node> {
+    private class NodeListIterator<G> : Vala.Iterator<G> {
         private Vala.List<Gir.Node> data;
-        private string tag;
+        private GLib.Type type;
         private int cursor = -1;
         
         public override bool valid {
@@ -199,14 +200,14 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
             }
         }
         
-        public NodeListIterator (Vala.List<Gir.Node> backing_list, string tag) {
+        public NodeListIterator (Vala.List<Gir.Node> backing_list) {
             this.data = backing_list;
-            this.tag = tag;
+            this.type = typeof (G);
         }
         
         private int previous_index_from (int current) {
             for (int i = current - 1; i > 0; i--) {
-                if (data[i].tag == tag) {
+                if (data[i].get_type ().is_a (type)) {
                     return i;
                 }
             }
@@ -216,7 +217,7 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
         
         private int next_index_from (int current) {
             for (int i = current + 1; i < data.size; i++) {
-                if (data[i].tag == tag) {
+                if (data[i].get_type ().is_a (type)) {
                     return i;
                 }
             }
@@ -233,8 +234,8 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
             return next_index_from (cursor) != -1;
         }
         
-        public override Gir.Node get () {
-            return data[cursor];
+        public override G get () {
+            return (G) data[cursor];
         }
         
         public override void remove () {
@@ -247,13 +248,13 @@ public class FilteredNodeList : Vala.List<Gir.Node> {
             return valid;
         }
         
-        public new void set (Gir.Node item) {
-            data[cursor] = item;
+        public new void set (G item) {
+            data[cursor] = (Gir.Node) item;
         }
         
-        public void add (Gir.Node item) {
+        public void add (G item) {
             cursor++;
-            data.insert (cursor, item);
+            data.insert (cursor, (Gir.Node) item);
         }
     }
 }

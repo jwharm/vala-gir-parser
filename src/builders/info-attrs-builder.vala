@@ -29,29 +29,29 @@ public class Builders.InfoAttrsBuilder {
 
     public void add_info_attrs (Symbol v_sym) {
         /* version */
-        v_sym.version.since = g_info_attrs.get_string ("version");
+        v_sym.version.since = g_info_attrs.attrs["version"];
 
         /* replacement */
-        if (g_info_attrs.has_attr ("moved-to")) {
-            v_sym.version.replacement = g_info_attrs.get_string ("moved-to");
+        if (g_info_attrs.attrs.contains ("moved-to")) {
+            v_sym.version.replacement = g_info_attrs.attrs["moved-to"];
         }
 
         /* deprecated and deprecated_since */
-        if (g_info_attrs.get_bool ("deprecated")) {
+        if (g_info_attrs.attr_get_bool ("deprecated")) {
             /* omit deprecation attributes when the parent already has them */
-            if (g_info_attrs.parent_node.get_bool ("deprecated")) {
+            if (g_info_attrs.parent_node.attr_get_bool ("deprecated")) {
                 return;
             }
 
             v_sym.version.deprecated = true;
-            var since = g_info_attrs.get_string ("deprecated-version");
+            var since = g_info_attrs.attrs["deprecated-version"];
             v_sym.version.deprecated_since = since;
         }
 
         /* finish-func */
-		if (g_info_attrs.has_attr ("glib:finish-func")) {
-            var finish_func = g_info_attrs.get_string ("glib:finish-func");
-            var name = g_info_attrs.get_string ("name");
+		if (g_info_attrs.attrs.contains ("glib:finish-func")) {
+            var finish_func = g_info_attrs.attrs["glib:finish-func"];
+            var name = g_info_attrs.attrs["name"];
             if (name.has_suffix ("_async")) {
                 name = name.substring (0, name.length - 6);
             }
@@ -62,65 +62,65 @@ public class Builders.InfoAttrsBuilder {
 		}
 
         /* custom (vala-specific) metadata attributes */
-        if (g_info_attrs.has_attr ("vala:finish-vfunc-name")) {
-            var name = g_info_attrs.get_string ("vala:finish-vfunc-name");
-			v_sym.set_attribute_string ("CCode", "finish_vfunc_name", name);
-		}
+        //  if (g_info_attrs.has_attr ("vala:finish-vfunc-name")) {
+        //      var name = g_info_attrs.get_string ("vala:finish-vfunc-name");
+		//  	v_sym.set_attribute_string ("CCode", "finish_vfunc_name", name);
+		//  }
 
-        if (g_info_attrs.has_attr ("vala:finish-instance")) {
-            var name = g_info_attrs.get_string ("vala:finish-instance");
-			v_sym.set_attribute_string ("CCode", "finish_instance", name);
-		}
+        //  if (g_info_attrs.has_attr ("vala:finish-instance")) {
+        //      var name = g_info_attrs.get_string ("vala:finish-instance");
+		//  	v_sym.set_attribute_string ("CCode", "finish_instance", name);
+		//  }
 
-        if (g_info_attrs.has_attr ("vala:experimental")) {
-            var experimental = g_info_attrs.get_bool ("vala:experimental");
-            v_sym.set_attribute_bool ("Version", "experimental", experimental);
-        }
+        //  if (g_info_attrs.has_attr ("vala:experimental")) {
+        //      var experimental = g_info_attrs.get_bool ("vala:experimental");
+        //      v_sym.set_attribute_bool ("Version", "experimental", experimental);
+        //  }
 
-        if (g_info_attrs.has_attr ("vala:instance-idx")) {
-            var idx = (double) g_info_attrs.get_int ("vala:instance-idx");
-            v_sym.set_attribute_double ("CCode", "instance_pos", idx + 0.5);
-        }
+        //  if (g_info_attrs.has_attr ("vala:instance-idx")) {
+        //      var idx = (double) g_info_attrs.get_int ("vala:instance-idx");
+        //      v_sym.set_attribute_double ("CCode", "instance_pos", idx + 0.5);
+        //  }
 
-        if (g_info_attrs.has_attr ("vala:type-get-function")) {
-            var get_type = g_info_attrs.get_string ("vala:type-get-function");
-            v_sym.set_attribute_string ("CCode", "type_get_function", get_type);
-        }
+        //  if (g_info_attrs.has_attr ("vala:type-get-function")) {
+        //      var get_type = g_info_attrs.get_string ("vala:type-get-function");
+        //      v_sym.set_attribute_string ("CCode", "type_get_function", get_type);
+        //  }
 
-        if (g_info_attrs.has_attr ("vala:hides")) {
-            v_sym.hides = g_info_attrs.get_bool ("vala:hides");
-        }
+        //  if (g_info_attrs.has_attr ("vala:hides")) {
+        //      v_sym.hides = g_info_attrs.get_bool ("vala:hides");
+        //  }
 
-        if (g_info_attrs.get_bool ("vala:floating") && v_sym is Method) {
-            unowned var v_method = (Method) v_sym;
-            v_method.returns_floating_reference = true;
-            v_method.return_type.value_owned = true;
-        }
+        //  if (g_info_attrs.get_bool ("vala:floating") && v_sym is Method) {
+        //      unowned var v_method = (Method) v_sym;
+        //      v_method.returns_floating_reference = true;
+        //      v_method.return_type.value_owned = true;
+        //  }
 
-        if (g_info_attrs.has_attr ("vala:feature-test-macro")) {
-            var macro = g_info_attrs.get_string ("vala:feature-test-macro");
-            v_sym.set_attribute_string ("CCode", "vala:feature_test_macro", macro);
-        }
+        //  if (g_info_attrs.has_attr ("vala:feature-test-macro")) {
+        //      var macro = g_info_attrs.get_string ("vala:feature-test-macro");
+        //      v_sym.set_attribute_string ("CCode", "vala:feature_test_macro", macro);
+        //  }
 
-        if (g_info_attrs.has_attr ("vala:delegate-target")) {
-            var dlg_target = g_info_attrs.get_bool ("vala:delegate-target");
-            v_sym.set_attribute_bool ("CCode", "delegate_target", dlg_target);
-        }
+        //  if (g_info_attrs.has_attr ("vala:delegate-target")) {
+        //      var dlg_target = g_info_attrs.get_bool ("vala:delegate-target");
+        //      v_sym.set_attribute_bool ("CCode", "delegate_target", dlg_target);
+        //  }
 
-        if (g_info_attrs.has_attr ("vala:printf-format")) {
-            var printf_format = g_info_attrs.get_bool ("vala:printf-format");
-            v_sym.set_attribute ("PrintfFormat", printf_format);
-        }
+        //  if (g_info_attrs.has_attr ("vala:printf-format")) {
+        //      var printf_format = g_info_attrs.get_bool ("vala:printf-format");
+        //      v_sym.set_attribute ("PrintfFormat", printf_format);
+        //  }
 
         /* "sentinel" is the terminator value of a varargs parameter list */
-        if (g_info_attrs.has_attr ("vala:sentinel")) {
-            var sentinel = g_info_attrs.get_string ("vala:sentinel");
-            v_sym.set_attribute_string ("CCode", "sentinel", sentinel);
-        }
+        //  if (g_info_attrs.has_attr ("vala:sentinel")) {
+        //      var sentinel = g_info_attrs.get_string ("vala:sentinel");
+        //      v_sym.set_attribute_string ("CCode", "sentinel", sentinel);
+        //  }
 
-        if (g_info_attrs.has_attr ("vala:returns-modified-pointer")) {
-            var ret_mod_p = g_info_attrs.get_bool ("vala:returns-modified-pointer");
-            v_sym.set_attribute ("ReturnsModifiedPointer", ret_mod_p);
-        }
+        //  if (g_info_attrs.has_attr ("vala:returns-modified-pointer")) {
+        //      var ret_mod_p = g_info_attrs.get_bool ("vala:returns-modified-pointer");
+        //      v_sym.set_attribute ("ReturnsModifiedPointer", ret_mod_p);
+        //  }
     }
 }

@@ -21,36 +21,36 @@ using Vala;
 
 public class Builders.ParametersBuilder {
 
-    private Gir.Node? g_call;
+    private Gir.Callable? g_call;
     private Callable? v_call;
 
-    public ParametersBuilder (Gir.Node? g_call, Callable? v_call) {
+    public ParametersBuilder (Gir.Callable? g_call, Callable? v_call) {
         this.g_call = g_call;
         this.v_call = v_call;
     }
 
     public void build_parameters () {
-        var g_param_node = g_call.any_of ("parameters");
+        var g_param_node = g_call.parameters;
         if (g_param_node == null) {
             return;
         }
 
-        var g_instance_param = g_param_node.any_of ("instance-parameter");
-        var g_params = g_param_node.all_of ("parameter");
+        var g_instance_param = g_param_node.instance_parameter;
+        var g_params = g_param_node.parameters;
 
         /* set "DestroysInstance" attribute when ownership of `this` is
          * transferred to the method: This means the method will consume the
          * instance. */
-        if (g_instance_param?.get_string ("transfer-ownership") == "full") {
+        if (g_instance_param?.transfer_ownership == FULL) {
             v_call.set_attribute ("DestroysInstance", true);
         }
 
         for (int i = 0; i < g_params.size; i++) {
-            Gir.Node g_par = g_params[i];
+            Gir.Parameter g_par = g_params[i];
             Vala.Parameter v_par;
 
             /* varargs */
-            if (g_par.any_of ("varargs") != null) {
+            if (g_par.varargs != null) {
                 v_par = new Vala.Parameter.with_ellipsis (g_par.source);
                 v_call.add_parameter (v_par);
                 return;
@@ -59,7 +59,7 @@ public class Builders.ParametersBuilder {
             /* instance_pos attribute: Specifies the position of the user_data
              * argument where Vala can pass the `this` parameter to treat the 
              * callback like an instance method. */
-            if (g_call.tag == "callback" && g_par.has_attr ("closure")) {
+            if (g_call is Gir.Callback && g_par.closure != -1) {
                 var pos = get_param_pos (i);
                 v_call.set_attribute_double ("CCode", "instance_pos", pos);
             }
@@ -70,38 +70,38 @@ public class Builders.ParametersBuilder {
             }
 
             /* determine the datatype */
-            var v_type = new DataTypeBuilder (g_par.any_of ("array", "type")).build ();
-            v_type.nullable = g_par.get_bool ("nullable")
-                    || (g_par.get_bool ("allow-none") && g_par.get_string ("direction") != "out");
+            var v_type = new DataTypeBuilder (g_par.anytype).build ();
+            v_type.nullable = g_par.nullable
+                    || (g_par.allow_none && g_par.direction != OUT);
 
             /* create the parameter */
-            v_par = new Vala.Parameter (g_par.get_string ("name"), v_type, g_par.source);
+            v_par = new Vala.Parameter (g_par.name, v_type, g_par.source);
 
             /* array parameter */
             if (v_type is ArrayType) {
                 unowned var v_arr_type = (ArrayType) v_type;
-                add_array_attrs (v_par, v_arr_type, g_par.any_of ("array"));
+                add_array_attrs (v_par, v_arr_type, g_par.anytype as Gir.Array);
                 v_arr_type.element_type.value_owned = true;
             }
 
-            var direction = g_par.get_string ("direction");
-            var transfer_ownership = g_par.get_string ("transfer-ownership");
+            var direction = g_par.direction;
+            var transfer_ownership = g_par.transfer_ownership;
 
             /* out or ref parameter */
-            if (direction == "out") {
+            if (direction == OUT) {
                 v_par.direction = ParameterDirection.OUT;
-            } else if (direction == "inout") {
+            } else if (direction == INOUT) {
                 v_par.direction = ParameterDirection.REF;
             }
 
             /* ownership transfer */
-            if (transfer_ownership != "none" || g_par.has_attr ("destroy")) {
+            if (transfer_ownership != NONE || g_par.destroy != -1) {
                 v_type.value_owned = true;
             }
 
             /* ownership transfer of generic type arguments */
             foreach (var type_arg in v_type.get_type_arguments ()) {
-                type_arg.value_owned = transfer_ownership != "container";
+                type_arg.value_owned = transfer_ownership != CONTAINER;
             }
 
             /* null-initializer for GCancellable parameters */
@@ -110,10 +110,10 @@ public class Builders.ParametersBuilder {
             }
 
             /* CCode delegate_target attribute */
-            if (g_par.has_attr("delegate-target")) {
-                var dlg_target = g_par.get_bool ("delegate-target");
-                v_par.set_attribute_bool ("CCode", "delegate_target", dlg_target);
-            }
+            //  if (g_par.has_attr("delegate-target")) {
+            //      var dlg_target = g_par.get_bool ("delegate-target");
+            //      v_par.set_attribute_bool ("CCode", "delegate_target", dlg_target);
+            //  }
     
             v_call.add_parameter (v_par);
         }
@@ -121,34 +121,33 @@ public class Builders.ParametersBuilder {
 
     public void add_array_attrs (Symbol v_sym,
                                  ArrayType v_type,
-                                 Gir.Node g_arr) {
+                                 Gir.Array g_arr) {
         /* don't emit array attributes for a GLib.GenericArray */
-        if (g_arr.get_string ("name") == "GLib.PtrArray") {
+        if (g_arr.name == "GLib.PtrArray") {
             return;
         }
 
         /* fixed length */
-        if (g_arr.has_attr ("fixed-size")) {
+        if (g_arr.fixed_size != -1) {
             v_type.fixed_length = true;
-            v_type.length = new IntegerLiteral (g_arr.get_string ("fixed-size"));
+            v_type.length = new IntegerLiteral (g_arr.attrs["fixed-size"]);
             v_sym.set_attribute_bool ("CCode", "array_length", false);
         }
 
         /* length in another parameter */
-        else if (g_arr.has_attr ("length") && g_call != null) {
-            var length = g_arr.get_int ("length");
-            var pos = get_param_pos (length);
-            var lp = g_call.any_of ("parameters").all_of ("parameter")[length];
-            var g_type = lp.any_of ("type");
+        else if (g_arr.length != -1 && g_call != null) {
+            var pos = get_param_pos (g_arr.length);
+            var lp = g_call.parameters.parameters[g_arr.length];
+            var g_type = lp.anytype;
 
             v_sym.set_attribute_double ("CCode", "array_length_pos", pos);
 
             if (v_sym is Vala.Parameter) {
-                v_sym.set_attribute_string ("CCode", "array_length_cname", lp.get_string ("name"));
+                v_sym.set_attribute_string ("CCode", "array_length_cname", lp.name);
             }
 
             /* int is the default and can be omitted */
-            var g_type_name = g_type.get_string ("name");
+            var g_type_name = g_type.name;
             if (g_type_name != "gint") {
                 v_sym.set_attribute_string ("CCode", "array_length_type", g_type_name);
             }
@@ -160,7 +159,7 @@ public class Builders.ParametersBuilder {
             /* If zero-terminated is missing, there's no length, there's no
              * fixed size, and the name attribute is unset, then zero-terminated
              * is true. */
-            if (g_arr.get_bool ("zero-terminated") || !g_arr.has_attr ("name")) {
+            if (g_arr.zero_terminated || g_arr.name == null) {
                 v_sym.set_attribute_bool ("CCode", "array_null_terminated", true);
             }
         }
@@ -185,34 +184,33 @@ public class Builders.ParametersBuilder {
      * an AsyncReadyCallback parameter, user-data (for a closure), or a
      * destroy-notify callback. */
     private bool is_hidden_param (int idx) {
-        foreach (var p in g_call.any_of ("parameters").all_of ("parameter")) {
-            var closure = p.get_int ("closure");
-            var destroy = p.get_int ("destroy");
-            if (closure == idx || destroy == idx) {
+        foreach (var p in g_call.parameters.parameters) {
+            if (p.closure == idx || p.destroy == idx) {
                 return true;
             }
 
-            var array = p.any_of ("array");
+            var array = p.anytype as Gir.Array;
             if (array != null) {
-                if (array.get_int ("length") == idx) {
+                if (array.length == idx) {
                     return true;
                 }
             }
         }
 
-        var return_value = g_call.any_of ("return-value");
-        if (return_value.has_any ("array")) {
-            if (return_value.any_of ("array").get_int ("length") == idx) {
+        var return_value = g_call.return_value;
+        if (return_value.anytype is Gir.Array) {
+            if (((Gir.Array) return_value.anytype).length == idx) {
                 return true;
             }
         }
 
-        if (g_call.tag == "method") {
-            if (g_call.has_attr ("glib:finish-func")) {
-                var p = g_call.any_of ("parameters").all_of ("parameter")[idx];
-                if (p.has_any ("type")) {
-                    var p_type = p.any_of ("type");
-                    if (p_type.get_string ("c:type") == "GAsyncReadyCallback") {
+        var g_method = g_call as Gir.Method;
+        if (g_method != null) {
+            if (g_method.glib_finish_func != null) {
+                var p = g_call.parameters.parameters[idx];
+                var p_type = p.anytype as Gir.TypeRef;
+                if (p_type != null) {
+                    if (p_type.c_type == "GAsyncReadyCallback") {
                         return true;
                     }
                 }

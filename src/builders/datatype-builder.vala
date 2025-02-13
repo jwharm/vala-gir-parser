@@ -21,9 +21,9 @@ using Vala;
 
 public class Builders.DataTypeBuilder {
 
-    private Gir.Node? g_anytype;
+    private Gir.AnyType? g_anytype;
 
-    public DataTypeBuilder (Gir.Node? g_anytype) {
+    public DataTypeBuilder (Gir.AnyType? g_anytype) {
         this.g_anytype = g_anytype;
     }
 
@@ -36,22 +36,22 @@ public class Builders.DataTypeBuilder {
         }
 
         /* <type> or <array name="GLib.PtrArray"> */
-        if ((g_anytype.tag == "array" && g_anytype.get_string ("name") == "GLib.PtrArray")
-                || (g_anytype.tag == "type")) {
-            return build_type (g_anytype.get_string ("name"),
-                               g_anytype.all_of ("type"),
+        if ((g_anytype is Gir.Array && g_anytype.name == "GLib.PtrArray")
+                || (g_anytype is Gir.TypeRef)) {
+            return build_type (g_anytype.name,
+                               g_anytype.anytype,
                                g_anytype.source);
         }
 
         /* <array> */
-        var inner = g_anytype.any_of ("array", "type");
+        var inner = g_anytype.anytype[0];
         DataType v_type = new DataTypeBuilder (inner).build ();
         return new ArrayType (v_type, 1, g_anytype.source);
     }
 
     /* Create Vala DataType from a Gir <type> element. */
     private DataType build_type (string name,
-                                      Vala.List<Gir.Node> g_inner_type,
+                                      Vala.List<Gir.AnyType> g_inner_type,
                                       SourceReference? source) {
         string? builtin = to_builtin_type (name);
         if (builtin != null) {
@@ -152,14 +152,14 @@ public class Builders.DataTypeBuilder {
 
     /* Check if this data type is a SimpleType (numeric, size or offset). */
     public bool is_simple_type () {
-        return g_anytype?.tag == "type"
-            && (to_builtin_type (g_anytype.get_string ("name")) ?? "string")
+        return g_anytype is Gir.TypeRef
+            && (to_builtin_type (g_anytype.name) ?? "string")
                     != "string";
     }
     
     /* Generate a string representation for a Gir <type> or <array> so they
      * can be easily compared for equality. */
-    public static string generate_string (Gir.Node? g_anytype) {
+    public static string generate_string (Gir.AnyType? g_anytype) {
         return (g_anytype == null) ? "null"
                 : new DataTypeBuilder (g_anytype).build ().to_string ();
     }
@@ -195,36 +195,6 @@ public class Builders.DataTypeBuilder {
         /* Get the datatype from the AST */
         var fields = context.root.get_fields ();
         return fields.size == 0 ? null : fields[0].variable_type;
-    }
-
-    /* Create a GIR <type> or <array> node for a Vala Datatype */
-    public static Gir.Node vala_datatype_to_gir (DataType v_datatype) {
-        var g_type = Gir.Node.create ("type", v_datatype.source_reference);
-        g_type.set_bool ("nullable", v_datatype.nullable);
-        g_type.set_string ("name", vala_datatype_name (v_datatype));
-
-        if (v_datatype.value_owned) {
-            g_type.set_string ("transfer-ownership", "full");
-        } else {
-            g_type.set_string ("transfer-ownership", "none");
-        }
-
-        /* array */
-        if (v_datatype is ArrayType) {
-            var v_inner = ((ArrayType) v_datatype).element_type;
-            g_type.tag = "array";
-            g_type.add (vala_datatype_to_gir (v_inner));
-            return g_type;
-        }
-
-        /* generic type arguments */
-        if (v_datatype.is_generic ()) {
-            foreach (var v_type_arg in v_datatype.get_type_arguments ()) {
-                g_type.add (vala_datatype_to_gir (v_type_arg));
-            }
-        }
-
-        return g_type;
     }
 
     /* Get the name of a Vala Datatype */

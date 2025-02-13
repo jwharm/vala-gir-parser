@@ -21,30 +21,30 @@ using Vala;
 
 public class Builders.BoxedBuilder : IdentifierBuilder {
 
-    private Gir.Node g_rec;
+    private Gir.Record g_rec;
 
-    public BoxedBuilder (Symbol v_parent_sym, Gir.Node g_rec) {
+    public BoxedBuilder (Symbol v_parent_sym, Gir.Record g_rec) {
         base (v_parent_sym, g_rec);
         this.g_rec = g_rec;
     }
 
     public Symbol build () {
         /* create a Vala compact class for boxed types */
-        Class v_class = new Class (g_rec.get_string ("name"), g_rec.source);
+        Class v_class = new Class (g_rec.name, g_rec.source);
         v_class.access = PUBLIC;
         v_parent_sym.add_class (v_class);
 
         /* compact */
-        v_class.set_attribute ("Compact", g_rec.get_bool ("vala:compact", true));
+        //  v_class.set_attribute ("Compact", g_rec.get_bool ("vala:compact", true));
         
         /* base type */
-        if (g_rec.has_attr ("parent")) {
-            var base_type = DataTypeBuilder.from_name (g_rec.get_string ("parent"), g_rec.source);
-            v_class.add_base_type (base_type);
-        }
+        //  if (g_rec.has_attr ("parent")) {
+        //      var base_type = DataTypeBuilder.from_name (g_rec.get_string ("parent"), g_rec.source);
+        //      v_class.add_base_type (base_type);
+        //  }
 
         /* cname */
-        var c_type = g_rec.get_string ("c:type");
+        var c_type = g_rec.c_type;
         if (c_type != generate_cname ()) {
             v_class.set_attribute_string ("CCode", "cname", c_type);
         }
@@ -56,7 +56,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         set_ccode_attrs (v_class);
 
         /* add constructors */
-        foreach (var g_ctor in g_rec.all_of ("constructor")) {
+        foreach (var g_ctor in g_rec.constructors) {
             var builder = new MethodBuilder (v_class, g_ctor);
             if (! builder.skip ()) {
                 builder.build_constructor ();
@@ -64,7 +64,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         }
 
         /* add functions */
-        foreach (var g_function in g_rec.all_of ("function")) {
+        foreach (var g_function in g_rec.functions) {
             var builder = new MethodBuilder (v_class, g_function);
             if (! builder.skip ()) {
                 builder.build_function ();
@@ -72,7 +72,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         }
 
         /* add methods */
-        foreach (var g_method in g_rec.all_of ("method")) {
+        foreach (var g_method in g_rec.methods) {
             var builder = new MethodBuilder (v_class, g_method);
             if (! builder.skip ()) {
                 builder.build_method ();
@@ -80,7 +80,7 @@ public class Builders.BoxedBuilder : IdentifierBuilder {
         }
 
         /* add fields */
-        foreach (var g_field in g_rec.all_of ("field")) {
+        foreach (var g_field in g_rec.fields) {
             var field_builder = new FieldBuilder (v_class, g_field);
             if (! field_builder.skip ()) {
                 field_builder.build ();
