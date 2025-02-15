@@ -18,7 +18,6 @@
  */
 
 using Gir;
-using Builders;
 using GirMetadata;
 using Vala;
 
@@ -48,7 +47,7 @@ public class GirParser2 : CodeVisitor {
 
         if (repository != null) {
             /* set package name */
-            string? pkg = repository.any_of ("package")?.get_string ("name");
+            string? pkg = repository.package?.name;
             source_file.package_name = pkg;
             if (context.has_package (pkg)) {
                 /* package already provided elsewhere, stop parsing this GIR
@@ -61,34 +60,24 @@ public class GirParser2 : CodeVisitor {
             }
 
             /* add dependency packages */
-            foreach (var include in repository.all_of ("include")) {
-                string dep = include.get_string ("name");
-                if (include.has_attr ("version")) {
-                    dep += "-" + include.get_string ("version");
+            foreach (var include in repository.includes) {
+                string dep = include.name;
+                if (include.attrs.contains ("version")) {
+                    dep += "-" + include.version;
                 }
 
                 context.add_external_package (dep);
             }
 
-            /* apply transformations */
-            Transformation[] transformations = {
-                new FunctionToMethod (),
-                new OutArgToReturnValue (),
-                new RefInstanceParam (),
-                new RemoveFirstVararg ()
-            };
-            apply_transformations (repository, transformations);
-
             /* apply metadata */
-            var metadata = load_metadata (context, source_file);
-            if (metadata != Metadata.empty) {
-                var metadata_processor = new MetadataProcessor (repository);
-                metadata_processor.apply (metadata);
-            }
+            //  var metadata = load_metadata (context, source_file);
+            //  if (metadata != Metadata.empty) {
+            //      var metadata_processor = new MetadataProcessor (repository);
+            //      metadata_processor.apply (metadata);
+            //  }
 
-            /* build the namespace and everything in it */
-            var g_ns = repository.any_of ("namespace");
-            new NamespaceBuilder (context.root, g_ns).build ();
+            /* build the namespace(s) and everything in it */
+            repository.accept (new VapiBuilder ());
         }
     }
 
@@ -103,26 +92,6 @@ public class GirParser2 : CodeVisitor {
             return parser.parse_metadata (file);
         } else {
             return Metadata.empty;
-        }
-    }
-
-    /* Loop through the gir tree (recursively) and apply the transformations
-     * on every node, replacing the existing nodes with the updated one. */
-    private void apply_transformations (Gir.Node node,
-                                        Transformation[] transformations) {
-        for (int i = 0; i < node.children.size; i++) {
-            var child = node.children[i];
-
-            /* transform child nodes */
-            apply_transformations (child, transformations);
-
-            /* transform the node itself */
-            foreach (var t in transformations) {
-                while (t.can_transform (child)) {
-                    t.apply (ref child);
-                    node.children[i] = child;
-                }
-            }
         }
     }
 }

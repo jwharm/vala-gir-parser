@@ -41,5 +41,8 @@ public class Gir.TypeRef : Node, AnyType, DocElements {
             return all_of<AnyType> ();
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_type (this);
+    }
+}

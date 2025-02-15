@@ -52,5 +52,9 @@ public class Gir.DocStability : Node {
             content = value;
         }
     }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_doc_stability (this);
+    }
 }
 

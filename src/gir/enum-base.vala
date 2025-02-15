@@ -17,8 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public interface Gir.EnumBase : Node, InfoAttrs, DocElements, InfoElements,
-                                Identifier {
+public interface Gir.EnumBase : Node, InfoAttrs, DocElements, InfoElements, Identifier {
     public string name {
         owned get {
             return attrs["name"];

@@ -35,5 +35,9 @@ public class Gir.Attribute : Node {
             attrs["value"] = value;
         }
     }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_attribute (this);
+    }
 }
 

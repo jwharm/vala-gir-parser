@@ -44,5 +44,8 @@ public class Gir.SourcePosition : Node {
             attrs["column"] = value;
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_source_position (this);
+    }
+}

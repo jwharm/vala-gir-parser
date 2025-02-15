@@ -75,4 +75,8 @@ public class Gir.Signal : Node, InfoAttrs, DocElements, InfoElements, Callable {
             attrs["emitter"] = value;
         }
     }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_signal (this);
+    }
 }

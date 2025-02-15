@@ -63,5 +63,9 @@ public class Gir.Constant : Node, InfoAttrs, DocElements, InfoElements {
             add (value);
         }
     }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_constant (this);
+    }
 }
 

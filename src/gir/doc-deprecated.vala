@@ -52,5 +52,9 @@ public class Gir.DocDeprecated : Node {
             content = value;
         }
     }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_doc_deprecated (this);
+    }
 }
 

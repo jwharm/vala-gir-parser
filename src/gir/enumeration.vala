@@ -17,8 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Enumeration : Node, InfoAttrs, DocElements,
-                               InfoElements, Identifier, EnumBase {
+public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements, Identifier, EnumBase {
     public string? glib_error_domain {
         owned get {
             return attrs["glib:error-domain"];
@@ -26,5 +25,9 @@ public class Gir.Enumeration : Node, InfoAttrs, DocElements,
         set {
             attrs["glib:error-domain"] = value;
         }
+    }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_enumeration (this);
     }
 }

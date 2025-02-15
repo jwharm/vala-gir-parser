@@ -32,5 +32,8 @@ public class Gir.Parameters : Node {
             remove_and_set (value);
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_parameters (this);
+    }
+}

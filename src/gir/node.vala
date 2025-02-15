@@ -22,17 +22,15 @@
  * nodes, and a parent node. The parent node of the root node is ``null``.
  */
 public class Gir.Node : Object {
-    public weak Node? parent_node { get; private set; default = null; }
-    public string? content { get; internal set construct; }
+    public weak Node? parent_node         { get; private set; default = null; }
+    public string? content                { get; internal set construct; }
     public Vala.Map<string, string> attrs { get; construct; }
-    public Vala.List<Node> children { get; construct; }
-    public Vala.SourceReference source {get; construct; }
+    public Vala.List<Node> children       { get; construct; }
+    public Vala.SourceReference? source   { get; construct; }
 
     construct {
-        if (children != null) {
-            foreach (Node n in children) {
-                n.parent_node = this;
-            }
+        foreach (Node n in children) {
+            n.parent_node = this;
         }
     }
 
@@ -63,21 +61,6 @@ public class Gir.Node : Object {
     }
 
     /**
-     * Create a new node from this node, with another type.
-     */
-    public T cast_to<T> () {
-        assert (typeof (T).is_a (typeof (Gir.Node)));
-        
-        T copy = (T) Object.new (typeof (T),
-                                 attrs: attrs,
-                                 children: children,
-                                 content: content,
-                                 source: source);
-        ((Node) copy).parent_node = parent_node;
-        return copy;
-    }
-
-    /**
      * Add the new child node, and set its parent_node to this node.
      */
     public void add (Node node) {
@@ -105,7 +88,7 @@ public class Gir.Node : Object {
     }
 
     /**
-     * Get the child node with the specified type, or ``null`` if not found.
+     * Get the first child node with the specified type, or `null` if not found.
      */
     public T? any_of<T> () {
         var type = typeof (T);
@@ -119,15 +102,15 @@ public class Gir.Node : Object {
     }
 
     /**
-     * Add a node to the list of child nodes, removing any existing nodes with
-     * the same type.
+     * Replace the first node with the new node's type with the new node. If
+     * no existing node with the same type is found, add the new node.
      */ 
     public void remove_and_set (Node node) {
         var type = node.get_type ();
         for (int i = 0; i < children.size; i++) {
             if (children[i].get_type () == type) {
-                children.remove_at (i);
-                break;
+                children[i] = node;
+                return;
             }
         }
         add (node);
@@ -137,11 +120,7 @@ public class Gir.Node : Object {
      * Get the boolean value of this key ("1" is true, "0" is false)
      */
     public bool attr_get_bool (string key, bool if_not_set = false) {
-        if (key in attrs) {
-            return "1" == attrs[key];
-        } else {
-            return if_not_set;
-        }
+        return (key in attrs) ? ("1" == attrs[key]) : if_not_set;
     }
 
     /**
@@ -155,11 +134,7 @@ public class Gir.Node : Object {
      * Get the int value of this key.
      */
     public int attr_get_int (string key, int if_not_set = -1) {
-        if (key in attrs) {
-            return int.parse (attrs[key]);
-        } else {
-            return if_not_set;
-        }
+        return (key in attrs) ? (int.parse (attrs[key])) : if_not_set;
     }
     
     /**
@@ -172,7 +147,30 @@ public class Gir.Node : Object {
     /**
      * Return a string representation of this node and its children.
      */
-    public string to_string (int indent = 0) {
+    public string to_string () {
+        return to_string_indented (0);
+    }
+
+    /**
+     * Visits this Gir node with the specified GirVisitor.
+     *
+     * @param visitor the visitor to be called while traversing
+     */
+    public virtual void accept (GirVisitor visitor) {
+    }
+
+    /**
+     * Visits all children of this Gir node with the specified GirVisitor.
+     *
+     * @param visitor the visitor to be called while traversing
+     */
+     public virtual void accept_children (GirVisitor visitor) {
+        foreach (var child in children) {
+            child.accept (visitor);
+        }
+    }
+
+    private string to_string_indented (int indent) {
         StringBuilder builder = new StringBuilder ();
         builder.append (string.nfill (indent, ' '))
                .append (get_type ().name ().substring ("Gir".length));
@@ -183,7 +181,7 @@ public class Gir.Node : Object {
 
         foreach (var child in children) {
             builder.append ("\n")
-                   .append (child.to_string (indent + 2));
+                   .append (child.to_string_indented (indent + 2));
         }
 
         return builder.str;
@@ -192,7 +190,11 @@ public class Gir.Node : Object {
     /**
      * Return an xml representation of this node and its children.
      */
-    public string to_xml (int indent = 0) {
+    public string to_xml () {
+        return to_xml_indented (0);
+    }
+
+    private string to_xml_indented (int indent) {
         StringBuilder builder = new StringBuilder ();
         
         /* opening tag */
@@ -230,7 +232,7 @@ public class Gir.Node : Object {
         /* child elements */
         foreach (var child in children) {
             builder.append ("\n")
-                   .append (child.to_string (indent + 2));
+                   .append (child.to_xml_indented (indent + 2));
         }
         
         /* text content */
@@ -301,4 +303,3 @@ public class Gir.Node : Object {
         return builder.str;
     }
 }
-

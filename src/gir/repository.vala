@@ -66,18 +66,14 @@ public class Gir.Repository : Node {
         }
     }
     
-    /* 
-     * The gir spec allows multiple namespaces in a gir file, but as far as I
-     * know, there is always just one single namespace in a gir file, so to keep
-     * things simple, we return only one namespace element.
-     */
-    public Namespace @namespace {
+    public Vala.List<Namespace> namespaces {
         owned get {
-            return any_of<Namespace> ();
+            return all_of<Namespace> ();
         }
-        set {
-            remove_and_set (value);
-        }
+    }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_repository (this);
     }
 }
 

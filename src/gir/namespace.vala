@@ -161,5 +161,8 @@ public class Gir.Namespace : Node {
             return all_of<Docsection> ();
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_namespace (this);
+    }
+}

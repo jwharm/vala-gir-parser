@@ -17,6 +17,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Bitfield : Node, InfoAttrs, DocElements, InfoElements,
-                            Identifier, EnumBase {
+public class Gir.Bitfield : Node, InfoAttrs, DocElements, InfoElements, Identifier, EnumBase {
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_bitfield (this);
+    }
 }

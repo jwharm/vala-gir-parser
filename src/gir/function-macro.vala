@@ -17,8 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.FunctionMacro : Node, DocElements, InfoElements, InfoAttrs,
-                                 CallableAttrs {
+public class Gir.FunctionMacro : Node, DocElements, InfoElements, InfoAttrs, CallableAttrs {
     public Parameters? parameters {
         owned get {
             return any_of<Parameters> ();
@@ -27,5 +26,8 @@ public class Gir.FunctionMacro : Node, DocElements, InfoElements, InfoAttrs,
             remove_and_set (value);
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_function_macro (this);
+    }
+}

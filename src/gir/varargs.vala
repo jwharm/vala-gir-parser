@@ -18,5 +18,7 @@
  */
 
 public class Gir.Varargs : Node {
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_varargs (this);
+    }
 }
-

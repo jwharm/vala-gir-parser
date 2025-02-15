@@ -35,5 +35,9 @@ public class Gir.Include : Node {
             attrs["version"] = value;
         }
     }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_include (this);
+    }
 }
 

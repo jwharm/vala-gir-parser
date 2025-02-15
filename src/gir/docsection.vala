@@ -26,5 +26,9 @@ public class Gir.Docsection : Node, DocElements {
             attrs["name"] = value;
         }
     }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_docsection (this);
+    }
 }
 

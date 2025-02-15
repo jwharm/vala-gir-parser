@@ -62,5 +62,8 @@ public class Gir.Member : Node, InfoAttrs, DocElements, InfoElements {
             attrs["glib:name"] = value;
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_member (this);
+    }
+}

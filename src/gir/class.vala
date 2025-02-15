@@ -17,8 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements,
-                         Identifier {
+public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements, Identifier {
     public string name {
         owned get {
             return attrs["name"];
@@ -227,6 +226,10 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements,
         owned get {
             return all_of<Callback> ();
         }
+    }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_class (this);
     }
 }
 

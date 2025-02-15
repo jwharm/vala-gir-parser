@@ -162,5 +162,8 @@ public class Gir.Parameter : Node, DocElements {
             return all_of<Attribute> ();
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_parameter (this);
+    }
+}

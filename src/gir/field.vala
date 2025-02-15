@@ -81,5 +81,9 @@ public class Gir.Field : Node, InfoAttrs, DocElements, InfoElements {
             add (value);
         }
     }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_field (this);
+    }
 }
 

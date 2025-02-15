@@ -17,8 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Method : Node, DocElements, InfoElements, InfoAttrs,
-                          CallableAttrs, Callable {
+public class Gir.Method : Node, DocElements, InfoElements, InfoAttrs, CallableAttrs, Callable {
     public string? glib_set_property {
         owned get {
             return attrs["glib:set-property"];
@@ -35,5 +34,9 @@ public class Gir.Method : Node, DocElements, InfoElements, InfoAttrs,
         set {
             attrs["glib:get-property"] = value;
         }
+    }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_method (this);
     }
 }

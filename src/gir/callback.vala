@@ -17,8 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Callback : Node, InfoAttrs, DocElements, InfoElements,
-                            Identifier, Callable {
+public class Gir.Callback : Node, InfoAttrs, DocElements, InfoElements, Identifier, Callable {
     public string c_type {
         owned get {
             return attrs["c:type"];
@@ -27,5 +26,8 @@ public class Gir.Callback : Node, InfoAttrs, DocElements, InfoElements,
             attrs["c:type"] = value;
         }
     }
-    
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_callback (this);
+    }
 }

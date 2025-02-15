@@ -113,5 +113,8 @@ public class Gir.ReturnValue : Node, DocElements {
             add (value);
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_return_value (this);
+    }
+}

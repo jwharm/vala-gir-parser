@@ -29,4 +29,3 @@ public interface Gir.AnyType : Node {
 
     public abstract Vala.List<AnyType> anytype { owned get; }
 }
-

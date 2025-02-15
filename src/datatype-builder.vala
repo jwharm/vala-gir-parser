@@ -19,7 +19,7 @@
 
 using Vala;
 
-public class Builders.DataTypeBuilder {
+public class DataTypeBuilder {
 
     private Gir.AnyType? g_anytype;
 
@@ -38,9 +38,7 @@ public class Builders.DataTypeBuilder {
         /* <type> or <array name="GLib.PtrArray"> */
         if ((g_anytype is Gir.Array && g_anytype.name == "GLib.PtrArray")
                 || (g_anytype is Gir.TypeRef)) {
-            return build_type (g_anytype.name,
-                               g_anytype.anytype,
-                               g_anytype.source);
+            return build_type (g_anytype.name, g_anytype.anytype, g_anytype.source);
         }
 
         /* <array> */
@@ -50,9 +48,7 @@ public class Builders.DataTypeBuilder {
     }
 
     /* Create Vala DataType from a Gir <type> element. */
-    private DataType build_type (string name,
-                                      Vala.List<Gir.AnyType> g_inner_type,
-                                      SourceReference? source) {
+    private DataType build_type (string name, Vala.List<Gir.AnyType> g_inner_type, SourceReference? source) {
         string? builtin = to_builtin_type (name);
         if (builtin != null) {
             var sym = new UnresolvedSymbol (null, builtin, source);
@@ -70,8 +66,7 @@ public class Builders.DataTypeBuilder {
     }
 
     /* Create Vala DataType from a string (for example "Gio.File"). */
-    public static DataType from_name (string name,
-                                      SourceReference? source = null) {
+    public static DataType from_name (string name, SourceReference? source = null) {
         if (name == "none") {
             return new VoidType (source);
         }
@@ -152,16 +147,13 @@ public class Builders.DataTypeBuilder {
 
     /* Check if this data type is a SimpleType (numeric, size or offset). */
     public bool is_simple_type () {
-        return g_anytype is Gir.TypeRef
-            && (to_builtin_type (g_anytype.name) ?? "string")
-                    != "string";
+        return g_anytype is Gir.TypeRef && (to_builtin_type (g_anytype.name) ?? "string") != "string";
     }
     
     /* Generate a string representation for a Gir <type> or <array> so they
      * can be easily compared for equality. */
     public static string generate_string (Gir.AnyType? g_anytype) {
-        return (g_anytype == null) ? "null"
-                : new DataTypeBuilder (g_anytype).build ().to_string ();
+        return (g_anytype == null) ? "null" : new DataTypeBuilder (g_anytype).build ().to_string ();
     }
 
     /* Parse a Vala.Expression (of a type) into a Vala.DataType. */
@@ -180,8 +172,7 @@ public class Builders.DataTypeBuilder {
 
         /* The Vala parser expects a SourceFile. Invent one in-memory. */
         var content = expr + " field;";
-        var source_file = new SourceFile (context, SourceFileType.NONE,
-                                          "temp.vala", content, false);
+        var source_file = new SourceFile (context, SourceFileType.NONE, "temp.vala", content, false);
         context.add_source_file (source_file);
 
         /* Invoke the Vala parser */

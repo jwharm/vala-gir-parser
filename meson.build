@@ -13,23 +13,11 @@ dependencies = [
 ]
 
 sources = files(
+		'src/datatype-builder.vala',
 		'src/gir-parser.vala',
+		'src/gir-visitor.vala',
 		'src/vapigen.vala',
-		'src/builders/alias-builder.vala',
-		'src/builders/boxed-builder.vala',
-		'src/builders/class-builder.vala',
-		'src/builders/constant-builder.vala',
-		'src/builders/datatype-builder.vala',
-		'src/builders/enum-builder.vala',
-		'src/builders/field-builder.vala',
-		'src/builders/identifier-builder.vala',
-		'src/builders/info-attrs-builder.vala',
-		'src/builders/interface-builder.vala',
-		'src/builders/method-builder.vala',
-		'src/builders/namespace-builder.vala',
-		'src/builders/parameters-builder.vala',
-		'src/builders/property-builder.vala',
-		'src/builders/struct-builder.vala',
+		'src/vapi-builder.vala',
 		'src/gir/alias.vala',
 		'src/gir/any-type.vala',
 		'src/gir/array.vala',
@@ -44,6 +32,7 @@ sources = files(
 		'src/gir/constant.vala',
 		'src/gir/constructor.vala',
 		'src/gir/doc-deprecated.vala',
+		'src/gir/doc-elements.vala',
 		'src/gir/doc-stability.vala',
 		'src/gir/doc-version.vala',
 		'src/gir/doc.vala',
@@ -85,7 +74,6 @@ sources = files(
 		'src/gir/varargs.vala',
 		'src/gir/virtual-method.vala',
 		'src/gir-metadata/metadata-parser.vala',
-		'src/gir-metadata/metadata-processor.vala',
 )
 
 executable('vapigen', sources, dependencies: dependencies)

@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -17,37 +17,49 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Alias : Node, InfoAttrs, DocElements, InfoElements, Identifier {
-    public string name {
+ public interface Gir.DocElements : Node {
+    public DocVersion? doc_version {
         owned get {
-            return attrs["name"];
+            return any_of<DocVersion> ();
         }
         set {
-            attrs["name"] = value;
+            remove_and_set (value);
         }
     }
     
-    public string c_type {
+    public DocStability? doc_stability {
         owned get {
-            return attrs["c:type"];
+            return any_of<DocStability> ();
         }
         set {
-            attrs["c:type"] = value;
+            remove_and_set (value);
         }
     }
     
-    public AnyType? anytype {
+    public Doc? doc {
         owned get {
-            return any_of<AnyType> ();
+            return any_of<Doc> ();
         }
         set {
-            remove<AnyType> ();
-            add (value);
+            remove_and_set (value);
         }
     }
-
-    public override void accept (GirVisitor visitor) {
-        visitor.visit_alias (this);
+    
+    public DocDeprecated? doc_deprecated {
+        owned get {
+            return any_of<DocDeprecated> ();
+        }
+        set {
+            remove_and_set (value);
+        }
+    }
+    
+    public SourcePosition? SourcePosition {
+        owned get {
+            return any_of<SourcePosition> ();
+        }
+        set {
+            remove_and_set (value);
+        }
     }
 }
-

@@ -26,5 +26,8 @@ public class Gir.Prerequisite : Node {
             attrs["name"] = value;
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_prerequisite (this);
+    }
+}

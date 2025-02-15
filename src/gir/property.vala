@@ -112,5 +112,8 @@ public class Gir.Property : Node, InfoAttrs, DocElements, InfoElements {
             add (value);
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_property (this);
+    }
+}

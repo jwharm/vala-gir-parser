@@ -68,5 +68,9 @@ public class Gir.Array : Node, AnyType {
             return all_of<AnyType> ();
         }
     }
+
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_array (this);
+    }
 }
 

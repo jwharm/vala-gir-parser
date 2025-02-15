@@ -26,5 +26,8 @@ public class Gir.CInclude : Node {
             attrs["name"] = value;
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_c_include (this);
+    }
+}

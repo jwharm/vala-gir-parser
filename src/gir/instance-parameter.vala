@@ -88,5 +88,8 @@ public class Gir.InstanceParameter : Node, DocElements {
             remove_and_set (value);
         }
     }
-}
 
+    public override void accept (GirVisitor visitor) {
+        visitor.visit_instance_parameter (this);
+    }
+}
