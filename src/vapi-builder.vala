@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -360,7 +360,10 @@ public class VapiBuilder : GirVisitor {
     }
 
     public override void visit_field (Gir.Field g_field) {
-        if (!g_field.introspectable || g_field.private || g_field.name == "priv" || g_field.anytype == null) {
+        if (!g_field.introspectable
+                || g_field.private
+                || g_field.name == "priv"
+                || g_field.anytype == null) {
             return;
         }
 
@@ -843,7 +846,7 @@ public class VapiBuilder : GirVisitor {
     }
 
     public override void visit_repository (Gir.Repository repository) {
-        /* Generate namespace */
+        /* Generate namespace(s) */
         repository.accept_children (this);
     }
 
@@ -1398,12 +1401,6 @@ public class VapiBuilder : GirVisitor {
         return false;
     }
 
-    /* Avoids a dependency on GLib.Math */
-    private static double floor (double a) {
-        double b = (double) (long) a;
-        return a < 0.0 ? b - 1.0 : b;
-    }
-
     /* Find a symbol in the Vala AST */
     public Symbol? lookup (string? name) {
         if (name != null) {
@@ -1416,5 +1413,11 @@ public class VapiBuilder : GirVisitor {
         }
 
         return null;
+    }
+
+    /* Avoids a dependency on GLib.Math */
+    private static double floor (double a) {
+        double b = (double) (long) a;
+        return a < 0.0 ? b - 1.0 : b;
     }
 }
