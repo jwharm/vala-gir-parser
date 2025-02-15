@@ -1402,7 +1402,7 @@ public class VapiBuilder : GirVisitor {
     }
 
     /* Find a symbol in the Vala AST */
-    public Symbol? lookup (string? name) {
+    private Symbol? lookup (string? name) {
         if (name != null) {
             for (Scope s = stack.peek ().scope; s != null; s = s.parent_scope) {
                 var sym = s.lookup (name);
