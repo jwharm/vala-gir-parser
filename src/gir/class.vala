@@ -143,6 +143,10 @@ public class Gir.Class : Node, InfoAttrs, DocElements, InfoElements, Identifier 
             method.accept (visitor);
         }
 
+        foreach (var method_inline in method_inlines) {
+            method_inline.accept (visitor);
+        }
+
         foreach (var function in functions) {
             function.accept (visitor);
         }

@@ -18,26 +18,15 @@
  */
 
 public class Gir.Include : Node {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
-    }
-    
-    public string version {
-        owned get {
-            return attrs["version"];
-        }
-        set {
-            attrs["version"] = value;
-        }
+    public string name    { owned get; set; }
+    public string version { owned get; set; }
+
+    public Include (string name, string version) {
+        this.name = name;
+        this.version = version;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_include (this);
     }
 }
-

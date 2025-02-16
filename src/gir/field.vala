@@ -18,72 +18,67 @@
  */
 
 public class Gir.Field : Node, InfoAttrs, DocElements, InfoElements {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
-    }
-    
-    public bool writable {
-        get {
-            return attr_get_bool ("writable", false);
-        }
-        set {
-            attr_set_bool ("writable", value);
-        }
-    }
-    
-    public bool readable {
-        get {
-            return attr_get_bool ("readable", false);
-        }
-        set {
-            attr_set_bool ("readable", value);
-        }
-    }
-    
-    public bool @private {
-        get {
-            return attr_get_bool ("private", false);
-        }
-        set {
-            attr_set_bool ("private", value);
-        }
-    }
-    
-    public int bits {
-        get {
-            return attr_get_int ("bits", -1);
-        }
-        set {
-            attr_set_int ("bits", value);
-        }
-    }
-    
-    public Callback? callback {
-        owned get {
-            return any_of<Callback> ();
-        }
-        set {
-            remove_and_set (value);
-        }
-    }
-    
-    public AnyType? anytype {
-        owned get {
-            return any_of<AnyType> ();
-        }
-        set {
-            remove<AnyType> ();
-            add (value);
-        }
+    public string name                              { owned get; set; }
+    public override bool introspectable             { get; set; }
+    public override bool deprecated                 { get; set; }
+    public override string deprecated_version       { owned get; set; }
+    public override string version                  { owned get; set; }
+    public override Stability stability             { get; set; }
+    public override DocVersion? doc_version         { owned get; set; }
+    public override DocStability? doc_stability     { owned get; set; }
+    public override Doc? doc                        { owned get; set; }
+    public override DocDeprecated? doc_deprecated   { owned get; set; }
+    public override SourcePosition? source_position { owned get; set; }
+    public override Vala.List<Attribute> attributes { owned get; set; }
+    public bool writable                            { get; set; }
+    public bool readable                            { get; set; }
+    public bool @private                            { get; set; }
+    public int bits                                 { get; set; }
+    public Callback? callback                       { owned get; set; }
+    public AnyType? anytype                         { owned get; set; }
+
+    public Field (string name, bool introspectable, bool deprecated,
+                  string deprecated_version, string version, Stability stability,
+                  DocVersion? doc_version, DocStability? doc_stability, Doc? doc,
+                  DocDeprecated? doc_deprecated, SourcePosition? source_position,
+                  Vala.List<Attribute> attributes, bool writable, bool readable,
+                  bool @private, int bits, Callback? callback, AnyType? anytype) {
+        this.name = name;
+        this.introspectable = introspectable;
+        this.deprecated = deprecated;
+        this.deprecated_version = deprecated_version;
+        this.version = version;
+        this.stability = stability;
+        this.doc_version = doc_version;
+        this.doc_stability = doc_stability;
+        this.doc = doc;
+        this.doc_deprecated = doc_deprecated;
+        this.source_position = source_position;
+        this.attributes = attributes;
+        this.writable = writable;
+        this.readable = readable;
+        this.private = @private;
+        this.bits = bits;
+        this.callback = callback;
+        this.anytype = anytype;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_field (this);
     }
-}
 
+    public override void accept_children (GirVisitor visitor) {
+        doc_version.accept (visitor);
+        doc_stability.accept (visitor);
+        doc.accept (visitor);
+        doc_deprecated.accept (visitor);
+        source_position.accept (visitor);
+        
+        foreach (var attribute in attributes) {
+            attribute.accept (visitor);
+        }
+
+        callback.accept (visitor);
+        anytype.accept (visitor);
+    }
+}

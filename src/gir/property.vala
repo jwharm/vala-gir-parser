@@ -18,102 +18,73 @@
  */
 
 public class Gir.Property : Node, InfoAttrs, DocElements, InfoElements {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
-    }
-    
-    public bool writable {
-        get {
-            return attr_get_bool ("writable", false);
-        }
-        set {
-            attr_set_bool ("writable", value);
-        }
-    }
-    
-    public bool readable {
-        get {
-            return attr_get_bool ("readable", true);
-        }
-        set {
-            attr_set_bool ("readable", value);
-        }
-    }
-    
-    public bool @construct {
-        get {
-            return attr_get_bool ("construct", false);
-        }
-        set {
-            attr_set_bool ("construct", value);
-        }
-    }
-    
-    public bool construct_only {
-        get {
-            return attr_get_bool ("construct-only", false);
-        }
-        set {
-            attr_set_bool ("construct-only", value);
-        }
-    }
-    
-    public string? setter {
-        owned get {
-            return attrs["setter"];
-        }
-        set {
-            attrs["setter"] = value;
-        }
-    }
-    
-    public string? getter {
-        owned get {
-            return attrs["getter"];
-        }
-        set {
-            attrs["getter"] = value;
-        }
-    }
-    
-    public string? default_value {
-        owned get {
-            return attrs["default-value"];
-        }
-        set {
-            attrs["default-value"] = value;
-        }
-    }
-    
-    public TransferOwnership transfer_ownership {
-        get {
-            return TransferOwnership.from_string (attrs["transfer-ownership"]);
-        }
-        set {
-            if (value == TransferOwnership.UNDEFINED) {
-                attrs.remove ("transfer-ownership");
-            } else {
-                attrs["transfer-ownership"] = value.to_string ();
-            }
-        }
-    }
-    
-    public AnyType anytype {
-        owned get {
-            return any_of<AnyType> ();
-        }
-        set {
-            remove<AnyType> ();
-            add (value);
-        }
+    public string name                              { owned get; set; }
+    public override bool introspectable             { get; set; }
+    public override bool deprecated                 { get; set; }
+    public override string deprecated_version       { owned get; set; }
+    public override string version                  { owned get; set; }
+    public override Stability stability             { get; set; }
+    public override DocVersion? doc_version         { owned get; set; }
+    public override DocStability? doc_stability     { owned get; set; }
+    public override Doc? doc                        { owned get; set; }
+    public override DocDeprecated? doc_deprecated   { owned get; set; }
+    public override SourcePosition? source_position { owned get; set; }
+    public override Vala.List<Attribute> attributes { owned get; set; }
+    public bool writable                            { get; set; }
+    public bool readable                            { get; set; }
+    public bool @construct                          { get; set; }
+    public bool construct_only                      { get; set; }
+    public string? setter                           { owned get; set; }
+    public string? getter                           { owned get; set; }
+    public string? default_value                    { owned get; set; }
+    public TransferOwnership transfer_ownership     { get; set; }
+    public AnyType anytype                          { owned get; set; }
+
+    public Property (string name, bool introspectable, bool deprecated,
+                     string deprecated_version, string version, Stability stability,
+                     DocVersion? doc_version, DocStability? doc_stability, Doc? doc,
+                     DocDeprecated? doc_deprecated, SourcePosition? source_position,
+                     Vala.List<Attribute> attributes, bool writable, bool readable,
+                     bool @construct, bool construct_only, string? setter, string? getter,
+                     TransferOwnership transfer_ownership, AnyType anytype) {
+        this.name = name;
+        this.introspectable = introspectable;
+        this.deprecated = deprecated;
+        this.deprecated_version = deprecated_version;
+        this.version = version;
+        this.stability = stability;
+        this.doc_version = doc_version;
+        this.doc_stability = doc_stability;
+        this.doc = doc;
+        this.doc_deprecated = doc_deprecated;
+        this.source_position = source_position;
+        this.attributes = attributes;
+        this.writable = writable;
+        this.readable = readable;
+        this.construct = @construct;
+        this.construct_only = construct_only;
+        this.setter = setter;
+        this.getter = getter;
+        this.default_value = default_value;
+        this.transfer_ownership = transfer_ownership;
+        this.anytype = anytype;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_property (this);
+    }
+
+    public override void accept_children (GirVisitor visitor) {
+        doc_version.accept (visitor);
+        doc_stability.accept (visitor);
+        doc.accept (visitor);
+        doc_deprecated.accept (visitor);
+        source_position.accept (visitor);
+        
+        foreach (var attribute in attributes) {
+            attribute.accept (visitor);
+        }
+        
+        anytype.accept (visitor);
     }
 }

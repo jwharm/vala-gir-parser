@@ -18,151 +18,124 @@
  */
 
 public class Gir.Namespace : Node {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
-    }
-    
-    public string version {
-        owned get {
-            return attrs["version"];
-        }
-        set {
-            attrs["version"] = value;
-        }
-    }
-    
-    public string c_identifier_prefixes {
-        owned get {
-            return attrs["c:identifier-prefixes"];
-        }
-        set {
-            attrs["c:identifier-prefixes"] = value;
-        }
-    }
-    
-    public string c_symbol_prefixes {
-        owned get {
-            return attrs["c:symbol-prefixes"];
-        }
-        set {
-            attrs["c:symbol-prefixes"] = value;
-        }
-    }
-    
-    public string c_prefix {
-        owned get {
-            return attrs["c:prefix"];
-        }
-        set {
-            attrs["c:prefix"] = value;
-        }
-    }
-    
-    public string shared_library {
-        owned get {
-            return attrs["shared-library"];
-        }
-        set {
-            attrs["shared-library"] = value;
-        }
-    }
-    
-    public Vala.List<Alias> aliases {
-        owned get {
-            return all_of<Alias> ();
-        }
-    }
-    
-    public Vala.List<Class> classes {
-        owned get {
-            return all_of<Class> ();
-        }
-    }
-    
-    public Vala.List<Interface> interfaces {
-        owned get {
-            return all_of<Interface> ();
-        }
-    }
-    
-    public Vala.List<Record> records {
-        owned get {
-            return all_of<Record> ();
-        }
-    }
-    
-    public Vala.List<Enumeration> enumerations {
-        owned get {
-            return all_of<Enumeration> ();
-        }
-    }
-    
-    public Vala.List<Function> functions {
-        owned get {
-            return all_of<Function> ();
-        }
-    }
-    
-    public Vala.List<FunctionInline> function_inlines {
-        owned get {
-            return all_of<FunctionInline> ();
-        }
-    }
-    
-    public Vala.List<FunctionMacro> function_macros {
-        owned get {
-            return all_of<FunctionMacro> ();
-        }
-    }
-    
-    public Vala.List<Union> unions {
-        owned get {
-            return all_of<Union> ();
-        }
-    }
-    
-    public Vala.List<Bitfield> bitfields {
-        owned get {
-            return all_of<Bitfield> ();
-        }
-    }
-    
-    public Vala.List<Callback> callbacks {
-        owned get {
-            return all_of<Callback> ();
-        }
-    }
-    
-    public Vala.List<Constant> constants {
-        owned get {
-            return all_of<Constant> ();
-        }
-    }
-    
-    public Vala.List<Attribute> attributes {
-        owned get {
-            return all_of<Attribute> ();
-        }
-    }
-    
-    public Vala.List<Boxed> boxeds {
-        owned get {
-            return all_of<Boxed> ();
-        }
-    }
-    
-    public Vala.List<Docsection> docsections {
-        owned get {
-            return all_of<Docsection> ();
-        }
+    public string name                                { owned get; set; }
+    public string version                             { owned get; set; }
+    public string c_identifier_prefixes               { owned get; set; }
+    public string c_symbol_prefixes                   { owned get; set; }
+    public string c_prefix                            { owned get; set; }
+    public string shared_library                      { owned get; set; }
+    public Vala.List<Alias> aliases                   { owned get; set; }
+    public Vala.List<Class> classes                   { owned get; set; }
+    public Vala.List<Interface> interfaces            { owned get; set; }
+    public Vala.List<Record> records                  { owned get; set; }
+    public Vala.List<Enumeration> enumerations        { owned get; set; }
+    public Vala.List<Function> functions              { owned get; set; }
+    public Vala.List<FunctionInline> function_inlines { owned get; set; }
+    public Vala.List<FunctionMacro> function_macros   { owned get; set; }
+    public Vala.List<Union> unions                    { owned get; set; }
+    public Vala.List<Bitfield> bitfields              { owned get; set; }
+    public Vala.List<Callback> callbacks              { owned get; set; }
+    public Vala.List<Constant> constants              { owned get; set; }
+    public Vala.List<Attribute> attributes            { owned get; set; }
+    public Vala.List<Boxed> boxeds                    { owned get; set; }
+    public Vala.List<Docsection> docsections          { owned get; set; }
+
+    public Namespace (string name, string version, string c_identifier_prefixes,
+                      string c_symbol_prefixes, string c_prefix, string shared_library,
+                      Vala.List<Alias> aliases, Vala.List<Class> classes,
+                      Vala.List<Interface> interfaces, Vala.List<Record> records,
+                      Vala.List<Enumeration> enumerations, Vala.List<Function> functions,
+                      Vala.List<FunctionInline> function_inlines,
+                      Vala.List<FunctionMacro> function_macros, Vala.List<Union> unions,
+                      Vala.List<Bitfield> bitfields, Vala.List<Callback> callbackes,
+                      Vala.List<Constant> constants, Vala.List<Attribute> attributes,
+                      Vala.List<Boxed> boxeds, Vala.List<Docsection> docsections) {
+        this.name = name;
+        this.version = version;
+        this.c_identifier_prefixes = c_identifier_prefixes;
+        this.c_symbol_prefixes = c_symbol_prefixes;
+        this.c_prefix = c_prefix;
+        this.shared_library = shared_library;
+        this.aliases = aliases;
+        this.classes = classes;
+        this.interfaces = interfaces;
+        this.records = records;
+        this.enumerations = enumerations;
+        this.functions = functions;
+        this.function_inlines = function_inlines;
+        this.function_macros = function_macros;
+        this.unions = unions;
+        this.bitfields = bitfields;
+        this.callbacks = callbackes;
+        this.constants = constants;
+        this.attributes = attributes;
+        this.boxeds = boxeds;
+        this.docsections = docsections;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_namespace (this);
+    }
+
+    public override void accept_children (GirVisitor visitor) {
+        foreach (var alias in aliases) {
+            alias.accept (visitor);
+        }
+
+        foreach (var @class in classes) {
+            @class.accept (visitor);
+        }
+        
+        foreach (var @interface in interfaces) {
+            @interface.accept (visitor);
+        }
+        
+        foreach (var record in records) {
+            record.accept (visitor);
+        }
+        
+        foreach (var enumeration in enumerations) {
+            enumeration.accept (visitor);
+        }
+        
+        foreach (var function in functions) {
+            function.accept (visitor);
+        }
+        
+        foreach (var function_inline in function_inlines) {
+            function_inline.accept (visitor);
+        }
+        
+        foreach (var function_macro in function_macros) {
+            function_macro.accept (visitor);
+        }
+        
+        foreach (var union in unions) {
+            union.accept (visitor);
+        }
+        
+        foreach (var bitfield in bitfields) {
+            bitfield.accept (visitor);
+        }
+        
+        foreach (var callback in callbacks) {
+            callback.accept (visitor);
+        }
+        
+        foreach (var constant in constants) {
+            constant.accept (visitor);
+        }
+        
+        foreach (var attribute in attributes) {
+            attribute.accept (visitor);
+        }
+        
+        foreach (var boxed in boxeds) {
+            boxed.accept (visitor);
+        }
+        
+        foreach (var docsection in docsections) {
+            docsection.accept (visitor);
+        }
     }
 }

@@ -18,78 +18,47 @@
  */
 
 public class Gir.InstanceParameter : Node, DocElements {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
-    }
-    
-    public bool nullable {
-        get {
-            return attr_get_bool ("nullable", false);
-        }
-        set {
-            attr_set_bool ("nullable", value);
-        }
-    }
-    
-    public bool allow_none {
-        get {
-            return attr_get_bool ("allow-none", true);
-        }
-        set {
-            attr_set_bool ("allow-none", value);
-        }
-    }
-    
-    public Direction direction {
-        get {
-            return Direction.from_string (attrs["direction"]);
-        }
-        set {
-            if (value == Direction.UNDEFINED) {
-                attrs.remove ("direction");
-            } else {
-                attrs["direction"] = value.to_string ();
-            }
-        }
-    }
-    
-    public bool caller_allocates {
-        get {
-            return attr_get_bool ("caller-allocates", false);
-        }
-        set {
-            attr_set_bool ("caller-allocates", value);
-        }
-    }
-    
-    public TransferOwnership transfer_ownership {
-        get {
-            return TransferOwnership.from_string (attrs["transfer-ownership"]);
-        }
-        set {
-            if (value == TransferOwnership.UNDEFINED) {
-                attrs.remove ("transfer-ownership");
-            } else {
-                attrs["transfer-ownership"] = value.to_string ();
-            }
-        }
-    }
-    
-    public TypeRef type_ref {
-        owned get {
-            return any_of<TypeRef> ();
-        }
-        set {
-            remove_and_set (value);
-        }
+    public string name                              { owned get; set; }
+    public override DocVersion? doc_version         { owned get; set; }
+    public override DocStability? doc_stability     { owned get; set; }
+    public override Doc? doc                        { owned get; set; }
+    public override DocDeprecated? doc_deprecated   { owned get; set; }
+    public override SourcePosition? source_position { owned get; set; }
+    public bool nullable                            { get; set; }
+    public bool allow_none                          { get; set; }
+    public Direction direction                      { get; set; }
+    public bool caller_allocates                    { get; set; }
+    public TransferOwnership transfer_ownership     { get; set; }
+    public TypeRef type_ref                         { owned get; set; }
+
+    public InstanceParameter (string name, DocVersion? doc_version, DocStability? doc_stability,
+                              Doc? doc, DocDeprecated? doc_deprecated, SourcePosition? source_position,
+                              bool nullable, bool allow_none, Direction direction, bool caller_allocates,
+                              TransferOwnership transfer_ownership, TypeRef type_ref) {
+        this.name = name;
+        this.doc_version = doc_version;
+        this.doc_stability = doc_stability;
+        this.doc = doc;
+        this.doc_deprecated = doc_deprecated;
+        this.source_position = source_position;
+        this.nullable = nullable;
+        this.allow_none = allow_none;
+        this.direction = direction;
+        this.caller_allocates = caller_allocates;
+        this.transfer_ownership = transfer_ownership;
+        this.type_ref = type_ref;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_instance_parameter (this);
+    }
+
+    public override void accept_children (GirVisitor visitor) {
+        doc_version.accept (visitor);
+        doc_stability.accept (visitor);
+        doc.accept (visitor);
+        doc_deprecated.accept (visitor);
+        source_position.accept (visitor);
+        type_ref.accept (visitor);
     }
 }

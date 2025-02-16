@@ -18,22 +18,23 @@
  */
 
 public class Gir.Parameters : Node {
-    public Vala.List<Parameter> parameters {
-        owned get {
-            return all_of<Parameter> ();
-        }
-    }
+    public Vala.List<Parameter> parameters { owned get; set; }
+    public InstanceParameter? instance_parameter { owned get; set; }
 
-    public InstanceParameter? instance_parameter {
-        owned get {
-            return any_of<InstanceParameter> ();
-        }
-        set {
-            remove_and_set (value);
-        }
+    public Parameters (Vala.List<Parameter> parameters, InstanceParameter instance_parameter) {
+        this.parameters = parameters;
+        this.instance_parameter = instance_parameter;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_parameters (this);
+    }
+
+    public override void accept_children (GirVisitor visitor) {
+        foreach (var parameter in parameters) {
+            parameter.accept (visitor);
+        }
+
+        instance_parameter.accept (visitor);
     }
 }

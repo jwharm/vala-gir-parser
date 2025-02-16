@@ -18,13 +18,10 @@
  */
 
 public class Gir.Prerequisite : Node {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
+    public string name { owned get; set; }
+
+    public Prerequisite (string name) {
+        this.name = name;
     }
 
     public override void accept (GirVisitor visitor) {

@@ -18,152 +18,72 @@
  */
 
 public class Gir.Parameter : Node, DocElements {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
-    }
-    
-    public bool nullable {
-        get {
-            return attr_get_bool ("nullable", false);
-        }
-        set {
-            attr_set_bool ("nullable", value);
-        }
-    }
-    
-    public bool allow_none {
-        get {
-            return attr_get_bool ("allow-none", false);
-        }
-        set {
-            attr_set_bool ("allow-none", value);
-        }
-    }
-    
-    public bool introspectable {
-        get {
-            return attr_get_bool ("introspectable", true);
-        }
-        set {
-            attr_set_bool ("introspectable", value);
-        }
-    }
-    
-    public int closure {
-        get {
-            return attr_get_int ("closure", -1);
-        }
-        set {
-            attr_set_int ("closure", value);
-        }
-    }
-    
-    public int destroy {
-        get {
-            return attr_get_int ("destroy", -1);
-        }
-        set {
-            attr_set_int ("destroy", value);
-        }
-    }
-    
-    public Scope scope {
-        get {
-            return Scope.from_string (attrs["scope"]);
-        }
-        set {
-            if (value == Scope.UNDEFINED) {
-                attrs.remove ("scope");
-            } else {
-                attrs["scope"] = value.to_string ();
-            }
-        }
-    }
-    
-    public Direction direction {
-        get {
-            return Direction.from_string (attrs["direction"]);
-        }
-        set {
-            if (value == Direction.UNDEFINED) {
-                attrs.remove ("direction");
-            } else {
-                attrs["direction"] = value.to_string ();
-            }
-        }
-    }
-    
-    public bool caller_allocates {
-        get {
-            return attr_get_bool ("caller-allocates", false);
-        }
-        set {
-            attr_set_bool ("caller-allocates", value);
-        }
-    }
-    
-    public bool optional {
-        get {
-            return attr_get_bool ("optional", false);
-        }
-        set {
-            attr_set_bool ("optional", value);
-        }
-    }
-    
-    public bool skip {
-        get {
-            return attr_get_bool ("skip", false);
-        }
-        set {
-            attr_set_bool ("skip", true);
-        }
-    }
-    
-    public TransferOwnership transfer_ownership {
-        get {
-            return TransferOwnership.from_string (attrs["transfer-ownership"]);
-        }
-        set {
-            if (value == TransferOwnership.UNDEFINED) {
-                attrs.remove ("transfer-ownership");
-            } else {
-                attrs["transfer-ownership"] = value.to_string ();
-            }
-        }
-    }
-    
-    public AnyType? anytype {
-        owned get {
-            return any_of<AnyType> ();
-        }
-        set {
-            remove<AnyType> ();
-            add (value);
-        }
-    }
-    
-    public Varargs? varargs {
-        owned get {
-            return any_of<Varargs> ();
-        }
-        set {
-            remove_and_set (value);
-        }
-    }
-    
-    public Vala.List<Attribute> attributes {
-        owned get {
-            return all_of<Attribute> ();
-        }
+    public string name                              { owned get; set; }
+    public bool introspectable                      { get; set; }
+    public override DocVersion? doc_version         { owned get; set; }
+    public override DocStability? doc_stability     { owned get; set; }
+    public override Doc? doc                        { owned get; set; }
+    public override DocDeprecated? doc_deprecated   { owned get; set; }
+    public override SourcePosition? source_position { owned get; set; }
+    public Vala.List<Attribute> attributes          { owned get; set; }
+    public bool nullable                            { get; set; }
+    public bool allow_none                          { get; set; }
+    public int closure                              { get; set; }
+    public int destroy                              { get; set; }
+    public Scope scope                              { get; set; }
+    public Direction direction                      { get; set; }
+    public bool caller_allocates                    { get; set; }
+    public bool optional                            { get; set; }
+    public bool skip                                { get; set; }
+    public TransferOwnership transfer_ownership     { get; set; }
+    public AnyType? anytype                         { owned get; set; }
+    public Varargs? varargs                         { owned get; set; }
+
+    public Parameter (string name, bool introspectable, DocVersion? doc_version,
+                      DocStability? doc_stability, Doc? doc, DocDeprecated? doc_deprecated,
+                      SourcePosition? source_position, Vala.List<Attribute> attributes,
+                      bool nullable, bool allow_none, int closure, int destroy,
+                      Scope scope, Direction direction, bool caller_allocates,
+                      bool optional, bool skip, TransferOwnership transfer_ownership,
+                      AnyType? anytype, Varargs? varargs) {
+        this.name = name;
+        this.introspectable = introspectable;
+        this.doc_version = doc_version;
+        this.doc_stability = doc_stability;
+        this.doc = doc;
+        this.doc_deprecated = doc_deprecated;
+        this.source_position = source_position;
+        this.attributes = attributes;
+        this.nullable = nullable;
+        this.allow_none = allow_none;
+        this.closure = closure;
+        this.destroy = destroy;
+        this.scope = scope;
+        this.direction = direction;
+        this.caller_allocates = caller_allocates;
+        this.optional = optional;
+        this.skip = skip;
+        this.transfer_ownership = transfer_ownership;
+        this.anytype = anytype;
+        this.varargs = varargs;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_parameter (this);
+    }
+
+    public override void accept_children (GirVisitor visitor) {
+        doc_version.accept (visitor);
+        doc_stability.accept (visitor);
+        doc.accept (visitor);
+        doc_deprecated.accept (visitor);
+        source_position.accept (visitor);
+        
+        foreach (var attribute in attributes) {
+            attribute.accept (visitor);
+        }
+
+        anytype.accept (visitor);
+        varargs.accept (visitor);
     }
 }

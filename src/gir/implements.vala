@@ -18,17 +18,13 @@
  */
 
 public class Gir.Implements : Node {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
+    public string name { owned get; set; }
+
+    public Implements (string name) {
+        this.name = name;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_implements (this);
     }
 }
-
