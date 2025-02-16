@@ -18,70 +18,23 @@
  */
 
 public class Gir.Doc : Node {
-    public bool xml_space_preserve {
-        get {
-            return attrs["xml:space"] == "preserve";
-        }
-        set {
-            if (value) {
-                attrs["xml:space"] = "preserve";
-            } else {
-                attrs.remove ("xml:space");
-            }
-        }
-    }
-    
-    public bool xml_whitespace_preserve {
-        get {
-            return attrs["xml:whitespace"] == "preserve";
-        }
-        set {
-            if (value) {
-                attrs["xml:whitespace"] = "preserve";
-            } else {
-                attrs.remove ("xml:whitespace");
-            }
-        }
-    }
-    
-    public string filename {
-        owned get {
-            return attrs["filename"];
-        }
-        set {
-            attrs["filename"] = value;
-        }
-    }
-    
-    public string line {
-        owned get {
-            return attrs["line"];
-        }
-        set {
-            attrs["line"] = value;
-        }
-    }
-    
-    public string? column {
-        owned get {
-            return attrs["column"];
-        }
-        set {
-            attrs["column"] = value;
-        }
-    }
-    
-    public string? text {
-        owned get {
-            return content;
-        }
-        set {
-            content = value;
-        }
+    public bool xml_space_preserve      { get; set; }
+    public bool xml_whitespace_preserve { get; set; }
+    public string? text                 { owned get; set; }
+    public string filename              { owned get; set; }
+    public string line                  { owned get; set; }
+    public string column                {owned get; set; }
+
+    public Doc (bool xml_space_preserve, bool xml_whitespace_preserve, string? text) {
+        this.xml_space_preserve = xml_space_preserve;
+        this.xml_whitespace_preserve = xml_whitespace_preserve;
+        this.text = text;
+        this.filename = filename;
+        this.line = line;
+        this.column = column;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_doc (this);
     }
 }
-

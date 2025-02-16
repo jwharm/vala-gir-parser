@@ -18,59 +18,33 @@
  */
 
 public class Gir.Array : Node, AnyType {
-    public bool zero_terminated {
-        get {
-            return attr_get_bool ("zero-terminated", false);
-        }
-        set {
-            attr_set_bool ("zero-terminated", value);
-        }
-    }
-    
-    public int fixed_size {
-        get {
-            return attr_get_int ("fixed-size", -1);
-        }
-        set {
-            attr_set_int ("fixed-size", value);
-        }
-    }
-    
-    public bool introspectable {
-        get {
-            return attr_get_bool ("introspectable", true);
-        }
-        set {
-            attr_set_bool ("introspectable", value);
-        }
-    }
-    
-    public int length {
-        get {
-            return attr_get_int ("length", -1);
-        }
-        set {
-            attr_set_int ("length", value);
-        }
-    }
-    
-    public string c_type {
-        owned get {
-            return attrs["c:type"];
-        }
-        set {
-            attrs["c:type"] = value;
-        }
-    }
-    
-    public override Vala.List<AnyType> anytype {
-        owned get {
-            return all_of<AnyType> ();
-        }
+    public override string name                    { owned get; set; }
+    public bool zero_terminated                    { get; set; }
+    public int fixed_size                          { get; set; }
+    public bool introspectable                     { get; set; }
+    public int length                              { get; set; }
+    public string c_type                           { owned get; set; }
+    public override Vala.List<AnyType> inner_types { owned get; set; }
+
+    public Array (string name, bool zero_terminated, int fixed_size,
+                  bool introspectable, int length, string c_type,
+                  Vala.List<AnyType> inner_types) {
+        this.name = name;
+        this.zero_terminated = zero_terminated;
+        this.fixed_size = fixed_size;
+        this.introspectable = introspectable;
+        this.length = length;
+        this.c_type = c_type;
+        this.inner_types = inner_types;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_array (this);
     }
-}
 
+    public override void accept_children (GirVisitor visitor) {
+        foreach (var anytype in inner_types) {
+            anytype.accept (visitor);
+        }
+    }
+}

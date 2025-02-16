@@ -18,14 +18,8 @@
  */
 
 public interface Gir.AnyType : Node {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
-    }
+    public abstract string name                    { owned get; set; }
+    public abstract Vala.List<AnyType> inner_types { owned get; set; }
 
-    public abstract Vala.List<AnyType> anytype { owned get; }
+    public abstract void accept (GirVisitor visitor);
 }

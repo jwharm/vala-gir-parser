@@ -18,10 +18,5 @@
  */
 
 public interface Gir.InfoElements : Node, DocElements {
-    public Vala.List<Attribute> attributes {
-        owned get {
-            return all_of<Attribute> ();
-        }
-    }
+    public abstract Vala.List<Attribute> attributes { owned get; set; }
 }
-

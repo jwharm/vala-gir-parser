@@ -18,52 +18,9 @@
  */
 
 public interface Gir.InfoAttrs : Node {
-    public bool introspectable {
-        get {
-            return attr_get_bool ("introspectable", true);
-        }
-        set {
-            attr_set_bool ("introspectable", value);
-        }
-    }
-    
-    public bool deprecated {
-        get {
-            return attr_get_bool ("deprecated", false);
-        }
-        set {
-            attr_set_bool ("deprecated", value);
-        }
-    }
-    
-    public string deprecated_version {
-        owned get {
-            return attrs["deprecated-version"];
-        }
-        set {
-            attrs["deprecated-version"] = value;
-        }
-    }
-    
-    public string version {
-        owned get {
-            return attrs["version"];
-        }
-        set {
-            attrs["version"] = value;
-        }
-    }
-    
-    public Stability stability {
-        get {
-            return Stability.from_string (attrs["stability"]);
-        }
-        set {
-            if (value == Stability.UNDEFINED) {
-                attrs.remove ("stability");
-            } else {
-                attrs["stability"] = value.to_string ();
-            }
-        }
-    }
+    public abstract bool introspectable       { get; set; }
+    public abstract bool deprecated           { get; set; }
+    public abstract string deprecated_version { owned get; set; }
+    public abstract string version            { owned get; set; }
+    public abstract Stability stability       { get; set; }
 }

@@ -18,57 +18,11 @@
  */
 
 public interface Gir.EnumBase : Node, InfoAttrs, DocElements, InfoElements, Identifier {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
-    }
-    
-    public string c_type {
-        owned get {
-            return attrs["c:type"];
-        }
-        set {
-            attrs["c:type"] = value;
-        }
-    }
-    
-    public string? glib_type_name {
-        owned get {
-            return attrs["glib:type-name"];
-        }
-        set {
-            attrs["glib:type-name"] = value;
-        }
-    }
-    
-    public string? glib_get_type {
-        owned get {
-            return attrs["glib:get-type"];
-        }
-        set {
-            attrs["glib:get-type"] = value;
-        }
-    }
-    
-    public Vala.List<Member> members {
-        owned get {
-            return all_of<Member> ();
-        }
-    }
-    
-    public Vala.List<Function> functions {
-        owned get {
-            return all_of<Function> ();
-        }
-    }
-    
-    public Vala.List<FunctionInline> function_inlines {
-        owned get {
-            return all_of<FunctionInline> ();
-        }
-    }
+    public abstract string name                                { owned get; set; }
+    public abstract string c_type                              { owned get; set; }
+    public abstract string? glib_type_name                     { owned get; set; }
+    public abstract string? glib_get_type                      { owned get; set; }
+    public abstract Vala.List<Member> members                  { owned get; set; }
+    public abstract Vala.List<Function> functions              { owned get; set; }
+    public abstract Vala.List<FunctionInline> function_inlines { owned get; set; }
 }

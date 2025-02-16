@@ -18,13 +18,10 @@
  */
 
 public class Gir.CInclude : Node {
-    public string name {
-        owned get {
-            return attrs["name"];
-        }
-        set {
-            attrs["name"] = value;
-        }
+    public string name { owned get; set; }
+
+    public CInclude (string name) {
+        this.name = name;
     }
 
     public override void accept (GirVisitor visitor) {

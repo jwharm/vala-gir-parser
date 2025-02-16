@@ -18,48 +18,9 @@
  */
 
  public interface Gir.DocElements : Node {
-    public DocVersion? doc_version {
-        owned get {
-            return any_of<DocVersion> ();
-        }
-        set {
-            remove_and_set (value);
-        }
-    }
-    
-    public DocStability? doc_stability {
-        owned get {
-            return any_of<DocStability> ();
-        }
-        set {
-            remove_and_set (value);
-        }
-    }
-    
-    public Doc? doc {
-        owned get {
-            return any_of<Doc> ();
-        }
-        set {
-            remove_and_set (value);
-        }
-    }
-    
-    public DocDeprecated? doc_deprecated {
-        owned get {
-            return any_of<DocDeprecated> ();
-        }
-        set {
-            remove_and_set (value);
-        }
-    }
-    
-    public SourcePosition? SourcePosition {
-        owned get {
-            return any_of<SourcePosition> ();
-        }
-        set {
-            remove_and_set (value);
-        }
-    }
+    public abstract DocVersion? doc_version         { owned get; set; }
+    public abstract DocStability? doc_stability     { owned get; set; }
+    public abstract Doc? doc                        { owned get; set; }
+    public abstract DocDeprecated? doc_deprecated   { owned get; set; }
+    public abstract SourcePosition? source_position { owned get; set; }
 }
