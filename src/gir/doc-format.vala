@@ -17,13 +17,15 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Varargs : Node {
+public class Gir.DocFormat : Node {
+    public string name { owned get; set; }
 
-    public Varargs () {
+    public DocFormat (string name) {
+        this.name = name;
     }
 
     public override void accept (GirVisitor visitor) {
-        visitor.visit_varargs (this);
+        visitor.visit_doc_format (this);
     }
 }
 

@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -17,56 +17,72 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.FunctionInline : Node, DocElements, InfoAttrs, CallableAttrs {
-    public override string name                     { owned get; set; }
-    public override bool introspectable             { get; set; }
-    public override bool deprecated                 { get; set; }
-    public override string deprecated_version       { owned get; set; }
-    public override string version                  { owned get; set; }
-    public override Stability stability             { get; set; }
-    public override DocVersion? doc_version         { owned get; set; }
-    public override DocStability? doc_stability     { owned get; set; }
-    public override Doc? doc                        { owned get; set; }
-    public override DocDeprecated? doc_deprecated   { owned get; set; }
-    public override SourcePosition? source_position { owned get; set; }
-    public override string? c_identifier            { owned get; set; }
-    public override string? shadowed_by             { owned get; set; }
-    public override string? shadows                 { owned get; set; }
-    public override bool @throws                    { get; set; }
-    public override string? moved_to                { owned get; set; }
-    public override string? glib_async_func         { owned get; set; }
-    public override string? glib_finish_func        { owned get; set; }
-    public Parameters? parameters                   { owned get; set; }
-    public ReturnValue? return_value                { owned get; set; }
+public class Gir.FunctionInline : InfoAttrs, DocElements, Node, CallableAttrs {
+    public bool introspectable { get; set; }
+    public bool deprecated { get; set; }
+    public string? deprecated_version { owned get; set; }
+    public string? version { owned get; set; }
+    public string? stability { owned get; set; }
+    public string name { owned get; set; }
+    public string? c_identifier { owned get; set; }
+    public string? shadowed_by { owned get; set; }
+    public string? shadows { owned get; set; }
+    public bool throws { get; set; }
+    public string? moved_to { owned get; set; }
+    public string? glib_async_func { owned get; set; }
+    public string? glib_sync_func { owned get; set; }
+    public string? glib_finish_func { owned get; set; }
+    public Parameters? parameters { get; set; }
+    public ReturnValue? return_value { get; set; }
+    public DocVersion? doc_version { get; set; }
+    public DocStability? doc_stability { get; set; }
+    public Doc? doc { get; set; }
+    public DocDeprecated? doc_deprecated { get; set; }
+    public SourcePosition? source_position { get; set; }
 
-    public FunctionInline (string name, bool introspectable, bool deprecated,
-                           string deprecated_version, string version, Stability stability,
-                           DocVersion? doc_version, DocStability? doc_stability, Doc? doc,
-                           DocDeprecated? doc_deprecated, SourcePosition? source_position,
-                           string? c_identifier, string? shadowed_by, string? shadows,
-                           bool @throws, string? moved_to, string? glib_async_func,
-                           string? glib_finish_func, Parameters? parameters,
-                           ReturnValue? return_value) {
-            this.name = name;
-            this.introspectable = introspectable;
-            this.deprecated = deprecated;
-            this.deprecated_version = deprecated_version;
-            this.version = version;
-            this.stability = stability;
-            this.doc_version = doc_version;
-            this.doc_stability = doc_stability;
-            this.doc = doc;
-            this.doc_deprecated = doc_deprecated;
-            this.source_position = source_position;
-            this.c_identifier = c_identifier;
-            this.shadowed_by = shadowed_by;
-            this.shadows = shadows;
-            this.throws = @throws;
-            this.moved_to = moved_to;
-            this.glib_async_func = glib_async_func;
-            this.glib_finish_func = glib_finish_func;
-            this.parameters = parameters;
-            this.return_value = return_value;
+    public FunctionInline (
+            bool introspectable,
+            bool deprecated,
+            string? deprecated_version,
+            string? version,
+            string? stability,
+            string name,
+            string? c_identifier,
+            string? shadowed_by,
+            string? shadows,
+            bool throws,
+            string? moved_to,
+            string? glib_async_func,
+            string? glib_sync_func,
+            string? glib_finish_func,
+            Parameters? parameters,
+            ReturnValue? return_value,
+            DocVersion? doc_version,
+            DocStability? doc_stability,
+            Doc? doc,
+            DocDeprecated? doc_deprecated,
+            SourcePosition? source_position) {
+        this.introspectable = introspectable;
+        this.deprecated = deprecated;
+        this.deprecated_version = deprecated_version;
+        this.version = version;
+        this.stability = stability;
+        this.name = name;
+        this.c_identifier = c_identifier;
+        this.shadowed_by = shadowed_by;
+        this.shadows = shadows;
+        this.throws = throws;
+        this.moved_to = moved_to;
+        this.glib_async_func = glib_async_func;
+        this.glib_sync_func = glib_sync_func;
+        this.glib_finish_func = glib_finish_func;
+        this.parameters = parameters;
+        this.return_value = return_value;
+        this.doc_version = doc_version;
+        this.doc_stability = doc_stability;
+        this.doc = doc;
+        this.doc_deprecated = doc_deprecated;
+        this.source_position = source_position;
     }
 
     public override void accept (GirVisitor visitor) {
@@ -74,13 +90,13 @@ public class Gir.FunctionInline : Node, DocElements, InfoAttrs, CallableAttrs {
     }
 
     public override void accept_children (GirVisitor visitor) {
-        doc_version.accept (visitor);
-        doc_stability.accept (visitor);
-        doc.accept (visitor);
-        doc_deprecated.accept (visitor);
-        source_position.accept (visitor);
-
-        parameters.accept (visitor);
-        return_value.accept (visitor);
+        parameters?.accept (visitor);
+        return_value?.accept (visitor);
+        doc_version?.accept (visitor);
+        doc_stability?.accept (visitor);
+        doc?.accept (visitor);
+        doc_deprecated?.accept (visitor);
+        source_position?.accept (visitor);
     }
 }
+

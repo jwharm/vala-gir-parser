@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -17,56 +17,71 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Property : Node, InfoAttrs, DocElements, InfoElements {
-    public string name                              { owned get; set; }
-    public override bool introspectable             { get; set; }
-    public override bool deprecated                 { get; set; }
-    public override string deprecated_version       { owned get; set; }
-    public override string version                  { owned get; set; }
-    public override Stability stability             { get; set; }
-    public override DocVersion? doc_version         { owned get; set; }
-    public override DocStability? doc_stability     { owned get; set; }
-    public override Doc? doc                        { owned get; set; }
-    public override DocDeprecated? doc_deprecated   { owned get; set; }
-    public override SourcePosition? source_position { owned get; set; }
-    public override Vala.List<Attribute> attributes { owned get; set; }
-    public bool writable                            { get; set; }
-    public bool readable                            { get; set; }
-    public bool @construct                          { get; set; }
-    public bool construct_only                      { get; set; }
-    public string? setter                           { owned get; set; }
-    public string? getter                           { owned get; set; }
-    public string? default_value                    { owned get; set; }
-    public TransferOwnership transfer_ownership     { get; set; }
-    public AnyType anytype                          { owned get; set; }
+public class Gir.Property : InfoAttrs, InfoElements, DocElements, Node {
+    public bool introspectable { get; set; }
+    public bool deprecated { get; set; }
+    public string? deprecated_version { owned get; set; }
+    public string? version { owned get; set; }
+    public string? stability { owned get; set; }
+    public string name { owned get; set; }
+    public bool writable { get; set; }
+    public bool readable { get; set; }
+    public bool construct { get; set; }
+    public bool construct_only { get; set; }
+    public string? setter { owned get; set; }
+    public string? getter { owned get; set; }
+    public string? default_value { owned get; set; }
+    public TransferOwnership transfer_ownership { get; set; }
+    public DocVersion? doc_version { get; set; }
+    public DocStability? doc_stability { get; set; }
+    public Doc? doc { get; set; }
+    public DocDeprecated? doc_deprecated { get; set; }
+    public SourcePosition? source_position { get; set; }
+    public Vala.List<Attribute> attributes { owned get; set; }
+    public AnyType anytype { get; set; }
 
-    public Property (string name, bool introspectable, bool deprecated,
-                     string deprecated_version, string version, Stability stability,
-                     DocVersion? doc_version, DocStability? doc_stability, Doc? doc,
-                     DocDeprecated? doc_deprecated, SourcePosition? source_position,
-                     Vala.List<Attribute> attributes, bool writable, bool readable,
-                     bool @construct, bool construct_only, string? setter, string? getter,
-                     TransferOwnership transfer_ownership, AnyType anytype) {
-        this.name = name;
+    public Property (
+            bool introspectable,
+            bool deprecated,
+            string? deprecated_version,
+            string? version,
+            string? stability,
+            string name,
+            bool writable,
+            bool readable,
+            bool construct,
+            bool construct_only,
+            string? setter,
+            string? getter,
+            string? default_value,
+            TransferOwnership transfer_ownership,
+            DocVersion? doc_version,
+            DocStability? doc_stability,
+            Doc? doc,
+            DocDeprecated? doc_deprecated,
+            SourcePosition? source_position,
+            Vala.List<Attribute> attributes,
+            AnyType anytype) {
         this.introspectable = introspectable;
         this.deprecated = deprecated;
         this.deprecated_version = deprecated_version;
         this.version = version;
         this.stability = stability;
+        this.name = name;
+        this.writable = writable;
+        this.readable = readable;
+        this.construct = construct;
+        this.construct_only = construct_only;
+        this.setter = setter;
+        this.getter = getter;
+        this.default_value = default_value;
+        this.transfer_ownership = transfer_ownership;
         this.doc_version = doc_version;
         this.doc_stability = doc_stability;
         this.doc = doc;
         this.doc_deprecated = doc_deprecated;
         this.source_position = source_position;
         this.attributes = attributes;
-        this.writable = writable;
-        this.readable = readable;
-        this.construct = @construct;
-        this.construct_only = construct_only;
-        this.setter = setter;
-        this.getter = getter;
-        this.default_value = default_value;
-        this.transfer_ownership = transfer_ownership;
         this.anytype = anytype;
     }
 
@@ -75,16 +90,16 @@ public class Gir.Property : Node, InfoAttrs, DocElements, InfoElements {
     }
 
     public override void accept_children (GirVisitor visitor) {
-        doc_version.accept (visitor);
-        doc_stability.accept (visitor);
-        doc.accept (visitor);
-        doc_deprecated.accept (visitor);
-        source_position.accept (visitor);
-        
+        doc_version?.accept (visitor);
+        doc_stability?.accept (visitor);
+        doc?.accept (visitor);
+        doc_deprecated?.accept (visitor);
+        source_position?.accept (visitor);
         foreach (var attribute in attributes) {
             attribute.accept (visitor);
         }
-        
+
         anytype.accept (visitor);
     }
 }
+

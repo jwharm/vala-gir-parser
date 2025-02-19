@@ -18,9 +18,9 @@
  */
 
 public interface Gir.InfoAttrs : Node {
-    public abstract bool introspectable       { get; set; }
-    public abstract bool deprecated           { get; set; }
-    public abstract string deprecated_version { owned get; set; }
-    public abstract string version            { owned get; set; }
-    public abstract Stability stability       { get; set; }
+    public abstract bool introspectable        { get; set; }
+    public abstract bool deprecated            { get; set; }
+    public abstract string? deprecated_version { owned get; set; }
+    public abstract string? version            { owned get; set; }
+    public abstract string? stability          { owned get; set; }
 }

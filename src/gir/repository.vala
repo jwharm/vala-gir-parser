@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -18,62 +18,58 @@
  */
 
 public class Gir.Repository : Node {
-    public string version {
-        owned get {
-            return attrs["version"];
-        }
-        set {
-            attrs["version"] = value;
-        }
-    }
-    
-    public string c_identifier_prefixes {
-        owned get {
-            return attrs["c:identifier-prefixes"];
-        }
-        set {
-            attrs["c:identifier-prefixes"] = value;
-        }
-    }
-    
-    public string c_symbol_prefixes {
-        owned get {
-            return attrs["c:symbol-prefixes"];
-        }
-        set {
-            attrs["c:symbol-prefixes"] = value;
-        }
-    }
-    
-    public Vala.List<Include> includes {
-        owned get {
-            return all_of<Include> ();
-        }
-    }
-    
-    public Vala.List<CInclude> c_includes {
-        owned get {
-            return all_of<CInclude> ();
-        }
-    }
-    
-    public Package? package {
-        owned get {
-            return any_of<Package> ();
-        }
-        set {
-            remove_and_set (value);
-        }
-    }
-    
-    public Vala.List<Namespace> namespaces {
-        owned get {
-            return all_of<Namespace> ();
-        }
+    public string? version { owned get; set; }
+    public string? c_identifier_prefixes { owned get; set; }
+    public string? c_symbol_prefixes { owned get; set; }
+    public Vala.List<Include> includes { owned get; set; }
+    public Vala.List<CInclude> cincludes { owned get; set; }
+    public Vala.List<Package> packages { owned get; set; }
+    public Vala.List<Namespace> namespaces { owned get; set; }
+    public Vala.List<DocFormat> doc_formats { owned get; set; }
+
+    public Repository (
+            string? version,
+            string? c_identifier_prefixes,
+            string? c_symbol_prefixes,
+            Vala.List<Include> includes,
+            Vala.List<CInclude> cincludes,
+            Vala.List<Package> packages,
+            Vala.List<Namespace> namespaces,
+            Vala.List<DocFormat> doc_formats) {
+        this.version = version;
+        this.c_identifier_prefixes = c_identifier_prefixes;
+        this.c_symbol_prefixes = c_symbol_prefixes;
+        this.includes = includes;
+        this.cincludes = cincludes;
+        this.packages = packages;
+        this.namespaces = namespaces;
+        this.doc_formats = doc_formats;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_repository (this);
+    }
+
+    public override void accept_children (GirVisitor visitor) {
+        foreach (var include in includes) {
+            include.accept (visitor);
+        }
+
+        foreach (var cinclude in cincludes) {
+            cinclude.accept (visitor);
+        }
+
+        foreach (var package in packages) {
+            package.accept (visitor);
+        }
+
+        foreach (var namespace in namespaces) {
+            namespace.accept (visitor);
+        }
+
+        foreach (var doc_format in doc_formats) {
+            doc_format.accept (visitor);
+        }
     }
 }
 

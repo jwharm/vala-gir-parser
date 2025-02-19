@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -17,25 +17,30 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Array : Node, AnyType {
-    public override string name                    { owned get; set; }
-    public bool zero_terminated                    { get; set; }
-    public int fixed_size                          { get; set; }
-    public bool introspectable                     { get; set; }
-    public int length                              { get; set; }
-    public string c_type                           { owned get; set; }
-    public override Vala.List<AnyType> inner_types { owned get; set; }
+public class Gir.Array : AnyType {
+    public string? name { owned get; set; }
+    public bool zero_terminated { get; set; }
+    public int fixed_size { get; set; }
+    public bool introspectable { get; set; }
+    public int length { get; set; }
+    public string? c_type { owned get; set; }
+    public AnyType anytype { get; set; }
 
-    public Array (string name, bool zero_terminated, int fixed_size,
-                  bool introspectable, int length, string c_type,
-                  Vala.List<AnyType> inner_types) {
+    public Array (
+            string? name,
+            bool zero_terminated,
+            int fixed_size,
+            bool introspectable,
+            int length,
+            string? c_type,
+            AnyType anytype) {
         this.name = name;
         this.zero_terminated = zero_terminated;
         this.fixed_size = fixed_size;
         this.introspectable = introspectable;
         this.length = length;
         this.c_type = c_type;
-        this.inner_types = inner_types;
+        this.anytype = anytype;
     }
 
     public override void accept (GirVisitor visitor) {
@@ -43,8 +48,7 @@ public class Gir.Array : Node, AnyType {
     }
 
     public override void accept_children (GirVisitor visitor) {
-        foreach (var anytype in inner_types) {
-            anytype.accept (visitor);
-        }
+        anytype.accept (visitor);
     }
 }
+

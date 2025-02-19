@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -18,10 +18,10 @@
  */
 
 public class Gir.Include : Node {
-    public string name    { owned get; set; }
-    public string version { owned get; set; }
+    public string name { owned get; set; }
+    public string? version { owned get; set; }
 
-    public Include (string name, string version) {
+    public Include (string name, string? version) {
         this.name = name;
         this.version = version;
     }
@@ -30,3 +30,4 @@ public class Gir.Include : Node {
         visitor.visit_include (this);
     }
 }
+

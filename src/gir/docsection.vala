@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -17,17 +17,21 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Docsection : Node, DocElements {
-    public string name                              { owned get; set; }
-    public override DocVersion? doc_version         { owned get; set; }
-    public override DocStability? doc_stability     { owned get; set; }
-    public override Doc? doc                        { owned get; set; }
-    public override DocDeprecated? doc_deprecated   { owned get; set; }
-    public override SourcePosition? source_position { owned get; set; }
+public class Gir.Docsection : DocElements, Node {
+    public string name { owned get; set; }
+    public DocVersion? doc_version { get; set; }
+    public DocStability? doc_stability { get; set; }
+    public Doc? doc { get; set; }
+    public DocDeprecated? doc_deprecated { get; set; }
+    public SourcePosition? source_position { get; set; }
 
-    public Docsection (string name, DocVersion? doc_version,
-                       DocStability? doc_stability, Doc? doc,
-                       DocDeprecated? doc_deprecated, SourcePosition? source_position) {
+    public Docsection (
+            string name,
+            DocVersion? doc_version,
+            DocStability? doc_stability,
+            Doc? doc,
+            DocDeprecated? doc_deprecated,
+            SourcePosition? source_position) {
         this.name = name;
         this.doc_version = doc_version;
         this.doc_stability = doc_stability;
@@ -41,10 +45,11 @@ public class Gir.Docsection : Node, DocElements {
     }
 
     public override void accept_children (GirVisitor visitor) {
-        doc_version.accept (visitor);
-        doc_stability.accept (visitor);
-        doc.accept (visitor);
-        doc_deprecated.accept (visitor);
-        source_position.accept (visitor);
+        doc_version?.accept (visitor);
+        doc_stability?.accept (visitor);
+        doc?.accept (visitor);
+        doc_deprecated?.accept (visitor);
+        source_position?.accept (visitor);
     }
 }
+

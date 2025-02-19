@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -19,9 +19,11 @@
 
 public class Gir.Parameters : Node {
     public Vala.List<Parameter> parameters { owned get; set; }
-    public InstanceParameter? instance_parameter { owned get; set; }
+    public InstanceParameter? instance_parameter { get; set; }
 
-    public Parameters (Vala.List<Parameter> parameters, InstanceParameter instance_parameter) {
+    public Parameters (
+            Vala.List<Parameter> parameters,
+            InstanceParameter? instance_parameter) {
         this.parameters = parameters;
         this.instance_parameter = instance_parameter;
     }
@@ -35,6 +37,7 @@ public class Gir.Parameters : Node {
             parameter.accept (visitor);
         }
 
-        instance_parameter.accept (visitor);
+        instance_parameter?.accept (visitor);
     }
 }
+

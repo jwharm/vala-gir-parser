@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -18,34 +18,21 @@
  */
 
 public class Gir.SourcePosition : Node {
-    public string filename {
-        owned get {
-            return attrs["filename"];
-        }
-        set {
-            attrs["filename"] = value;
-        }
-    }
-    
-    public string line {
-        owned get {
-            return attrs["line"];
-        }
-        set {
-            attrs["line"] = value;
-        }
-    }
-    
-    public string? column {
-        owned get {
-            return attrs["column"];
-        }
-        set {
-            attrs["column"] = value;
-        }
+    public string filename { owned get; set; }
+    public string line { owned get; set; }
+    public string? column { owned get; set; }
+
+    public SourcePosition (
+            string filename,
+            string line,
+            string? column) {
+        this.filename = filename;
+        this.line = line;
+        this.column = column;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_source_position (this);
     }
 }
+

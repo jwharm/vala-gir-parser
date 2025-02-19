@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -18,23 +18,24 @@
  */
 
 public class Gir.Doc : Node {
-    public bool xml_space_preserve      { get; set; }
-    public bool xml_whitespace_preserve { get; set; }
-    public string? text                 { owned get; set; }
-    public string filename              { owned get; set; }
-    public string line                  { owned get; set; }
-    public string column                {owned get; set; }
+    public string filename { owned get; set; }
+    public string line { owned get; set; }
+    public string? column { owned get; set; }
+    public string? text { owned get; set; }
 
-    public Doc (bool xml_space_preserve, bool xml_whitespace_preserve, string? text) {
-        this.xml_space_preserve = xml_space_preserve;
-        this.xml_whitespace_preserve = xml_whitespace_preserve;
-        this.text = text;
+    public Doc (
+            string filename,
+            string line,
+            string? column,
+            string? text) {
         this.filename = filename;
         this.line = line;
         this.column = column;
+        this.text = text;
     }
 
     public override void accept (GirVisitor visitor) {
         visitor.visit_doc (this);
     }
 }
+

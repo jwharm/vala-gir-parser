@@ -18,9 +18,9 @@
  */
 
  public interface Gir.DocElements : Node {
-    public abstract DocVersion? doc_version         { owned get; set; }
-    public abstract DocStability? doc_stability     { owned get; set; }
-    public abstract Doc? doc                        { owned get; set; }
-    public abstract DocDeprecated? doc_deprecated   { owned get; set; }
-    public abstract SourcePosition? source_position { owned get; set; }
+    public abstract DocVersion? doc_version         { get; set; }
+    public abstract DocStability? doc_stability     { get; set; }
+    public abstract Doc? doc                        { get; set; }
+    public abstract DocDeprecated? doc_deprecated   { get; set; }
+    public abstract SourcePosition? source_position { get; set; }
 }

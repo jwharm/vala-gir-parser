@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -17,55 +17,66 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements, Identifier, EnumBase {
-    public override string name                                { owned get; set; }
-    public override bool introspectable                        { get; set; }
-    public override bool deprecated                            { get; set; }
-    public override string deprecated_version                  { owned get; set; }
-    public override string version                             { owned get; set; }
-    public override Stability stability                        { get; set; }
-    public override DocVersion? doc_version                    { owned get; set; }
-    public override DocStability? doc_stability                { owned get; set; }
-    public override Doc? doc                                   { owned get; set; }
-    public override DocDeprecated? doc_deprecated              { owned get; set; }
-    public override SourcePosition? source_position            { owned get; set; }
-    public override Vala.List<Attribute> attributes            { owned get; set; }
-    public override string c_type                              { owned get; set; }
-    public override string? glib_type_name                     { owned get; set; }
-    public override string? glib_get_type                      { owned get; set; }
-    public override Vala.List<Member> members                  { owned get; set; }
-    public override Vala.List<Function> functions              { owned get; set; }
-    public override Vala.List<FunctionInline> function_inlines { owned get; set; }
-    public string? glib_error_domain                           { owned get; set; }
+public class Gir.Enumeration : InfoAttrs, InfoElements, Identifier, DocElements, EnumBase, Node {
+    public bool introspectable { get; set; }
+    public bool deprecated { get; set; }
+    public string? deprecated_version { owned get; set; }
+    public string? version { owned get; set; }
+    public string? stability { owned get; set; }
+    public string name { owned get; set; }
+    public string c_type { owned get; set; }
+    public string? glib_type_name { owned get; set; }
+    public string? glib_get_type { owned get; set; }
+    public string? glib_error_domain { owned get; set; }
+    public DocVersion? doc_version { get; set; }
+    public DocStability? doc_stability { get; set; }
+    public Doc? doc { get; set; }
+    public DocDeprecated? doc_deprecated { get; set; }
+    public SourcePosition? source_position { get; set; }
+    public Vala.List<Attribute> attributes { owned get; set; }
+    public Vala.List<Member> members { owned get; set; }
+    public Vala.List<Function> functions { owned get; set; }
+    public Vala.List<FunctionInline> function_inlines { owned get; set; }
 
-    public Enumeration (string name, bool introspectable, bool deprecated,
-                        string deprecated_version, string version, Stability stability,
-                        DocVersion? doc_version, DocStability? doc_stability, Doc? doc,
-                        DocDeprecated? doc_deprecated, SourcePosition? source_position,
-                        Vala.List<Attribute> attributes, string c_type,
-                        string? glib_type_name, string? glib_get_type,
-                        Vala.List<Member> members, Vala.List<Function> functions,
-                        Vala.List<FunctionInline> function_inlines,
-                        string? glib_error_domain) {
-            this.name = name;
-            this.introspectable = introspectable;
-            this.deprecated = deprecated;
-            this.deprecated_version = deprecated_version;
-            this.version = version;
-            this.stability = stability;
-            this.doc_version = doc_version;
-            this.doc_stability = doc_stability;
-            this.doc = doc;
-            this.doc_deprecated = doc_deprecated;
-            this.source_position = source_position;
-            this.attributes = attributes;
-            this.c_type = c_type;
-            this.glib_type_name = glib_type_name;
-            this.glib_get_type = glib_get_type;
-            this.members = members;
-            this.functions = functions;
-            this.function_inlines = function_inlines;
-            this.glib_error_domain = glib_error_domain;
+    public Enumeration (
+            bool introspectable,
+            bool deprecated,
+            string? deprecated_version,
+            string? version,
+            string? stability,
+            string name,
+            string c_type,
+            string? glib_type_name,
+            string? glib_get_type,
+            string? glib_error_domain,
+            DocVersion? doc_version,
+            DocStability? doc_stability,
+            Doc? doc,
+            DocDeprecated? doc_deprecated,
+            SourcePosition? source_position,
+            Vala.List<Attribute> attributes,
+            Vala.List<Member> members,
+            Vala.List<Function> functions,
+            Vala.List<FunctionInline> function_inlines) {
+        this.introspectable = introspectable;
+        this.deprecated = deprecated;
+        this.deprecated_version = deprecated_version;
+        this.version = version;
+        this.stability = stability;
+        this.name = name;
+        this.c_type = c_type;
+        this.glib_type_name = glib_type_name;
+        this.glib_get_type = glib_get_type;
+        this.glib_error_domain = glib_error_domain;
+        this.doc_version = doc_version;
+        this.doc_stability = doc_stability;
+        this.doc = doc;
+        this.doc_deprecated = doc_deprecated;
+        this.source_position = source_position;
+        this.attributes = attributes;
+        this.members = members;
+        this.functions = functions;
+        this.function_inlines = function_inlines;
     }
 
     public override void accept (GirVisitor visitor) {
@@ -73,12 +84,11 @@ public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements, Ident
     }
 
     public override void accept_children (GirVisitor visitor) {
-        doc_version.accept (visitor);
-        doc_stability.accept (visitor);
-        doc.accept (visitor);
-        doc_deprecated.accept (visitor);
-        source_position.accept (visitor);
-        
+        doc_version?.accept (visitor);
+        doc_stability?.accept (visitor);
+        doc?.accept (visitor);
+        doc_deprecated?.accept (visitor);
+        source_position?.accept (visitor);
         foreach (var attribute in attributes) {
             attribute.accept (visitor);
         }
@@ -96,3 +106,4 @@ public class Gir.Enumeration : Node, InfoAttrs, DocElements, InfoElements, Ident
         }
     }
 }
+

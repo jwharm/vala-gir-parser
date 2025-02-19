@@ -51,6 +51,9 @@ public abstract class GirVisitor {
     public virtual void visit_doc_deprecated (Gir.DocDeprecated doc_deprecated) {
     }
 
+    public virtual void visit_doc_format (Gir.DocFormat doc_format) {
+    }
+
     public virtual void visit_doc_stability (Gir.DocStability doc_stability) {
     }
 

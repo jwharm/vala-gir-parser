@@ -17,31 +17,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public enum Gir.Stability {
-    UNDEFINED,
-    STABLE,
-    UNSTABLE,
-    PRIVATE;
-    
-    public static Stability from_string (string? str) {
-        switch (str) {
-            case "Stable":   return STABLE;
-            case "Unstable": return UNSTABLE;
-            case "Private":  return PRIVATE;
-            default:         return UNDEFINED;
-        }
-    }
-    
-    public string to_string () {
-        switch (this) {
-            case STABLE:    return "Stable";
-            case UNSTABLE:  return "Unstable";
-            case PRIVATE:   return "Private";
-            default:        return "";
-        }
-    }
-}
-
 public enum Gir.TransferOwnership {
     UNDEFINED,
     NONE,

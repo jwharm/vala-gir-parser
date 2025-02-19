@@ -17,9 +17,5 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public interface Gir.AnyType : Node {
-    public abstract string name                    { owned get; set; }
-    public abstract Vala.List<AnyType> inner_types { owned get; set; }
-
-    public abstract void accept (GirVisitor visitor);
+public abstract class Gir.AnyType : Gir.Node {
 }

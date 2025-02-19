@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -18,13 +18,9 @@
  */
 
 public class Gir.DocVersion : Node {
-    public bool xml_space_preserve      { get; set; }
-    public bool xml_whitespace_preserve { get; set; }
-    public string? text                 { owned get; set; }
+    public string? text { owned get; set; }
 
-    public DocVersion (bool xml_space_preserve, bool xml_whitespace_preserve, string? text) {
-        this.xml_space_preserve = xml_space_preserve;
-        this.xml_whitespace_preserve = xml_whitespace_preserve;
+    public DocVersion (string? text) {
         this.text = text;
     }
 
@@ -32,3 +28,4 @@ public class Gir.DocVersion : Node {
         visitor.visit_doc_version (this);
     }
 }
+
