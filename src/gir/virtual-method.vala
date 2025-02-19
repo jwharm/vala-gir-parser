@@ -67,7 +67,9 @@ public class Gir.VirtualMethod : InfoAttrs, InfoElements, DocElements, Node, Cal
             SourcePosition? source_position,
             Vala.List<Attribute> attributes,
             Parameters? parameters,
-            ReturnValue? return_value) {
+            ReturnValue? return_value,
+            Vala.SourceReference? source) {
+        base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;
         this.deprecated_version = deprecated_version;

@@ -97,6 +97,55 @@ public class Gir.Parser {
     }
 
     /**
+     * Get a filtered view of all child nodes with the specified type.
+     */
+     public Vala.List<T> all_of<T> (Vala.ArrayList<Node> children) {
+        return new FilteredNodeList<T> (children);
+    }
+
+    /**
+     * Get the first child node with the specified type, or `null` if not found.
+     */
+    public T? any_of<T> (Vala.ArrayList<Node> children) {
+        var type = typeof (T);
+        foreach (var child in children) {
+            if (child.get_type ().is_a (type)) {
+                return child;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the boolean value of this key ("1" is true, "0" is false)
+     */
+     public bool attr_get_bool (string key, bool if_not_set = false) {
+        return (key in attrs) ? ("1" == attrs[key]) : if_not_set;
+    }
+
+    /**
+     * Set the boolean value of this key
+     */ 
+    public void attr_set_bool (string key, bool val) {
+        attrs[key] = (val ? "1" : "0");
+    }
+
+    /**
+     * Get the int value of this key.
+     */
+    public int attr_get_int (string key, int if_not_set = -1) {
+        return (key in attrs) ? (int.parse (attrs[key])) : if_not_set;
+    }
+    
+    /**
+     * Set the int value of this key
+     */
+    public void attr_set_int (string key, int val) {
+        attrs[key] = val.to_string();
+    }
+
+    /**
      * Make sure that all Node subclasses are registered on startup.
      */
     private static void ensure_initialized () {

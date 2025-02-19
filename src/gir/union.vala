@@ -69,7 +69,9 @@ public class Gir.Union : InfoAttrs, InfoElements, DocElements, Node {
             Vala.List<MethodInline> method_inlines,
             Vala.List<Function> functions,
             Vala.List<FunctionInline> function_inlines,
-            Vala.List<Record> records) {
+            Vala.List<Record> records,
+            Vala.SourceReference? source) {
+        base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;
         this.deprecated_version = deprecated_version;

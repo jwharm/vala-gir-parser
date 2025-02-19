@@ -79,7 +79,9 @@ public class Gir.Record : InfoAttrs, InfoElements, Identifier, DocElements, Node
             Vala.List<Union> unions,
             Vala.List<Method> methods,
             Vala.List<MethodInline> method_inlines,
-            Vala.List<Constructor> constructors) {
+            Vala.List<Constructor> constructors,
+            Vala.SourceReference? source) {
+        base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;
         this.deprecated_version = deprecated_version;

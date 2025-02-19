@@ -23,7 +23,9 @@ public class Gir.Parameters : Node {
 
     public Parameters (
             Vala.List<Parameter> parameters,
-            InstanceParameter? instance_parameter) {
+            InstanceParameter? instance_parameter,
+            Vala.SourceReference? source) {
+        base(source);
         this.parameters = parameters;
         this.instance_parameter = instance_parameter;
     }

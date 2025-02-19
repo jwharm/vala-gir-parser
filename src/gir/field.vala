@@ -51,7 +51,9 @@ public class Gir.Field : InfoAttrs, InfoElements, DocElements, Node {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<Attribute> attributes) {
+            Vala.List<Attribute> attributes,
+            Vala.SourceReference? source) {
+        base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;
         this.deprecated_version = deprecated_version;

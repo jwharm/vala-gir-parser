@@ -21,7 +21,8 @@ public class Gir.Attribute : Node {
     public string name { owned get; set; }
     public string value { owned get; set; }
 
-    public Attribute (string name, string value) {
+    public Attribute (string name, string value, Vala.SourceReference? source) {
+        base(source);
         this.name = name;
         this.value = value;
     }

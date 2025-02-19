@@ -61,7 +61,9 @@ public class Gir.FunctionMacro : InfoAttrs, InfoElements, DocElements, Node, Cal
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
             Vala.List<Attribute> attributes,
-            Parameters? parameters) {
+            Parameters? parameters,
+            Vala.SourceReference? source) {
+        base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;
         this.deprecated_version = deprecated_version;

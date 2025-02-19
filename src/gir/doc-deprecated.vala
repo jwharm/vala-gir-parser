@@ -20,7 +20,8 @@
 public class Gir.DocDeprecated : Node {
     public string? text { owned get; set; }
 
-    public DocDeprecated (string? text) {
+    public DocDeprecated (string? text, Vala.SourceReference? source) {
+        base(source);
         this.text = text;
     }
 

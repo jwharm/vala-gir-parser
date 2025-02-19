@@ -57,7 +57,9 @@ public class Gir.Enumeration : InfoAttrs, InfoElements, Identifier, DocElements,
             Vala.List<Attribute> attributes,
             Vala.List<Member> members,
             Vala.List<Function> functions,
-            Vala.List<FunctionInline> function_inlines) {
+            Vala.List<FunctionInline> function_inlines,
+            Vala.SourceReference? source) {
+        base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;
         this.deprecated_version = deprecated_version;

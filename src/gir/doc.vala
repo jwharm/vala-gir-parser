@@ -27,7 +27,9 @@ public class Gir.Doc : Node {
             string filename,
             string line,
             string? column,
-            string? text) {
+            string? text,
+            Vala.SourceReference? source) {
+        base(source);
         this.filename = filename;
         this.line = line;
         this.column = column;

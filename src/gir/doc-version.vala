@@ -20,7 +20,8 @@
 public class Gir.DocVersion : Node {
     public string? text { owned get; set; }
 
-    public DocVersion (string? text) {
+    public DocVersion (string? text, Vala.SourceReference? source) {
+        base(source);
         this.text = text;
     }
 

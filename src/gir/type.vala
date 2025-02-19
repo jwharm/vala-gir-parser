@@ -37,7 +37,9 @@ public class Gir.TypeRef : DocElements, AnyType {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<AnyType> anytypes) {
+            Vala.List<AnyType> anytypes,
+            Vala.SourceReference? source) {
+        base(source);
         this.name = name;
         this.c_type = c_type;
         this.introspectable = introspectable;
@@ -50,7 +52,7 @@ public class Gir.TypeRef : DocElements, AnyType {
     }
 
     public override void accept (GirVisitor visitor) {
-        visitor.visit_type_ref (this);
+        visitor.visit_type (this);
     }
 
     public override void accept_children (GirVisitor visitor) {

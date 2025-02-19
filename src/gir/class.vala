@@ -97,7 +97,9 @@ public class Gir.Class : InfoAttrs, InfoElements, Identifier, DocElements, Node 
             Vala.List<Union> unions,
             Vala.List<Constant> constants,
             Vala.List<Record> records,
-            Vala.List<Callback> callbacks) {
+            Vala.List<Callback> callbacks,
+            Vala.SourceReference? source) {
+        base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;
         this.deprecated_version = deprecated_version;

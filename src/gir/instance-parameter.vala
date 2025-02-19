@@ -43,7 +43,9 @@ public class Gir.InstanceParameter : DocElements, Node {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            TypeRef type_ref) {
+            TypeRef type_ref,
+            Vala.SourceReference? source) {
+        base(source);
         this.name = name;
         this.nullable = nullable;
         this.allow_none = allow_none;

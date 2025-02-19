@@ -35,7 +35,9 @@ public class Gir.Repository : Node {
             Vala.List<CInclude> cincludes,
             Vala.List<Package> packages,
             Vala.List<Namespace> namespaces,
-            Vala.List<DocFormat> doc_formats) {
+            Vala.List<DocFormat> doc_formats,
+            Vala.SourceReference? source) {
+        base(source);
         this.version = version;
         this.c_identifier_prefixes = c_identifier_prefixes;
         this.c_symbol_prefixes = c_symbol_prefixes;

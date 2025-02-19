@@ -47,7 +47,9 @@ public class Gir.Alias : InfoAttrs, InfoElements, Identifier, DocElements, Node 
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
             Vala.List<Attribute> attributes,
-            AnyType? anytype) {
+            AnyType? anytype,
+            Vala.SourceReference? source) {
+        base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;
         this.deprecated_version = deprecated_version;

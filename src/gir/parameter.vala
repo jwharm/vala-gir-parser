@@ -55,7 +55,9 @@ public class Gir.Parameter : DocElements, Node {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<Attribute> attributes) {
+            Vala.List<Attribute> attributes,
+            Vala.SourceReference? source) {
+        base(source);
         this.name = name;
         this.nullable = nullable;
         this.allow_none = allow_none;

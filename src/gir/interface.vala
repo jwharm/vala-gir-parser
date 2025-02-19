@@ -79,7 +79,9 @@ public class Gir.Interface : InfoAttrs, InfoElements, Identifier, DocElements, N
             Vala.List<Property> properties,
             Vala.List<Signal> @signals,
             Vala.List<Callback> callbacks,
-            Vala.List<Constant> constants) {
+            Vala.List<Constant> constants,
+            Vala.SourceReference? source) {
+        base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;
         this.deprecated_version = deprecated_version;

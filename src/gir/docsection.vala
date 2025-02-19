@@ -31,7 +31,9 @@ public class Gir.Docsection : DocElements, Node {
             DocStability? doc_stability,
             Doc? doc,
             DocDeprecated? doc_deprecated,
-            SourcePosition? source_position) {
+            SourcePosition? source_position,
+            Vala.SourceReference? source) {
+        base(source);
         this.name = name;
         this.doc_version = doc_version;
         this.doc_stability = doc_stability;

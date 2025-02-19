@@ -61,7 +61,9 @@ public class Gir.Namespace : Node {
             Vala.List<Constant> constants,
             Vala.List<Attribute> attributes,
             Vala.List<Boxed> boxeds,
-            Vala.List<Docsection> doc_sections) {
+            Vala.List<Docsection> doc_sections,
+            Vala.SourceReference? source) {
+        base(source);
         this.name = name;
         this.version = version;
         this.c_identifier_prefixes = c_identifier_prefixes;

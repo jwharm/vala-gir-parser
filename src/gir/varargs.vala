@@ -19,7 +19,8 @@
 
 public class Gir.Varargs : Node {
 
-    public Varargs () {
+    public Varargs (Vala.SourceReference? source) {
+        base(source);
     }
 
     public override void accept (GirVisitor visitor) {

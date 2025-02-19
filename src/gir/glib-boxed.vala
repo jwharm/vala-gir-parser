@@ -53,7 +53,9 @@ public class Gir.Boxed : InfoAttrs, InfoElements, Identifier, DocElements, Node 
             SourcePosition? source_position,
             Vala.List<Attribute> attributes,
             Vala.List<Function> functions,
-            Vala.List<FunctionInline> function_inlines) {
+            Vala.List<FunctionInline> function_inlines,
+            Vala.SourceReference? source) {
+        base(source);
         this.name = name;
         this.introspectable = introspectable;
         this.deprecated = deprecated;

@@ -20,7 +20,8 @@
 public class Gir.Implements : Node {
     public string name { owned get; set; }
 
-    public Implements (string name) {
+    public Implements (string name, Vala.SourceReference? source) {
+        base(source);
         this.name = name;
     }
 
