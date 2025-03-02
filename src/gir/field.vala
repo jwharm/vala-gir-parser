@@ -34,6 +34,8 @@ public class Gir.Field : InfoAttrs, InfoElements, DocElements, Node {
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
     public Vala.List<Attribute> attributes { owned get; set; }
+    public Callback? callback { get; set; }
+    public AnyType? anytype { get; set; }
 
     public Field (
             bool introspectable,

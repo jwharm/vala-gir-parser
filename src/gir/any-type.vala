@@ -18,6 +18,8 @@
  */
 
 public abstract class Gir.AnyType : Gir.Node {
+    public abstract string? name { owned get; set; }
+
     protected AnyType(Vala.SourceReference? source) {
         base(source);
     }

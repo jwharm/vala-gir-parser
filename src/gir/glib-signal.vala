@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Signal : InfoAttrs, InfoElements, DocElements, Node {
+public class Gir.Signal : Callable, InfoAttrs, InfoElements, DocElements, Node {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }

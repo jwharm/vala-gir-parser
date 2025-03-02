@@ -21,7 +21,7 @@
  * Base class for all Gir Nodes. The parent node of the root node is `null`.
  */
 public abstract class Gir.Node : Object {
-    public weak Node? parent_node         { get; private set; default = null; }
+    public weak Node? parent_node         { get; set; default = null; }
     public Vala.SourceReference? source   { get; set; }
 
     protected Node (Vala.SourceReference? source) {

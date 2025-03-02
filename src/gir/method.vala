@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Method : InfoAttrs, InfoElements, DocElements, Node, CallableAttrs {
+public class Gir.Method : Callable, InfoAttrs, InfoElements, DocElements, Node, CallableAttrs {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }
@@ -27,7 +27,7 @@ public class Gir.Method : InfoAttrs, InfoElements, DocElements, Node, CallableAt
     public string? c_identifier { owned get; set; }
     public string? shadowed_by { owned get; set; }
     public string? shadows { owned get; set; }
-    public bool throws { get; set; }
+    public bool @throws { get; set; }
     public string? moved_to { owned get; set; }
     public string? glib_async_func { owned get; set; }
     public string? glib_sync_func { owned get; set; }
@@ -53,7 +53,7 @@ public class Gir.Method : InfoAttrs, InfoElements, DocElements, Node, CallableAt
             string? c_identifier,
             string? shadowed_by,
             string? shadows,
-            bool throws,
+            bool @throws,
             string? moved_to,
             string? glib_async_func,
             string? glib_sync_func,
@@ -79,7 +79,7 @@ public class Gir.Method : InfoAttrs, InfoElements, DocElements, Node, CallableAt
         this.c_identifier = c_identifier;
         this.shadowed_by = shadowed_by;
         this.shadows = shadows;
-        this.throws = throws;
+        this.throws = @throws;
         this.moved_to = moved_to;
         this.glib_async_func = glib_async_func;
         this.glib_sync_func = glib_sync_func;

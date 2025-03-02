@@ -20,14 +20,59 @@
 using Vala;
 
 public class Gir.Parser {
-    static construct {
-        ensure_initialized ();
-    }
-
     private SourceFile source_file;
     private SourceLocation begin;
     private SourceLocation end;
     
+    /**
+     * Get a list that only contains nodes with the specified type.
+     */
+    private static Vala.List<T> get_nodes<T> (ArrayList<Node> list) {
+        var result = new ArrayList<T> ();
+        var type = typeof (T);
+        foreach (var node in list) {
+            if (node.get_type ().is_a (type)) {
+                result.add (node);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Get the first child node with the specified type, or `null` if not found.
+     */
+    private static T? get_node<T> (ArrayList<Node> children) {
+        var type = typeof (T);
+        foreach (var child in children) {
+            if (child.get_type ().is_a (type)) {
+                return child;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the boolean value of this key ("1" is true, "0" is false)
+     */
+    private static bool get_bool (Vala.Map<string, string> attrs, string key, bool if_not_set = false) {
+        return (key in attrs) ? ("1" == attrs[key]) : if_not_set;
+    }
+
+    /**
+     * Get the int value of this key
+     */
+    private static int get_int (Vala.Map<string, string> attrs, string key, int if_not_set = -1) {
+        return (key in attrs) ? (int.parse (attrs[key])) : if_not_set;
+    }
+    
+    /**
+     * Get the string value of this key
+     */
+    private static string? get_string (Vala.Map<string, string> attrs, string key, string? if_not_set = null) {
+        return (key in attrs) ? (attrs[key]) : if_not_set;
+    }
+
     /**
      * Create a Gir Parser for the provided source file.
      *
@@ -80,122 +125,161 @@ public class Gir.Parser {
             }
         }
         
-        /* Determine the Node subclass */
-        Type type = Type.from_name (Node.element_to_type_name (element));
-        if (type == 0) {
-            Report.warning (source, "Unsupported element: " + element);
-            /* Fallback to generic Node type */
-            type = typeof (Node);
+        Node new_node;
+        switch (element) {
+        case "alias":
+            new_node = new Alias (
+                get_bool (attrs, "introspectable"),
+                get_bool (attrs, "deprecated"),
+                get_string (attrs, "deprecated-version"),
+                get_string (attrs, "version"),
+                get_string (attrs, "stability"),
+                get_string (attrs, "name"),
+                get_string (attrs, "c:type"),
+                get_node <DocVersion> (children),
+                get_node <DocStability> (children),
+                get_node <Doc> (children),
+                get_node <DocDeprecated> (children),
+                get_node <SourcePosition> (children),
+                get_nodes <Attribute> (children),
+                get_node <AnyType> (children),
+                source);
+            break;
+        case "array":
+            new_node = new Array (
+                get_string (attrs, "name"),
+                get_bool (attrs, "zero-terminated"),
+                get_int (attrs, "fixed-size"),
+                get_bool (attrs, "introspectable"),
+                get_int (attrs, "length"),
+                get_string (attrs, "c:type"),
+                get_node <AnyType> (children),
+                source);
+            break;
+        case "attribute":
+            new_node = new Attribute (
+                get_string (attrs, "name"),
+                get_string (attrs, "value"),
+                source);
+            break;
+        case "bitfield":
+            new_node = new Bitfield (
+                get_bool (attrs, "introspectable"),
+                get_bool (attrs, "deprecated"),
+                get_string (attrs, "deprecated-version"),
+                get_string (attrs, "version"),
+                get_string (attrs, "stability"),
+                get_string (attrs, "name"),
+                get_string (attrs, "c:type"),
+                get_string (attrs, "glib:type-name"),
+                get_string (attrs, "glib:get-type"),
+                get_node <DocVersion> (children),
+                get_node <DocStability> (children),
+                get_node <Doc> (children),
+                get_node <DocDeprecated> (children),
+                get_node <SourcePosition> (children),
+                get_nodes <Attribute> (children),
+                get_nodes <Member> (children),
+                get_nodes <Function> (children),
+                get_nodes <FunctionInline> (children),
+                source);
+            break;
+        case "c:include":
+            new_node = new CInclude (get_string (attrs, "name"), source);
+            break;
+        case "callback":
+            new_node = new Callback (
+                get_bool (attrs, "introspectable"),
+                get_bool (attrs, "deprecated"),
+                get_string (attrs, "deprecated-version"),
+                get_string (attrs, "version"),
+                get_string (attrs, "stability"),
+                get_string (attrs, "name"),
+                get_string (attrs, "c:type"),
+                get_bool (attrs, "throws"),
+                get_node <DocVersion> (children),
+                get_node <DocStability> (children),
+                get_node <Doc> (children),
+                get_node <DocDeprecated> (children),
+                get_node <SourcePosition> (children),
+                get_nodes <Attribute> (children),
+                get_node <Parameters> (children),
+                get_node <ReturnValue> (children),
+                source);
+            break;
+        case "class":
+            new_node = new Class (
+                get_bool (attrs, "introspectable"),
+                get_bool (attrs, "deprecated"),
+                get_string (attrs, "deprecated-version"),
+                get_string (attrs, "version"),
+                get_string (attrs, "stability"),
+                get_string (attrs, "name"),
+                get_string (attrs, "glib:type-name"),
+                get_string (attrs, "glib:get-type"),
+                get_string (attrs, "parent"),
+                get_string (attrs, "glib:type-struct"),
+                get_string (attrs, "glib:ref-func"),
+                get_string (attrs, "glib:unref-func"),
+                get_string (attrs, "glib:set-value-func"),
+                get_string (attrs, "glib:get-value-func"),
+                get_string (attrs, "c:type"),
+                get_string (attrs, "c:symbol-prefix"),
+                get_bool (attrs, "abstract"),
+                get_bool (attrs, "glib:fundamental"),
+                get_bool (attrs, "final"),
+                get_node <DocVersion> (children),
+                get_node <DocStability> (children),
+                get_node <Doc> (children),
+                get_node <DocDeprecated> (children),
+                get_node <SourcePosition> (children),
+                get_nodes <Attribute> (children),
+                get_nodes <Implements> (children),
+                get_nodes <Constructor> (children),
+                get_nodes <Method> (children),
+                get_nodes <MethodInline> (children),
+                get_nodes <Function> (children),
+                get_nodes <FunctionInline> (children),
+                get_nodes <VirtualMethod> (children),
+                get_nodes <Field> (children),
+                get_nodes <Property> (children),
+                get_nodes <Signal> (children),
+                get_nodes <Union> (children),
+                get_nodes <Constant> (children),
+                get_nodes <Record> (children),
+                get_nodes <Callback> (children),
+                source
+            );
+            break;
+        case "constant":
+            new_node = new Constant (
+                get_bool (attrs, "introspectable"),
+                get_bool (attrs, "deprecated"),
+                get_string (attrs, "deprecated-version"),
+                get_string (attrs, "version"),
+                get_string (attrs, "stability"),
+                get_string (attrs, "name"),
+                get_string (attrs, "value"),
+                get_string (attrs, "c:type"),
+                get_string (attrs, "c:identifier"),
+                get_node <DocVersion> (children),
+                get_node <DocStability> (children),
+                get_node <Doc> (children),
+                get_node <DocDeprecated> (children),
+                get_node <SourcePosition> (children),
+                get_nodes <Attribute> (children),
+                get_node <AnyType> (children),
+                source);
+            break;
+        default:
+            Report.error (source, "Unsupported element '%s'", element);
+            break;
         }
 
-        /* Create and return a new Gir Node */
-        return Object.new (type,
-                           attrs: attrs,
-                           children: children,
-                           content: content.str.strip (),
-                           source: source) as Node;
-    }
-
-    /**
-     * Get a filtered view of all child nodes with the specified type.
-     */
-     public Vala.List<T> all_of<T> (Vala.ArrayList<Node> children) {
-        return new FilteredNodeList<T> (children);
-    }
-
-    /**
-     * Get the first child node with the specified type, or `null` if not found.
-     */
-    public T? any_of<T> (Vala.ArrayList<Node> children) {
-        var type = typeof (T);
         foreach (var child in children) {
-            if (child.get_type ().is_a (type)) {
-                return child;
-            }
+            child.parent_node = new_node;
         }
 
-        return null;
-    }
-
-    /**
-     * Get the boolean value of this key ("1" is true, "0" is false)
-     */
-     public bool attr_get_bool (string key, bool if_not_set = false) {
-        return (key in attrs) ? ("1" == attrs[key]) : if_not_set;
-    }
-
-    /**
-     * Set the boolean value of this key
-     */ 
-    public void attr_set_bool (string key, bool val) {
-        attrs[key] = (val ? "1" : "0");
-    }
-
-    /**
-     * Get the int value of this key.
-     */
-    public int attr_get_int (string key, int if_not_set = -1) {
-        return (key in attrs) ? (int.parse (attrs[key])) : if_not_set;
-    }
-    
-    /**
-     * Set the int value of this key
-     */
-    public void attr_set_int (string key, int val) {
-        attrs[key] = val.to_string();
-    }
-
-    /**
-     * Make sure that all Node subclasses are registered on startup.
-     */
-    private static void ensure_initialized () {
-        typeof (Gir.Alias).ensure ();
-        typeof (Gir.AnyType).ensure ();
-        typeof (Gir.Array).ensure ();
-        typeof (Gir.Attribute).ensure ();
-        typeof (Gir.Bitfield).ensure ();
-        typeof (Gir.Boxed).ensure ();
-        typeof (Gir.CallableAttrs).ensure ();
-        typeof (Gir.Callback).ensure ();
-        typeof (Gir.CInclude).ensure ();
-        typeof (Gir.Class).ensure ();
-        typeof (Gir.Constant).ensure ();
-        typeof (Gir.Constructor).ensure ();
-        typeof (Gir.DocDeprecated).ensure ();
-        typeof (Gir.Docsection).ensure ();
-        typeof (Gir.DocStability).ensure ();
-        typeof (Gir.Doc).ensure ();
-        typeof (Gir.DocVersion).ensure ();
-        typeof (Gir.Enumeration).ensure ();
-        typeof (Gir.Field).ensure ();
-        typeof (Gir.FunctionInline).ensure ();
-        typeof (Gir.FunctionMacro).ensure ();
-        typeof (Gir.Function).ensure ();
-        typeof (Gir.Implements).ensure ();
-        typeof (Gir.Include).ensure ();
-        typeof (Gir.InfoAttrs).ensure ();
-        typeof (Gir.InfoElements).ensure ();
-        typeof (Gir.InstanceParameter).ensure ();
-        typeof (Gir.Interface).ensure ();
-        typeof (Gir.Member).ensure ();
-        typeof (Gir.MethodInline).ensure ();
-        typeof (Gir.Method).ensure ();
-        typeof (Gir.Namespace).ensure ();
-        typeof (Gir.Node).ensure ();
-        typeof (Gir.Package).ensure ();
-        typeof (Gir.Parameters).ensure ();
-        typeof (Gir.Parameter).ensure ();
-        typeof (Gir.Prerequisite).ensure ();
-        typeof (Gir.Property).ensure ();
-        typeof (Gir.Record).ensure ();
-        typeof (Gir.Repository).ensure ();
-        typeof (Gir.ReturnValue).ensure ();
-        typeof (Gir.Signal).ensure ();
-        typeof (Gir.SourcePosition).ensure ();
-        typeof (Gir.TypeRef).ensure ();
-        typeof (Gir.Union).ensure ();
-        typeof (Gir.Varargs).ensure ();
-        typeof (Gir.VirtualMethod).ensure ();
+        return new_node;
     }
 }
-

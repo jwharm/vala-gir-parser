@@ -47,22 +47,23 @@ public class GirParser2 : CodeVisitor {
 
         if (repository != null) {
             /* set package name */
-            string? pkg = repository.package?.name;
-            source_file.package_name = pkg;
-            if (context.has_package (pkg)) {
-                /* package already provided elsewhere, stop parsing this GIR
-                 * if it was not passed explicitly */
-                if (! source_file.from_commandline) {
-                    return;
+            foreach (var pkg in repository.packages) {
+                source_file.package_name = pkg.name;
+                if (context.has_package (pkg.name)) {
+                    /* package already provided elsewhere, stop parsing this GIR
+                     * if it was not passed explicitly */
+                    if (! source_file.from_commandline) {
+                        return;
+                    }
+                } else {
+                    context.add_package (pkg.name);
                 }
-            } else {
-                context.add_package (pkg);
             }
 
             /* add dependency packages */
             foreach (var include in repository.includes) {
                 string dep = include.name;
-                if (include.attrs.contains ("version")) {
+                if (include.version != null) {
                     dep += "-" + include.version;
                 }
 

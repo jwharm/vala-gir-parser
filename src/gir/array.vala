@@ -18,7 +18,7 @@
  */
 
 public class Gir.Array : AnyType {
-    public string? name { owned get; set; }
+    public override string? name { owned get; set; }
     public bool zero_terminated { get; set; }
     public int fixed_size { get; set; }
     public bool introspectable { get; set; }

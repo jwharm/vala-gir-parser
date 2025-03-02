@@ -18,7 +18,7 @@
  */
 
 public class Gir.TypeRef : DocElements, AnyType {
-    public string? name { owned get; set; }
+    public override string? name { owned get; set; }
     public string? c_type { owned get; set; }
     public bool introspectable { get; set; }
     public DocVersion? doc_version { get; set; }

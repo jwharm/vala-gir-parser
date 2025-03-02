@@ -35,15 +35,21 @@ public class DataTypeBuilder {
             return new VoidType ();
         }
 
-        /* <type> or <array name="GLib.PtrArray"> */
-        if ((g_anytype is Gir.Array && g_anytype.name == "GLib.PtrArray")
-                || (g_anytype is Gir.TypeRef)) {
-            return build_type (g_anytype.name, g_anytype.anytype, g_anytype.source);
+        /* <type> */
+        if (g_anytype is Gir.TypeRef) {
+            var g_type = (Gir.TypeRef) g_anytype;
+            return build_type (g_anytype.name, g_type.anytypes, g_anytype.source);
         }
 
         /* <array> */
-        var inner = g_anytype.anytype[0];
-        DataType v_type = new DataTypeBuilder (inner).build ();
+        var g_array = (Gir.Array) g_anytype;
+        if (g_array.name == "GLib.PtrArray") {
+            var inner_types = new ArrayList<Gir.AnyType>();
+            inner_types.add (g_array.anytype);
+            return build_type (g_anytype.name, inner_types, g_anytype.source);
+        }
+
+        DataType v_type = new DataTypeBuilder (g_array.anytype).build ();
         return new ArrayType (v_type, 1, g_anytype.source);
     }
 

@@ -35,6 +35,8 @@ public class Gir.Parameter : DocElements, Node {
     public Doc? doc { get; set; }
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
+    public AnyType? anytype { get; set; }
+    public Varargs? varargs { get; set; }
     public Vala.List<Attribute> attributes { owned get; set; }
 
     public Parameter (

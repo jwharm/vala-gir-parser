@@ -22,7 +22,7 @@ public class Gir.Repository : Node {
     public string? c_identifier_prefixes { owned get; set; }
     public string? c_symbol_prefixes { owned get; set; }
     public Vala.List<Include> includes { owned get; set; }
-    public Vala.List<CInclude> cincludes { owned get; set; }
+    public Vala.List<CInclude> c_includes { owned get; set; }
     public Vala.List<Package> packages { owned get; set; }
     public Vala.List<Namespace> namespaces { owned get; set; }
     public Vala.List<DocFormat> doc_formats { owned get; set; }
@@ -42,7 +42,7 @@ public class Gir.Repository : Node {
         this.c_identifier_prefixes = c_identifier_prefixes;
         this.c_symbol_prefixes = c_symbol_prefixes;
         this.includes = includes;
-        this.cincludes = cincludes;
+        this.c_includes = cincludes;
         this.packages = packages;
         this.namespaces = namespaces;
         this.doc_formats = doc_formats;
@@ -57,7 +57,7 @@ public class Gir.Repository : Node {
             include.accept (visitor);
         }
 
-        foreach (var cinclude in cincludes) {
+        foreach (var cinclude in c_includes) {
             cinclude.accept (visitor);
         }
 
