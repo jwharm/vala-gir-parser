@@ -41,7 +41,6 @@ sources = files(
 		'src/gir/enumeration.vala',
 		'src/gir/enums.vala',
 		'src/gir/field.vala',
-		'src/gir/filtered-node-list.vala',
 		'src/gir/function-inline.vala',
 		'src/gir/function-macro.vala',
 		'src/gir/function.vala',
