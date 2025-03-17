@@ -57,6 +57,8 @@ public class Gir.Parameter : DocElements, Node {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
+            AnyType? anytype,
+            Varargs? varargs,
             Vala.List<Attribute> attributes,
             Vala.SourceReference? source) {
         base(source);
@@ -77,6 +79,8 @@ public class Gir.Parameter : DocElements, Node {
         this.doc = doc;
         this.doc_deprecated = doc_deprecated;
         this.source_position = source_position;
+        this.anytype = anytype;
+        this.varargs = varargs;
         this.attributes = attributes;
     }
 
@@ -90,6 +94,8 @@ public class Gir.Parameter : DocElements, Node {
         doc?.accept (visitor);
         doc_deprecated?.accept (visitor);
         source_position?.accept (visitor);
+        anytype?.accept (visitor);
+        varargs?.accept (visitor);
         foreach (var attribute in attributes) {
             attribute.accept (visitor);
         }

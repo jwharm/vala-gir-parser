@@ -24,8 +24,8 @@ public class Gir.Namespace : Node {
     public string? c_symbol_prefixes { owned get; set; }
     public string? c_prefix { owned get; set; }
     public string? shared_library { owned get; set; }
-    public Vala.List<Alias> alias { owned get; set; }
-    public Vala.List<Class> class { owned get; set; }
+    public Vala.List<Alias> aliases { owned get; set; }
+    public Vala.List<Class> classes { owned get; set; }
     public Vala.List<Interface> interfaces { owned get; set; }
     public Vala.List<Record> records { owned get; set; }
     public Vala.List<Enumeration> enums { owned get; set; }
@@ -47,8 +47,8 @@ public class Gir.Namespace : Node {
             string? c_symbol_prefixes,
             string? c_prefix,
             string? shared_library,
-            Vala.List<Alias> alias,
-            Vala.List<Class> class,
+            Vala.List<Alias> aliases,
+            Vala.List<Class> classes,
             Vala.List<Interface> interfaces,
             Vala.List<Record> records,
             Vala.List<Enumeration> enums,
@@ -70,8 +70,8 @@ public class Gir.Namespace : Node {
         this.c_symbol_prefixes = c_symbol_prefixes;
         this.c_prefix = c_prefix;
         this.shared_library = shared_library;
-        this.alias = alias;
-        this.class = class;
+        this.aliases = aliases;
+        this.classes = classes;
         this.interfaces = interfaces;
         this.records = records;
         this.enums = enums;
@@ -92,24 +92,20 @@ public class Gir.Namespace : Node {
     }
 
     public override void accept_children (GirVisitor visitor) {
-        foreach (var alias in alias) {
-            alias.accept (visitor);
+        foreach (var @class in classes) {
+            @class.accept (visitor);
         }
 
-        foreach (var class in class) {
-            class.accept (visitor);
-        }
-
-        foreach (var interface in interfaces) {
-            interface.accept (visitor);
+        foreach (var @interface in interfaces) {
+            @interface.accept (visitor);
         }
 
         foreach (var record in records) {
             record.accept (visitor);
         }
 
-        foreach (var enum in enums) {
-            enum.accept (visitor);
+        foreach (var @enum in enums) {
+            @enum.accept (visitor);
         }
 
         foreach (var function in functions) {
@@ -150,6 +146,10 @@ public class Gir.Namespace : Node {
 
         foreach (var doc_section in doc_sections) {
             doc_section.accept (visitor);
+        }
+
+        foreach (var alias in aliases) {
+            alias.accept (visitor);
         }
     }
 }
