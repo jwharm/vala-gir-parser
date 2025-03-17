@@ -157,10 +157,6 @@ public class Gir.Interface : InfoAttrs, InfoElements, Identifier, DocElements, N
             virtual_method.accept (visitor);
         }
 
-        foreach (var field in fields) {
-            field.accept (visitor);
-        }
-
         foreach (var property in properties) {
             property.accept (visitor);
         }
@@ -175,6 +171,10 @@ public class Gir.Interface : InfoAttrs, InfoElements, Identifier, DocElements, N
 
         foreach (var constant in constants) {
             constant.accept (visitor);
+        }
+
+        foreach (var field in fields) {
+            field.accept (visitor);
         }
     }
 }

@@ -113,10 +113,6 @@ public class Gir.Union : InfoAttrs, InfoElements, DocElements, Node {
             attribute.accept (visitor);
         }
 
-        foreach (var field in fields) {
-            field.accept (visitor);
-        }
-
         foreach (var constructor in constructors) {
             constructor.accept (visitor);
         }
@@ -139,6 +135,10 @@ public class Gir.Union : InfoAttrs, InfoElements, DocElements, Node {
 
         foreach (var record in records) {
             record.accept (visitor);
+        }
+
+        foreach (var field in fields) {
+            field.accept (visitor);
         }
     }
 }

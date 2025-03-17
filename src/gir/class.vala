@@ -183,10 +183,6 @@ public class Gir.Class : InfoAttrs, InfoElements, Identifier, DocElements, Node 
             virtual_method.accept (visitor);
         }
 
-        foreach (var field in fields) {
-            field.accept (visitor);
-        }
-
         foreach (var property in properties) {
             property.accept (visitor);
         }
@@ -209,6 +205,10 @@ public class Gir.Class : InfoAttrs, InfoElements, Identifier, DocElements, Node 
 
         foreach (var callback in callbacks) {
             callback.accept (visitor);
+        }
+
+        foreach (var field in fields) {
+            field.accept (visitor);
         }
     }
 }

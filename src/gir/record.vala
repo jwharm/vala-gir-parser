@@ -128,10 +128,6 @@ public class Gir.Record : InfoAttrs, InfoElements, Identifier, DocElements, Node
             attribute.accept (visitor);
         }
 
-        foreach (var field in fields) {
-            field.accept (visitor);
-        }
-
         foreach (var function in functions) {
             function.accept (visitor);
         }
@@ -154,6 +150,10 @@ public class Gir.Record : InfoAttrs, InfoElements, Identifier, DocElements, Node
 
         foreach (var constructor in constructors) {
             constructor.accept (visitor);
+        }
+
+        foreach (var field in fields) {
+            field.accept (visitor);
         }
     }
 }
