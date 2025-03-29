@@ -15,9 +15,9 @@ dependencies = [
 sources = files(
 		'src/datatype-builder.vala',
 		'src/gir-parser.vala',
-		'src/gir-visitor.vala',
 		'src/vapigen.vala',
 		'src/vapi-builder.vala',
+		'src/gir/anonymous-record.vala',
 		'src/gir/alias.vala',
 		'src/gir/any-type.vala',
 		'src/gir/array.vala',
@@ -27,6 +27,7 @@ sources = files(
 		'src/gir/callable-attrs.vala',
 		'src/gir/callable.vala',
 		'src/gir/callback.vala',
+		'src/gir/context.vala',
 		'src/gir/class.vala',
 		'src/gir/constant.vala',
 		'src/gir/constructor.vala',
@@ -69,10 +70,12 @@ sources = files(
 		'src/gir/repository.vala',
 		'src/gir/return-value.vala',
 		'src/gir/source-position.vala',
+		'src/gir/symbol-resolver.vala',
 		'src/gir/type.vala',
 		'src/gir/union.vala',
 		'src/gir/varargs.vala',
 		'src/gir/virtual-method.vala',
+		'src/gir/visitor.vala',
 		'src/gir-metadata/metadata-parser.vala',
 )
 
