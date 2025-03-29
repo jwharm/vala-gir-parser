@@ -19,11 +19,12 @@
 
 using Vala;
 
-public class VapiBuilder : GirVisitor {
+public class VapiBuilder : Gir.Visitor {
+
     /**
      * Keeps track of the last created Vala Symbol
      */
-    private class SymbolStack {
+     private class SymbolStack {
         private ArrayList<Symbol> stack = new ArrayList<Symbol> ();
 
         public void push (Symbol sym) {
@@ -77,9 +78,6 @@ public class VapiBuilder : GirVisitor {
             /* attributes */
             add_info_attrs (g_alias);
 
-            /* CCode attributes */
-            set_ccode_attrs (g_alias);
-
             /* Generate members */
             g_alias.accept_children (this);
             stack.pop ();
@@ -99,9 +97,6 @@ public class VapiBuilder : GirVisitor {
 
             /* attributes */
             add_info_attrs (g_alias);
-
-            /* CCode attributes */
-            set_ccode_attrs (g_alias);
 
             /* Generate members */
             g_alias.accept_children (this);
@@ -162,9 +157,6 @@ public class VapiBuilder : GirVisitor {
             /* attributes */
             add_info_attrs (g_alias);
 
-            /* get_type method */
-            set_ccode_attrs (g_alias);
-
             /* Generate members */
             g_alias.accept_children (this);
             stack.pop ();
@@ -191,7 +183,7 @@ public class VapiBuilder : GirVisitor {
         /* cprefix */
         string? common_prefix = null;
         foreach (var g_member in g_bitfield.members) {
-            var name = g_member.c_identifier.ascii_up().replace ("-", "_");
+            var name = g_member.c_identifier.ascii_up ().replace ("-", "_");
             calculate_common_prefix (ref common_prefix, name);
         }
         v_sym.set_attribute_string ("CCode", "cprefix", common_prefix);
@@ -201,7 +193,6 @@ public class VapiBuilder : GirVisitor {
 
         /* attributes */
         add_info_attrs (g_bitfield);
-        set_ccode_attrs (g_bitfield);
 
         /* Generate members */
         g_bitfield.accept_children (this);
@@ -222,9 +213,18 @@ public class VapiBuilder : GirVisitor {
         stack.peek ().add_delegate (v_delegate);
         stack.push (v_delegate);
 
-        /* c_name */
+        /* cname */
         if (g_callback.parent_node is Gir.Namespace) {
-            var cname = generate_cname (g_callback);
+            /* string cname = generate_identifier_cname (g_callback);
+             * 
+             * generate_identifier_cname() doesn't work for a Gir.Callback
+             * instance, because after casting to a Gir.Identifier, the "name"
+             * property returns null. I'm reasonably sure this is a Vala bug,
+             * but haven't looked into it yet. Apply a workaround for now.
+             */
+            var ns_prefix = get_ns_prefix (g_callback);
+            string cname = ns_prefix == null ? null : ns_prefix + g_callback.name;
+    
             if (g_callback.c_type != cname) {
                 v_delegate.set_attribute_string ("CCode", "cname", g_callback.c_type);
             }
@@ -291,8 +291,40 @@ public class VapiBuilder : GirVisitor {
         /* type_id */
         set_type_id (g_class.glib_get_type);
 
-        /* CCode attributes */
-        set_ccode_attrs (g_class);
+        /* ref_function */
+        var custom_ref = find_method_with_suffix (g_class, "_ref");
+        if (g_class.glib_ref_func != null) {
+            v_class.set_attribute_string ("CCode", "ref_function", g_class.glib_ref_func);
+        }
+        else if (custom_ref != null) {
+            v_class.set_attribute_string ("CCode", "ref_function", custom_ref);
+        }
+
+        /* unref_function */
+        var custom_unref = find_method_with_suffix (g_class, "_unref");
+        if (g_class.glib_unref_func != null) {
+            v_class.set_attribute_string ("CCode", "unref_function", g_class.glib_unref_func);
+        }
+        else if (custom_unref != null) {
+            v_class.set_attribute_string ("CCode", "unref_function", custom_unref);
+        }
+
+        /* always provide constructor in generated bindings
+         * to indicate that implicit Object () chainup is allowed */
+        bool no_introspectable_constructors = true;
+        foreach (var ctor in g_class.constructors) {
+            if (ctor.introspectable) {
+                no_introspectable_constructors = false;
+                break;
+            }
+        }
+
+        if (no_introspectable_constructors) {
+            var v_cm = new CreationMethod (null, null, g_class.source);
+            v_cm.has_construct_function = false;
+            v_cm.access = PROTECTED;
+            v_class.add_method (v_cm);
+        }
 
         /* Generate members */
         g_class.accept_children (this);
@@ -343,6 +375,7 @@ public class VapiBuilder : GirVisitor {
 
         /* attributes and deprecation */
         add_info_attrs (g_constructor);
+        add_callable_attrs (g_constructor);
 
         /* return type annotation */
         if (g_constructor.parent_node is Gir.Class) {
@@ -392,7 +425,7 @@ public class VapiBuilder : GirVisitor {
         /* cprefix */
         string? common_prefix = null;
         foreach (var g_member in g_enum.members) {
-            var name = g_member.c_identifier.ascii_up().replace ("-", "_");
+            var name = g_member.c_identifier.ascii_up ().replace ("-", "_");
             calculate_common_prefix (ref common_prefix, name);
         }
         v_sym.set_attribute_string ("CCode", "cprefix", common_prefix);
@@ -402,7 +435,6 @@ public class VapiBuilder : GirVisitor {
 
         /* attributes */
         add_info_attrs (g_enum);
-        set_ccode_attrs (g_enum);
 
         /* Generate members */
         g_enum.accept_children (this);
@@ -509,6 +541,20 @@ public class VapiBuilder : GirVisitor {
         stack.peek ().add_method (v_method);
         stack.push (v_method);
 
+        /* When the first parameter is the parent type, the function should be
+         * an instance method after all. This is usually the case for functions
+         * operating on enums. */
+        if (g_function.parameters != null && !g_function.parameters.parameters.is_empty) {
+            var self = g_function.parameters.parameters[0];
+            if (self.direction == UNDEFINED || self.direction == IN || self.caller_allocates) {
+                var parent_type = (g_function.parent_node as Gir.Identifier)?.name;
+                var self_type = (self.anytype as Gir.TypeRef)?.name;
+                if (parent_type != null && self_type != null && self_type == parent_type) {
+                    v_method.binding = INSTANCE;
+                }                
+            }
+        }
+
         /* array return type attributes */
         if (v_return_type is ArrayType) {
             add_array_return_type_attributes (g_function);
@@ -516,12 +562,13 @@ public class VapiBuilder : GirVisitor {
 
         /* c name */
         var c_identifier = g_function.c_identifier;
-        if (c_identifier != generate_cname (g_function)) {
+        if (c_identifier != generate_symbol_cname (g_function)) {
             v_method.set_attribute_string ("CCode", "cname", c_identifier);
         }
 
         /* attributes and deprecation */
         add_info_attrs (g_function);
+        add_callable_attrs (g_function);
 
         /* throws */
         if (g_function.throws) {
@@ -573,9 +620,6 @@ public class VapiBuilder : GirVisitor {
         /* type_id */
         set_type_id (g_iface.glib_get_type);
 
-        /* CCode attributes */
-        set_ccode_attrs (g_iface);
-
         /* Generate members */
         g_iface.accept_children (this);
         stack.pop ();
@@ -586,14 +630,14 @@ public class VapiBuilder : GirVisitor {
         var common_prefix = v_sym.get_attribute_string ("CCode", "cprefix");
         var name = g_member.c_identifier
                            .substring (common_prefix.length)
-                           .ascii_up()
+                           .ascii_up ()
                            .replace ("-", "_");
         if (v_sym is Enum) {
             var v_value = new Vala.EnumValue (name, null, g_member.source, null);
             unowned var v_enum = (Enum) v_sym;
             v_enum.add_value (v_value);
         } else {
-            var value = new IntegerLiteral(g_member.value);
+            var value = new IntegerLiteral (g_member.value);
             unowned var v_err = (ErrorDomain) v_sym;
             v_err.add_code (new ErrorCode.with_value (name, value, g_member.source));
         }
@@ -619,12 +663,13 @@ public class VapiBuilder : GirVisitor {
 
         /* c name */
         var c_identifier = g_method.c_identifier;
-        if (c_identifier != generate_cname (g_method)) {
+        if (c_identifier != generate_symbol_cname (g_method)) {
             v_method.set_attribute_string ("CCode", "cname", c_identifier);
         }
 
         /* attributes and deprecation */
         add_info_attrs (g_method);
+        add_callable_attrs (g_method);
 
         /* throws */
         if (g_method.throws) {
@@ -715,6 +760,13 @@ public class VapiBuilder : GirVisitor {
 
             /* skip hidden parameters */
             if (is_hidden_param (g_call, i)) {
+                continue;
+            }
+
+            /* skip the first parameter of a function that was converted to an
+             * instance method, because it acts as the instance parameter */
+            if (i == 0 && g_call is Gir.Function && v_call is Vala.Method
+                    && ((Vala.Method) v_call).binding == INSTANCE) {
                 continue;
             }
 
@@ -870,33 +922,69 @@ public class VapiBuilder : GirVisitor {
         stack.pop ();
     }
 
-    public override void visit_record (Gir.Record g_rec) {
-        if (!g_rec.introspectable || g_rec.glib_is_gtype_struct_for != null) {
+    public override void visit_record (Gir.Record g_record) {
+        if (!g_record.introspectable || g_record.glib_is_gtype_struct_for != null) {
             return;
         }
 
-        /* create struct */
-        Struct v_struct = new Struct (g_rec.name, g_rec.source);
-        v_struct.access = PUBLIC;
-        stack.peek ().add_struct (v_struct);
-        stack.push (v_struct);
+        /* Check whether this record is a plain struct or a boxed type */
+        bool is_boxed_type = g_record.glib_get_type != null;
+
+        /* create a compact class (for a boxed type) or a plain struct */
+        Symbol v_sym;
+        if (is_boxed_type) {
+            v_sym = new Class (g_record.name, g_record.source);
+            v_sym.set_attribute ("Compact", true);
+            stack.peek ().add_class ((Class) v_sym);
+        } else {
+            v_sym = new Struct (g_record.name, g_record.source);
+            stack.peek ().add_struct ((Struct) v_sym);
+        }
+        
+        v_sym.access = PUBLIC;
+        stack.push (v_sym);
 
         /* c_name */
-        if (g_rec.c_type != generate_identifier_cname (g_rec)) {
-            v_struct.set_attribute_string ("CCode", "cname", g_rec.c_type);
+        if (g_record.c_type != generate_identifier_cname (g_record)) {
+            v_sym.set_attribute_string ("CCode", "cname", g_record.c_type);
         }
 
         /* type_id */
-        set_type_id (g_rec.glib_get_type);
+        set_type_id (g_record.glib_get_type);
 
         /* attributes */
-        add_info_attrs (g_rec);
+        add_info_attrs (g_record);
 
-        /* get_type method */
-        set_ccode_attrs (g_rec);
+        /* copy_function */
+        var custom_ref = find_method_with_suffix (g_record, "_ref");
+        if (g_record.copy_function != null) {
+            v_sym.set_attribute_string ("CCode", "copy_function", g_record.copy_function);
+        }
+        /* custom ref function */
+        else if (custom_ref != null) {
+            v_sym.set_attribute_string ("CCode", "ref_function", custom_ref);
+        }
+        /* boxed types default to g_boxed_copy */
+        else if (g_record.glib_get_type != null) {
+            v_sym.set_attribute_string ("CCode", "copy_function", "g_boxed_copy");
+        }
+
+        /* free_function */
+        var custom_unref = find_method_with_suffix (g_record, "_unref");
+        if (g_record.free_function != null) {
+            v_sym.set_attribute_string ("CCode", "free_function", g_record.free_function);
+        }
+        /* custom unref function */
+        else if (custom_unref != null) {
+            v_sym.set_attribute_string ("CCode", "unref_function", custom_unref);
+        }
+        /* boxed types default to g_boxed_free */
+        else if (g_record.glib_get_type != null) {
+            v_sym.set_attribute_string ("CCode", "free_function", "g_boxed_free");
+        }
 
         /* Generate members */
-        g_rec.accept_children (this);
+        g_record.accept_children (this);
         stack.pop ();
     }
 
@@ -978,6 +1066,7 @@ public class VapiBuilder : GirVisitor {
 
         /* attributes and deprecation */
         add_info_attrs (g_virtual_method);
+        add_callable_attrs (g_virtual_method);
 
         /* "NoWrapper" attribute when no invoker method with the same name */
         var invoker_method = get_invoker_method (g_virtual_method);
@@ -1026,55 +1115,7 @@ public class VapiBuilder : GirVisitor {
         }
     }
 
-    private void set_ccode_attrs (Gir.Identifier g_identifier) {
-        var v_sym = stack.peek ();
-
-        /* FIXME: Set CCode attribute "lower_case_csuffix" */
-
-        var custom_ref = find_method_with_suffix (g_identifier, "_ref");
-        var custom_unref = find_method_with_suffix (g_identifier, "_unref");
-
-        var g_class = g_identifier as Gir.Class;
-        var g_rec = g_identifier as Gir.Record;
-        var g_union = g_identifier as Gir.Record;
-
-        /* ref_function */
-        if (g_class?.glib_ref_func != null) {
-            v_sym.set_attribute_string ("CCode", "ref_function", g_class.glib_ref_func);
-        }
-        /* copy_function */
-        else if (g_rec?.copy_function != null || g_union?.copy_function != null) {
-            var copy_func = g_rec?.copy_function ?? g_union.copy_function;
-            v_sym.set_attribute_string ("CCode", "copy_function", copy_func);
-        }
-        /* custom ref function */
-        else if (custom_ref != null) {
-            v_sym.set_attribute_string ("CCode", "ref_function", custom_ref);
-        }
-        /* boxed types default to g_boxed_copy */
-        else if (type_id != null && g_identifier is Gir.Record) {
-            v_sym.set_attribute_string ("CCode", "copy_function", "g_boxed_copy");
-        }
-
-        /* unref_function */
-        if (g_class?.glib_unref_func != null) {
-            v_sym.set_attribute_string ("CCode", "unref_function", g_class.glib_unref_func);
-        }
-        /* free_function */
-        else if (g_rec?.free_function != null || g_union?.free_function != null) {
-            var free_func = g_rec?.free_function ?? g_union.free_function;
-            v_sym.set_attribute_string ("CCode", "free_function", free_func);
-        }
-        /* custom unref function */
-        else if (custom_unref != null) {
-            v_sym.set_attribute_string ("CCode", "unref_function", custom_unref);
-        }
-        /* boxed types default to g_boxed_free */
-        else if (type_id != null && g_identifier is Gir.Record) {
-            v_sym.set_attribute_string ("CCode", "free_function", "g_boxed_free");
-        }
-    }
-
+    /* Find a method in this type with the requested name */
     private static Gir.Method? find_method_by_name (Gir.Identifier g_identifier, string? name) {
         if (name != null) {
             foreach (var m in get_gir_methods (g_identifier)) {
@@ -1083,6 +1124,7 @@ public class VapiBuilder : GirVisitor {
                 }
             }
         }
+
         return null;
     }
 
@@ -1093,19 +1135,18 @@ public class VapiBuilder : GirVisitor {
                 return g_method.c_identifier;
             }
         }
+
         return null;
     }
 
     /* Get the C prefix of this identifier */
     private static string? get_ns_prefix (Gir.Identifier g_identifier) {
-        var ns = (Gir.Namespace) g_identifier.parent_node;
-
-        /* Return null if this is not a registered type */
-        if (ns == null) {
-            return null;
+        if (g_identifier.parent_node is Gir.Namespace) {
+            var ns = (Gir.Namespace) g_identifier.parent_node;
+            return ns.c_identifier_prefixes ?? ns.c_prefix ?? ns.name;
         }
 
-        return ns.c_identifier_prefixes ?? ns.c_prefix ?? ns.name;
+        return null;
     }
     
     /* Generate the Vala DataType of this method's return type */
@@ -1228,7 +1269,7 @@ public class VapiBuilder : GirVisitor {
 
     /* Find a signal with the same name and type signature as this method or
      * virtual method. */
-     private static bool is_signal_emitter_method (Gir.Callable g_call) {
+    private static bool is_signal_emitter_method (Gir.Callable g_call) {
         if (! (g_call is Gir.Method || g_call is Gir.VirtualMethod)) {
             return false;
         }
@@ -1244,7 +1285,7 @@ public class VapiBuilder : GirVisitor {
 
     /* Find a property with the same name as this method. If found, the property
      * takes precedence. */
-     private static bool is_property_accessor (Gir.Callable g_call) {
+    private static bool is_property_accessor (Gir.Callable g_call) {
         foreach (var p in get_gir_properties (g_call.parent_node)) {
             if (equal_names (p.name, g_call.name)) {
                 return true;
@@ -1254,8 +1295,9 @@ public class VapiBuilder : GirVisitor {
         return false;
     }
 
-    /* Generate the C function name from the GIR name and all prefixes */
-    private static string generate_cname (Gir.Callable call) {
+    /* Generate the C function name from the GIR name and all prefixes, for
+     * example "gtk_window_new" */
+    private static string generate_symbol_cname (Gir.Callable call) {
         var sb = new StringBuilder (call.name);
         unowned var node = call.parent_node;
         while (node != null) {
@@ -1298,7 +1340,8 @@ public class VapiBuilder : GirVisitor {
         return ns_prefix == null ? null : ns_prefix + g_identifier.name;
     }
 
-    /* Generate C name of the TypeClass/TypeInterface of a class/interface */
+    /* Generate C name of the TypeClass/TypeInterface of a class/interface,
+     * for example "GtkWindowClass" */
     private static string? generate_type_cname (Gir.Identifier g_identifier) {
         if (g_identifier is Gir.Class) {
             return g_identifier.name + "Class";
@@ -1327,34 +1370,35 @@ public class VapiBuilder : GirVisitor {
         }
     }
 
-    /* Set version, replacement, deprecated and finish-func attributes */
+    /* Set version, deprecated and deprecated_since attributes */
     private void add_info_attrs (Gir.InfoAttrs g_info_attrs) {
         var v_sym = stack.peek ();
 
         /* version */
         v_sym.version.since = g_info_attrs.version;
 
-        /* replacement */
-        unowned var g_callable_attrs = g_info_attrs as Gir.CallableAttrs;
-        if (g_callable_attrs != null && g_callable_attrs.moved_to != null) {
-            v_sym.version.replacement = g_callable_attrs.moved_to;
-        }
-
         /* deprecated and deprecated_since */
         if (g_info_attrs.deprecated) {
             /* omit deprecation attributes when the parent already has them */
             var parent = g_info_attrs.parent_node as Gir.InfoAttrs;
-            if (parent != null && parent.deprecated) {
-                return;
+            if (parent == null || !parent.deprecated) {
+                v_sym.version.deprecated = true;
+                v_sym.version.deprecated_since = g_info_attrs.deprecated_version;
             }
+        }
+    }
 
-            v_sym.version.deprecated = true;
-            var since = g_info_attrs.deprecated_version;
-            v_sym.version.deprecated_since = since;
+    /* Set replacement and finish-func attributes */
+    private void add_callable_attrs (Gir.CallableAttrs g_callable_attrs) {
+        var v_sym = stack.peek ();
+
+        /* replacement */
+        if (g_callable_attrs.moved_to != null) {
+            v_sym.version.replacement = g_callable_attrs.moved_to;
         }
 
         /* finish-func */
-        if (g_callable_attrs != null && g_callable_attrs.glib_finish_func != null) {
+        if (g_callable_attrs.glib_finish_func != null && g_callable_attrs.name != null) {
             var name = g_callable_attrs.name;
             if (name.has_suffix ("_async")) {
                 name = name.substring (0, name.length - 6);
@@ -1367,6 +1411,7 @@ public class VapiBuilder : GirVisitor {
 		}
     }
 
+    /* Set attributes to specify the array length */
     private void add_array_attrs (Gir.Callable? g_call, ArrayType v_type, Gir.Array g_arr) {
         var v_sym = stack.peek ();
 
@@ -1432,21 +1477,25 @@ public class VapiBuilder : GirVisitor {
      * destroy-notify callback. */
     private static bool is_hidden_param (Gir.Callable g_call, int idx) {
         foreach (var p in g_call.parameters.parameters) {
+            /* user-data for a closure, or destroy-notify callback */
             if (p.closure == idx || p.destroy == idx) {
                 return true;
             }
 
+            /* array length */
             var array = p.anytype as Gir.Array;
             if (array?.length == idx) {
                 return true;
             }
         }
 
+        /* length of returned array */
         var array = g_call.return_value.anytype as Gir.Array;
         if (array?.length == idx) {
             return true;
         }
 
+        /* GAsycnReadyCallback */
         var g_method = g_call as Gir.Method;
         if (g_method?.glib_finish_func != null) {
             var p = g_method.parameters.parameters[idx];
@@ -1476,7 +1525,9 @@ public class VapiBuilder : GirVisitor {
     /* Get all fields that are declared in this node. When the node doesn't
      * have any fields, an empty list will be returned. */
     private static Vala.List<Gir.Field> get_gir_fields (Gir.Node node) {
-        if (node is Gir.Interface) {
+        if (node is Gir.AnonymousRecord) {
+            return ((Gir.AnonymousRecord) node).fields;
+        } else if (node is Gir.Interface) {
             return ((Gir.Interface) node).fields;
         } else if (node is Gir.Class) {
             return ((Gir.Class) node).fields;
@@ -1491,7 +1542,7 @@ public class VapiBuilder : GirVisitor {
 
     /* Get all functions that are declared in this node. When the node doesn't
      * have any functions, an empty list will be returned. */
-     private static Vala.List<Gir.Function> get_gir_functions (Gir.Node node) {
+    private static Vala.List<Gir.Function> get_gir_functions (Gir.Node node) {
         if (node is Gir.Namespace) {
             return ((Gir.Namespace) node).functions;
         } else if (node is Gir.Interface) {
@@ -1515,7 +1566,7 @@ public class VapiBuilder : GirVisitor {
 
     /* Get all methods that are declared in this node. When the node doesn't
      * have any methods, an empty list will be returned. */
-     private static Vala.List<Gir.Method> get_gir_methods (Gir.Node node) {
+    private static Vala.List<Gir.Method> get_gir_methods (Gir.Node node) {
         if (node is Gir.Interface) {
             return ((Gir.Interface) node).methods;
         } else if (node is Gir.Class) {
@@ -1531,7 +1582,7 @@ public class VapiBuilder : GirVisitor {
 
     /* Get all virtual methods that are declared in this node. When the node
      * doesn't have any virtual methods, an empty list will be returned. */
-     private static Vala.List<Gir.VirtualMethod> get_gir_virtual_methods (Gir.Node node) {
+    private static Vala.List<Gir.VirtualMethod> get_gir_virtual_methods (Gir.Node node) {
         if (node is Gir.Interface) {
             return ((Gir.Interface) node).virtual_methods;
         } else if (node is Gir.Class) {
@@ -1543,7 +1594,7 @@ public class VapiBuilder : GirVisitor {
 
     /* Get all signals that are declared in this node. When the node doesn't
      * have any signals, an empty list will be returned. */
-     private static Vala.List<Gir.Signal> get_gir_signals (Gir.Node node) {
+    private static Vala.List<Gir.Signal> get_gir_signals (Gir.Node node) {
         if (node is Gir.Interface) {
             return ((Gir.Interface) node).signals;
         } else if (node is Gir.Class) {
@@ -1555,7 +1606,7 @@ public class VapiBuilder : GirVisitor {
     
     /* Get all properties that are declared in this node. When the node doesn't
      * have any properties, an empty list will be returned. */
-     private static Vala.List<Gir.Property> get_gir_properties (Gir.Node node) {
+    private static Vala.List<Gir.Property> get_gir_properties (Gir.Node node) {
         if (node is Gir.Interface) {
             return ((Gir.Interface) node).properties;
         } else if (node is Gir.Class) {
