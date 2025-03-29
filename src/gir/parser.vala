@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2025 Jan-Willem Harmannij
+ * Copyright (C) 2024-2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -20,12 +20,18 @@
 using Vala;
 
 public class Gir.Parser {
-    private SourceFile source_file;
-    private SourceLocation begin;
-    private SourceLocation end;
-    
+    /* These boolean attributes are default true, others are default false */
+    private const string[] DEFAULT_TRUE_ATTRIBUTES = {
+        "caller-allocates",
+        "introspectable",
+        "readable",
+        "zero-terminated"
+    };
+
+    private Gir.Context context;
+
     /**
-     * Get a list that only contains nodes with the specified type.
+     * Get a list that only contains nodes with the specified type
      */
     private static Vala.List<T> get_nodes<T> (ArrayList<Node> list) {
         var result = new ArrayList<T> ();
@@ -39,7 +45,7 @@ public class Gir.Parser {
     }
 
     /**
-     * Get the first child node with the specified type, or `null` if not found.
+     * Get the first child node with the specified type, or `null` if not found
      */
     private static T? get_node<T> (ArrayList<Node> children) {
         var type = typeof (T);
@@ -55,8 +61,8 @@ public class Gir.Parser {
     /**
      * Get the boolean value of this key ("1" is true, "0" is false)
      */
-    private static bool get_bool (Vala.Map<string, string> attrs, string key, bool if_not_set = false) {
-        return (key in attrs) ? ("1" == attrs[key]) : if_not_set;
+    private static bool get_bool (Vala.Map<string, string> attrs, string key) {
+        return (key in attrs) ? ("1" == attrs[key]) : (key in DEFAULT_TRUE_ATTRIBUTES);
     }
 
     /**
@@ -74,27 +80,60 @@ public class Gir.Parser {
     }
 
     /**
-     * Create a Gir Parser for the provided source file.
-     *
-     * @param  source_file a valid Gir file
+     * Create a Gir Parser for the provided Gir Context.
      */
-    public Parser (SourceFile source_file) {
-        this.source_file = source_file;
+    public Parser (Gir.Context context) {
+        this.context = context;
+    }
+
+    public void parse () {
+        foreach (var name_and_version in context.parser_queue) {
+            context.repositories.add (parse_repository (name_and_version));
+        }
     }
 
     /**
-     * Parse the provided Gir file into a tree of Gir Nodes.
+     * Parse the requested repository from a Gir file into a tree of Gir nodes.
      *
      * @return the Repository, or null in case the gir file is invalid
      */
-    public Repository? parse() {
+    public Repository? parse_repository (string name_and_version) {
+        /* Find the gir file in one of the gir directories */
+        string gir_filename = null;
+        foreach (string dir in context.gir_directories) {
+            if (FileUtils.test (dir, IS_DIR)) {
+                string path = Path.build_filename (dir, name_and_version + ".gir", null);
+                if (FileUtils.test (path, EXISTS)) {
+                    gir_filename = path;
+                    break;
+                }
+            }
+        }
+
+        /* If the gir file is not found anywhere, return null */
+        if (gir_filename == null) {
+            Report.error (null, "No gir file found for %s", name_and_version);
+            return null;
+        }
+
+        /* Manually allocating the SourceFile prevents a premature unref */
+        SourceFile* source_file = new SourceFile (CodeContext.get (), SOURCE, gir_filename);
+
+        /* Parse the gir file */
+        return parse_source_file (source_file);
+    }
+
+    public Repository? parse_source_file (SourceFile source_file) {
+        SourceLocation begin;
+        SourceLocation end;
+
         var reader = new MarkupReader (source_file.filename);
         
         /* Find the first START_ELEMENT token in the XML file */
         while (true) {
             var token_type = reader.read_token (out begin, out end);
             if (token_type == START_ELEMENT) {
-                return parse_element (reader) as Repository;
+                return parse_element (source_file, reader) as Repository;
             } else if (token_type == EOF) {
                 var source = new SourceReference (source_file, begin, end);
                 Report.error (source, "No repository found");
@@ -104,19 +143,20 @@ public class Gir.Parser {
     }
 
     /* Parse one XML element (recursively), and return a new Gir Node */
-    private Node parse_element (MarkupReader reader) {
+    private Node parse_element (SourceFile source_file, MarkupReader reader) {
+        SourceLocation begin;
+        SourceLocation end;
         var element = reader.name;
         var children = new Vala.ArrayList<Node> ();
         var attrs = reader.get_attributes ();
         var content = new StringBuilder ();
-        var source = new SourceReference (source_file, begin, end);
 
         /* Keep parsing XML until an END_ELEMENT or EOF token is reached */
         while (true) {
             var token = reader.read_token (out begin, out end);
             if (token == MarkupTokenType.START_ELEMENT) {
                 /* Recursively create a child node and add it to the list */
-                Node node = parse_element (reader);
+                Node node = parse_element (source_file, reader);
                 children.add (node);
             } else if (token == MarkupTokenType.TEXT) {
                 content.append (reader.content);
@@ -125,6 +165,7 @@ public class Gir.Parser {
             }
         }
         
+        var source = new SourceReference (source_file, begin, end);
         Node new_node;
         switch (element) {
         case "alias":
@@ -447,7 +488,7 @@ public class Gir.Parser {
             break;
         case "glib:boxed":
             new_node = new Boxed (
-                get_string (attrs, "name"),
+                get_string (attrs, "glib:name"),
                 get_bool (attrs, "introspectable"),
                 get_bool (attrs, "deprecated"),
                 get_string (attrs, "deprecated-version"),
@@ -494,10 +535,15 @@ public class Gir.Parser {
             new_node = new Implements (get_string (attrs, "name"), source);
             break;
         case "include":
-            new_node = new Include (
-                get_string (attrs, "name"),
-                get_string (attrs, "version"),
-                source);
+            /* Recursively parse the included repository */
+            string name = get_string (attrs, "name");
+            string version = get_string (attrs, "version");
+            string repository_name = name + "-" + version;
+            if (! context.contains_repository (repository_name)) {
+                context.repositories.add (parse_repository (repository_name));
+            }
+            
+            new_node = new Include (name, version, source);
             break;
         case "instance-parameter":
             new_node = new InstanceParameter (
@@ -710,38 +756,50 @@ public class Gir.Parser {
                 source);
             break;
         case "record":
-            new_node = new Record (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
-                get_string (attrs, "name"),
-                get_string (attrs, "c:type"),
-                get_bool (attrs, "disguised"),
-                get_bool (attrs, "opaque"),
-                get_bool (attrs, "pointer"),
-                get_string (attrs, "glib:type-name"),
-                get_string (attrs, "glib:get-type"),
-                get_string (attrs, "c:symbol-prefix"),
-                get_bool (attrs, "foreign"),
-                get_string (attrs, "glib:is-gtype-struct-for"),
-                get_string (attrs, "copy-function"),
-                get_string (attrs, "free-function"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
-                get_nodes <Field> (children),
-                get_nodes <Function> (children),
-                get_nodes <FunctionInline> (children),
-                get_nodes <Union> (children),
-                get_nodes <Method> (children),
-                get_nodes <MethodInline> (children),
-                get_nodes <Constructor> (children),
-                source);
+            if ("name" in attrs) {
+                new_node = new Record (
+                    get_bool (attrs, "introspectable"),
+                    get_bool (attrs, "deprecated"),
+                    get_string (attrs, "deprecated-version"),
+                    get_string (attrs, "version"),
+                    get_string (attrs, "stability"),
+                    get_string (attrs, "name"),
+                    get_string (attrs, "c:type"),
+                    get_bool (attrs, "disguised"),
+                    get_bool (attrs, "opaque"),
+                    get_bool (attrs, "pointer"),
+                    get_string (attrs, "glib:type-name"),
+                    get_string (attrs, "glib:get-type"),
+                    get_string (attrs, "c:symbol-prefix"),
+                    get_bool (attrs, "foreign"),
+                    get_string (attrs, "glib:is-gtype-struct-for"),
+                    get_string (attrs, "copy-function"),
+                    get_string (attrs, "free-function"),
+                    get_node <DocVersion> (children),
+                    get_node <DocStability> (children),
+                    get_node <Doc> (children),
+                    get_node <DocDeprecated> (children),
+                    get_node <SourcePosition> (children),
+                    get_nodes <Attribute> (children),
+                    get_nodes <Field> (children),
+                    get_nodes <Function> (children),
+                    get_nodes <FunctionInline> (children),
+                    get_nodes <Union> (children),
+                    get_nodes <Method> (children),
+                    get_nodes <MethodInline> (children),
+                    get_nodes <Constructor> (children),
+                    source);
+            } else {
+                new_node = new AnonymousRecord (
+                    get_node <DocVersion> (children),
+                    get_node <DocStability> (children),
+                    get_node <Doc> (children),
+                    get_node <DocDeprecated> (children),
+                    get_node <SourcePosition> (children),
+                    get_nodes <Field> (children),
+                    get_nodes <Union> (children),
+                    source);
+            }
             break;
         case "repository":
             new_node = new Repository (
@@ -856,7 +914,7 @@ public class Gir.Parser {
             break;
         default:
             Report.error (source, "Unsupported element '%s'", element);
-            break;
+            assert_not_reached ();
         }
 
         foreach (var child in children) {

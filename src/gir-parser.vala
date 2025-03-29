@@ -32,7 +32,7 @@ using Vala;
  */
 public class GirParser2 : CodeVisitor {
 
-    public void parse(CodeContext context) {
+    public void parse (CodeContext context) {
         context.accept (this);
     }
 
@@ -41,22 +41,32 @@ public class GirParser2 : CodeVisitor {
             return;
         }
 
-        var context = CodeContext.get ();
-        var parser = new Gir.Parser (source_file);
-        var repository = parser.parse ();
+        if (! source_file.from_commandline) {
+            return;
+        }
+
+        var code_context = CodeContext.get ();
+
+        string name_and_version = Path.get_basename (source_file.filename)[:-4];
+
+        var gir_context = new Gir.Context (code_context.gir_directories);
+        gir_context.add_repository (name_and_version);
+        var parser = new Gir.Parser (gir_context);
+        parser.parse ();
+        var repository = gir_context.get_repository (name_and_version);
 
         if (repository != null) {
             /* set package name */
             foreach (var pkg in repository.packages) {
                 source_file.package_name = pkg.name;
-                if (context.has_package (pkg.name)) {
+                if (code_context.has_package (pkg.name)) {
                     /* package already provided elsewhere, stop parsing this GIR
                      * if it was not passed explicitly */
                     if (! source_file.from_commandline) {
                         return;
                     }
                 } else {
-                    context.add_package (pkg.name);
+                    code_context.add_package (pkg.name);
                 }
             }
 
@@ -67,7 +77,7 @@ public class GirParser2 : CodeVisitor {
                     dep += "-" + include.version;
                 }
 
-                context.add_external_package (dep);
+                code_context.add_external_package (dep);
             }
 
             /* apply metadata */
@@ -84,15 +94,15 @@ public class GirParser2 : CodeVisitor {
 
     /* Load metadata, first look into metadata directories then in the same
      * directory of the .gir. */
-    private Metadata load_metadata (CodeContext context, SourceFile gir_file) {
-        string? filename = context.get_metadata_path (gir_file.filename);
-        if (filename != null && FileUtils.test (filename, EXISTS)) {
-            var parser = new MetadataParser ();
-            var file = new SourceFile (context, gir_file.file_type, filename);
-            context.add_source_file (file);
-            return parser.parse_metadata (file);
-        } else {
-            return Metadata.empty;
-        }
-    }
+    //  private Metadata load_metadata (CodeContext context, SourceFile gir_file) {
+    //      string? filename = context.get_metadata_path (gir_file.filename);
+    //      if (filename != null && FileUtils.test (filename, EXISTS)) {
+    //          var parser = new MetadataParser ();
+    //          var file = new SourceFile (context, gir_file.file_type, filename);
+    //          context.add_source_file (file);
+    //          return parser.parse_metadata (file);
+    //      } else {
+    //          return Metadata.empty;
+    //      }
+    //  }
 }
