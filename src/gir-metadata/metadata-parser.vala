@@ -167,7 +167,7 @@ public class GirMetadata.Metadata {
         /* indent */
         sb.append (string.nfill (indent, ' '));
         if (indent > 0) {
-            sb.append(".");
+            sb.append (".");
         }
 
         /* pattern and selector */
