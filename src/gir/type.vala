@@ -51,11 +51,11 @@ public class Gir.TypeRef : DocElements, AnyType {
         this.anytypes = anytypes;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_type (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         doc_version?.accept (visitor);
         doc_stability?.accept (visitor);
         doc?.accept (visitor);

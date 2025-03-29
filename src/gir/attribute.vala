@@ -27,7 +27,7 @@ public class Gir.Attribute : Node {
         this.value = value;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_attribute (this);
     }
 }

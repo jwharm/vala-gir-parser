@@ -25,7 +25,7 @@ public class Gir.Implements : Node {
         this.name = name;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_implements (this);
     }
 }

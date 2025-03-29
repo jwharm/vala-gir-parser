@@ -87,11 +87,11 @@ public class Gir.Namespace : Node {
         this.doc_sections = doc_sections;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_namespace (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         foreach (var @class in classes) {
             @class.accept (visitor);
         }

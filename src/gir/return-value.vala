@@ -69,11 +69,11 @@ public class Gir.ReturnValue : DocElements, Node {
         this.anytype = anytype;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_return_value (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         doc_version?.accept (visitor);
         doc_stability?.accept (visitor);
         doc?.accept (visitor);

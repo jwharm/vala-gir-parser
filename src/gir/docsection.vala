@@ -42,11 +42,11 @@ public class Gir.Docsection : DocElements, Node {
         this.source_position = source_position;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_docsection (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         doc_version?.accept (visitor);
         doc_stability?.accept (visitor);
         doc?.accept (visitor);

@@ -25,7 +25,7 @@ public class Gir.Package : Node {
         this.name = name;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_package (this);
     }
 }

@@ -27,7 +27,7 @@ public class Gir.Include : Node {
         this.version = version;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_include (this);
     }
 }

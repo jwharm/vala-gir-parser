@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Class : InfoAttrs, InfoElements, Identifier, DocElements, Node {
+public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }
@@ -141,11 +141,11 @@ public class Gir.Class : InfoAttrs, InfoElements, Identifier, DocElements, Node 
         this.callbacks = callbacks;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_class (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         doc_version?.accept (visitor);
         doc_stability?.accept (visitor);
         doc?.accept (visitor);

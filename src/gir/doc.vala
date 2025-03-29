@@ -36,7 +36,7 @@ public class Gir.Doc : Node {
         this.text = text;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_doc (this);
     }
 }

@@ -48,11 +48,11 @@ public class Gir.Repository : Node {
         this.doc_formats = doc_formats;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_repository (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         foreach (var include in includes) {
             include.accept (visitor);
         }

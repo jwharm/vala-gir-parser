@@ -30,11 +30,11 @@ public class Gir.Parameters : Node {
         this.instance_parameter = instance_parameter;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_parameters (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         foreach (var parameter in parameters) {
             parameter.accept (visitor);
         }

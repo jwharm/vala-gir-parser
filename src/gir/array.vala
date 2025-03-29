@@ -45,11 +45,11 @@ public class Gir.Array : AnyType {
         this.anytype = anytype;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_array (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         anytype.accept (visitor);
     }
 }

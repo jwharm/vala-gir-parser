@@ -1,5 +1,5 @@
 /* vala-gir-parser
- * Copyright (C) 2024 Jan-Willem Harmannij
+ * Copyright (C) 2024-2025 Jan-Willem Harmannij
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *

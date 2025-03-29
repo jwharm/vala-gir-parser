@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Boxed : InfoAttrs, InfoElements, Identifier, DocElements, Node {
+public class Gir.Boxed : InfoAttrs, DocElements, InfoElements, Identifier, Node {
     public string name { owned get; set; }
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
@@ -75,11 +75,11 @@ public class Gir.Boxed : InfoAttrs, InfoElements, Identifier, DocElements, Node 
         this.function_inlines = function_inlines;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_boxed (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         doc_version?.accept (visitor);
         doc_stability?.accept (visitor);
         doc?.accept (visitor);

@@ -25,7 +25,7 @@ public class Gir.Prerequisite : Node {
         this.name = name;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_prerequisite (this);
     }
 }

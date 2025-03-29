@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.VirtualMethod : Callable, InfoAttrs, InfoElements, DocElements, Node, CallableAttrs {
+public class Gir.VirtualMethod : InfoAttrs, DocElements, InfoElements, Callable, Node, CallableAttrs {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }
@@ -96,11 +96,11 @@ public class Gir.VirtualMethod : Callable, InfoAttrs, InfoElements, DocElements,
         this.return_value = return_value;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_virtual_method (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         doc_version?.accept (visitor);
         doc_stability?.accept (visitor);
         doc?.accept (visitor);

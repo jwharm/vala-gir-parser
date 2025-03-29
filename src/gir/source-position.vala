@@ -33,7 +33,7 @@ public class Gir.SourcePosition : Node {
         this.column = column;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_source_position (this);
     }
 }

@@ -87,11 +87,11 @@ public class Gir.FunctionInline : InfoAttrs, DocElements, Node, CallableAttrs {
         this.source_position = source_position;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_function_inline (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         parameters?.accept (visitor);
         return_value?.accept (visitor);
         doc_version?.accept (visitor);

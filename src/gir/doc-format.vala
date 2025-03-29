@@ -25,7 +25,7 @@ public class Gir.DocFormat : Node {
         this.name = name;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_doc_format (this);
     }
 }

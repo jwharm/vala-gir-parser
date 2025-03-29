@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Bitfield : InfoAttrs, InfoElements, Identifier, DocElements, EnumBase, Node {
+public class Gir.Bitfield : InfoAttrs, DocElements, InfoElements, Identifier, EnumBase, Node {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }
@@ -78,11 +78,11 @@ public class Gir.Bitfield : InfoAttrs, InfoElements, Identifier, DocElements, En
         this.function_inlines = function_inlines;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_bitfield (this);
     }
 
-    public override void accept_children (GirVisitor visitor) {
+    public override void accept_children (Visitor visitor) {
         doc_version?.accept (visitor);
         doc_stability?.accept (visitor);
         doc?.accept (visitor);

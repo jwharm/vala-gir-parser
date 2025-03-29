@@ -23,7 +23,7 @@ public class Gir.Varargs : Node {
         base(source);
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_varargs (this);
     }
 }

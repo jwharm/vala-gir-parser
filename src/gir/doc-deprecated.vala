@@ -25,7 +25,7 @@ public class Gir.DocDeprecated : Node {
         this.text = text;
     }
 
-    public override void accept (GirVisitor visitor) {
+    public override void accept (Visitor visitor) {
         visitor.visit_doc_deprecated (this);
     }
 }
