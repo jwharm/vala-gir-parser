@@ -44,7 +44,7 @@ public class DataTypeBuilder {
         /* <array> */
         var g_array = (Gir.Array) g_anytype;
         if (g_array.name == "GLib.PtrArray") {
-            var inner_types = new ArrayList<Gir.AnyType>();
+            var inner_types = new ArrayList<Gir.AnyType> ();
             inner_types.add (g_array.anytype);
             return build_type (g_anytype.name, inner_types, g_anytype.source);
         }
@@ -183,8 +183,8 @@ public class DataTypeBuilder {
 
         /* Invoke the Vala parser */
         new Parser ().parse (context);
-        CodeContext.pop();
-        
+        CodeContext.pop ();
+
         if (context.report.get_errors () > 0) {
             return null;
         }
