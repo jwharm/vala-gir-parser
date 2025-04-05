@@ -19,4 +19,11 @@
 
 public interface Gir.InfoElements : Node, DocElements {
     public abstract Vala.List<Attribute> attributes { owned get; set; }
+
+    public void accept_info_elements (Visitor visitor) {
+        accept_doc_elements (visitor);
+        foreach (var attribute in attributes) {
+            attribute.accept (visitor);
+        }
+    }
 }

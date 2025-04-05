@@ -23,4 +23,12 @@
     public abstract Doc? doc                        { get; set; }
     public abstract DocDeprecated? doc_deprecated   { get; set; }
     public abstract SourcePosition? source_position { get; set; }
+
+    public void accept_doc_elements (Visitor visitor) {
+        doc_version?.accept (visitor);
+        doc_stability?.accept (visitor);
+        doc?.accept (visitor);
+        doc_deprecated?.accept (visitor);
+        source_position?.accept (visitor);
+    }
 }

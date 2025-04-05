@@ -55,11 +55,8 @@ public class Gir.AnonymousRecord : DocElements, Node {
     }
 
     public override void accept_children (Visitor visitor) {
-        doc_version?.accept (visitor);
-        doc_stability?.accept (visitor);
-        doc?.accept (visitor);
-        doc_deprecated?.accept (visitor);
-        source_position?.accept (visitor);
+        accept_doc_elements (visitor);
+
         foreach (var union in unions) {
             union.accept (visitor);
         }

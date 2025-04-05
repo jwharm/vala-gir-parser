@@ -104,14 +104,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
     }
 
     public override void accept_children (Visitor visitor) {
-        doc_version?.accept (visitor);
-        doc_stability?.accept (visitor);
-        doc?.accept (visitor);
-        doc_deprecated?.accept (visitor);
-        source_position?.accept (visitor);
-        foreach (var attribute in attributes) {
-            attribute.accept (visitor);
-        }
+        accept_info_elements (visitor);
 
         foreach (var constructor in constructors) {
             constructor.accept (visitor);

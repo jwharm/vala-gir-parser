@@ -92,13 +92,9 @@ public class Gir.FunctionInline : InfoAttrs, DocElements, Node, CallableAttrs {
     }
 
     public override void accept_children (Visitor visitor) {
+        accept_doc_elements (visitor);
         parameters?.accept (visitor);
         return_value?.accept (visitor);
-        doc_version?.accept (visitor);
-        doc_stability?.accept (visitor);
-        doc?.accept (visitor);
-        doc_deprecated?.accept (visitor);
-        source_position?.accept (visitor);
     }
 }
 
