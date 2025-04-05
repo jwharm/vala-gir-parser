@@ -17,14 +17,17 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Context {
+public class Gir.Context : Object {
     internal Vala.List<Gir.Repository> repositories { get; set; }
     internal Vala.List<string> parser_queue { get; set; }
     public string[] gir_directories { get; set; }
 
-    public Context (string[] gir_directories) {
+    construct {
         this.repositories = new Vala.ArrayList<Gir.Repository> ();
         this.parser_queue = new Vala.ArrayList<string> ();
+    }
+
+    public Context (string[] gir_directories) {
         this.gir_directories = gir_directories;
     }
 

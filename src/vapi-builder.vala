@@ -24,7 +24,7 @@ public class VapiBuilder : Gir.Visitor {
     /**
      * Keeps track of the last created Vala Symbol
      */
-     private class SymbolStack {
+    private class SymbolStack {
         private ArrayList<Symbol> stack = new ArrayList<Symbol> ();
 
         public void push (Symbol sym) {
@@ -40,9 +40,10 @@ public class VapiBuilder : Gir.Visitor {
         }
     }
 
-    private SymbolStack stack = new SymbolStack ();
+    private SymbolStack stack;
 
-    public VapiBuilder () {
+    construct {
+        stack = new SymbolStack ();
         stack.push (CodeContext.get ().root);
     }
 

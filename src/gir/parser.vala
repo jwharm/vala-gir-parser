@@ -19,7 +19,7 @@
 
 using Vala;
 
-public class Gir.Parser {
+public class Gir.Parser : Object {
     /* These boolean attributes are default true, others are default false */
     private const string[] DEFAULT_TRUE_ATTRIBUTES = {
         "caller-allocates",
@@ -28,7 +28,7 @@ public class Gir.Parser {
         "zero-terminated"
     };
 
-    private Gir.Context context;
+    public Gir.Context context { get; set; }
 
     /**
      * Get a list that only contains nodes with the specified type

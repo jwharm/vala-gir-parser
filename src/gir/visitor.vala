@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public abstract class Gir.Visitor {
+public abstract class Gir.Visitor : Object {
     public virtual void visit_alias (Gir.Alias alias) {
     }
 

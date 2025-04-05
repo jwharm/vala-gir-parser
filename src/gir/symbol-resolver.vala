@@ -17,8 +17,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.SymbolResolver {
-    private Context context;
+public class Gir.SymbolResolver : Object {
+    public Context context { get; set; }
 
     public SymbolResolver (Context context) {
         this.context = context;
