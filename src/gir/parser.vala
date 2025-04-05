@@ -143,7 +143,7 @@ public class Gir.Parser {
     }
 
     /* Parse one XML element (recursively), and return a new Gir Node */
-    private Node parse_element (SourceFile source_file, MarkupReader reader) {
+    private Node? parse_element (SourceFile source_file, MarkupReader reader) {
         SourceLocation begin;
         SourceLocation end;
         var element = reader.name;
@@ -156,8 +156,10 @@ public class Gir.Parser {
             var token = reader.read_token (out begin, out end);
             if (token == MarkupTokenType.START_ELEMENT) {
                 /* Recursively create a child node and add it to the list */
-                Node node = parse_element (source_file, reader);
+                Node? node = parse_element (source_file, reader);
+                if (node != null) {
                 children.add (node);
+                }
             } else if (token == MarkupTokenType.TEXT) {
                 content.append (reader.content);
             } else {
@@ -166,7 +168,7 @@ public class Gir.Parser {
         }
         
         var source = new SourceReference (source_file, begin, end);
-        Node new_node;
+        Node? new_node = null;
         switch (element) {
         case "alias":
             new_node = new Alias (
@@ -914,7 +916,7 @@ public class Gir.Parser {
             break;
         default:
             Report.error (source, "Unsupported element '%s'", element);
-            assert_not_reached ();
+            break;
         }
 
         foreach (var child in children) {
