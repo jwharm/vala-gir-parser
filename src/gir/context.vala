@@ -18,12 +18,12 @@
  */
 
 public class Gir.Context : Object {
-    internal Vala.List<Gir.Repository> repositories { get; set; }
+    internal Vala.Map<string, Gir.Repository> repositories { get; set; }
     internal Vala.List<string> parser_queue { get; set; }
     public string[] gir_directories { get; set; }
 
     construct {
-        this.repositories = new Vala.ArrayList<Gir.Repository> ();
+        this.repositories = new Vala.HashMap<string, Gir.Repository> (str_hash, str_equal);
         this.parser_queue = new Vala.ArrayList<string> ();
     }
 
@@ -32,10 +32,17 @@ public class Gir.Context : Object {
     }
 
     /**
-     * Add a repository to be parsed, for example "Gtk-4.0".
+     * Queue a repository to be parsed, for example "Gtk-4.0".
      */
-    public void add_repository (string name_and_version) {
+    public void queue_repository (string name_and_version) {
         parser_queue.add (name_and_version);
+    }
+
+    /**
+     * Add a parsed repository
+     */
+    internal void add_repository (string name_and_version, Gir.Repository repository) {
+        repositories[name_and_version] = repository;
     }
 
     /**
@@ -43,29 +50,13 @@ public class Gir.Context : Object {
      * null when the repository is not found.
      */
     public Gir.Repository? get_repository (string name_and_version) {
-        foreach (var repository in repositories) {
-            foreach (var ns in repository.namespaces) {
-                if (name_and_version == (ns.name + "-" + ns.version)) {
-                    return repository;
-                }
-            }
-        }
-
-        return null;
+        return repositories[name_and_version];
     }
 
     /**
      * Check whether a Gir repository is in the context, for example "Gtk-4.0".
      */
      public bool contains_repository (string name_and_version) {
-        foreach (var repository in repositories) {
-            foreach (var ns in repository.namespaces) {
-                if (name_and_version == (ns.name + "-" + ns.version)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return name_and_version in repositories;
     }
 }

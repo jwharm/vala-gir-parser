@@ -86,9 +86,12 @@ public class Gir.Parser : Object {
         this.context = context;
     }
 
+    /**
+     * Parse enqueued Gir repositories and add the Gir nodes to the Gir Context.
+     */
     public void parse () {
         foreach (var name_and_version in context.parser_queue) {
-            context.repositories.add (parse_repository (name_and_version));
+            context.add_repository (name_and_version, parse_repository (name_and_version));
         }
     }
 
@@ -158,7 +161,7 @@ public class Gir.Parser : Object {
                 /* Recursively create a child node and add it to the list */
                 Node? node = parse_element (source_file, reader);
                 if (node != null) {
-                children.add (node);
+                    children.add (node);
                 }
             } else if (token == MarkupTokenType.TEXT) {
                 content.append (reader.content);
@@ -540,9 +543,9 @@ public class Gir.Parser : Object {
             /* Recursively parse the included repository */
             string name = get_string (attrs, "name");
             string version = get_string (attrs, "version");
-            string repository_name = name + "-" + version;
-            if (! context.contains_repository (repository_name)) {
-                context.repositories.add (parse_repository (repository_name));
+            string name_and_version = name + "-" + version;
+            if (! context.contains_repository (name_and_version)) {
+                context.add_repository (name_and_version, parse_repository (name_and_version));
             }
             
             new_node = new Include (name, version, source);

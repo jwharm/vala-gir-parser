@@ -47,10 +47,11 @@ public class GirParser2 : CodeVisitor {
 
         var code_context = CodeContext.get ();
 
+        /* Repository name and version = filename without the ".gir" extension */
         string name_and_version = Path.get_basename (source_file.filename)[:-4];
 
         var gir_context = new Gir.Context (code_context.gir_directories);
-        gir_context.add_repository (name_and_version);
+        gir_context.queue_repository (name_and_version);
         var parser = new Gir.Parser (gir_context);
         parser.parse ();
         var repository = gir_context.get_repository (name_and_version);
