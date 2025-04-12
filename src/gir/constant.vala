@@ -32,7 +32,7 @@ public class Gir.Constant : InfoAttrs, DocElements, InfoElements, Node {
     public Doc? doc { get; set; }
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
-    public Vala.List<Attribute> attributes { owned get; set; }
+    public Gee.List<Attribute> attributes { owned get; set; }
     public AnyType? anytype { get; set; }
 
     public Constant (
@@ -50,9 +50,9 @@ public class Gir.Constant : InfoAttrs, DocElements, InfoElements, Node {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<Attribute> attributes,
+            Gee.List<Attribute> attributes,
             AnyType? anytype,
-            Vala.SourceReference? source) {
+            Gir.Xml.Reference? source) {
         base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;

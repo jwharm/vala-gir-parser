@@ -26,7 +26,7 @@ public class Gir.TypeRef : DocElements, AnyType {
     public Doc? doc { get; set; }
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
-    public Vala.List<AnyType> anytypes { owned get; set; }
+    public Gee.List<AnyType> anytypes { owned get; set; }
 
     public TypeRef (
             string? name,
@@ -37,8 +37,8 @@ public class Gir.TypeRef : DocElements, AnyType {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<AnyType> anytypes,
-            Vala.SourceReference? source) {
+            Gee.List<AnyType> anytypes,
+            Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
         this.c_type = c_type;

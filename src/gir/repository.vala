@@ -21,22 +21,22 @@ public class Gir.Repository : Node {
     public string? version { owned get; set; }
     public string? c_identifier_prefixes { owned get; set; }
     public string? c_symbol_prefixes { owned get; set; }
-    public Vala.List<Include> includes { owned get; set; }
-    public Vala.List<CInclude> c_includes { owned get; set; }
-    public Vala.List<Package> packages { owned get; set; }
-    public Vala.List<Namespace> namespaces { owned get; set; }
-    public Vala.List<DocFormat> doc_formats { owned get; set; }
+    public Gee.List<Include> includes { owned get; set; }
+    public Gee.List<CInclude> c_includes { owned get; set; }
+    public Gee.List<Package> packages { owned get; set; }
+    public Gee.List<Namespace> namespaces { owned get; set; }
+    public Gee.List<DocFormat> doc_formats { owned get; set; }
 
     public Repository (
             string? version,
             string? c_identifier_prefixes,
             string? c_symbol_prefixes,
-            Vala.List<Include> includes,
-            Vala.List<CInclude> cincludes,
-            Vala.List<Package> packages,
-            Vala.List<Namespace> namespaces,
-            Vala.List<DocFormat> doc_formats,
-            Vala.SourceReference? source) {
+            Gee.List<Include> includes,
+            Gee.List<CInclude> cincludes,
+            Gee.List<Package> packages,
+            Gee.List<Namespace> namespaces,
+            Gee.List<DocFormat> doc_formats,
+            Gir.Xml.Reference? source) {
         base(source);
         this.version = version;
         this.c_identifier_prefixes = c_identifier_prefixes;

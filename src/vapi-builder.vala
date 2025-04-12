@@ -52,27 +52,29 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_alias.source);
+
         var type_name = g_alias.anytype?.name;
         if (type_name == null) {
-            Report.warning (g_alias.source, "Unsupported alias `%s'", g_alias.name);
+            Report.warning (v_source, "Unsupported alias `%s'", g_alias.name);
             return;
         }
 
         var target = lookup (type_name);
         if (! (target == null || target is Struct || target is Class || target is Interface || target is Delegate)) {
-            Report.warning (g_alias.source, "alias for `%s' is not supported", target.get_full_name ());
+            Report.warning (v_source, "alias for `%s' is not supported", target.get_full_name ());
             return;
         }
 
         if (target is Class) {
             /* create class */
-            Class v_class = new Class (g_alias.name, g_alias.source);
+            Class v_class = new Class (g_alias.name, v_source);
             v_class.access = PUBLIC;
             stack.peek ().add_class (v_class);
             stack.push (v_class);
 
             /* alias extends the target class and has the same type_id */
-            var base_type = DataTypeBuilder.from_name (type_name, g_alias.source);
+            var base_type = DataTypeBuilder.from_name (type_name, v_source);
             v_class.add_base_type (base_type);
             v_class.set_attribute_string ("CCode", "type_id", target.get_attribute_string ("CCode", "type_id"));
 
@@ -86,13 +88,13 @@ public class VapiBuilder : Gir.Visitor {
         
         else if (target is Interface) {
             /* this is not a correct alias, but what can we do otherwise? */
-            var v_iface = new Interface (g_alias.name, g_alias.source);
+            var v_iface = new Interface (g_alias.name, v_source);
             v_iface.access = PUBLIC;
             stack.peek ().add_interface (v_iface);
             stack.push (v_iface);
 
             /* alias extends the target interface and has the same type_id */
-            var prereq_type = DataTypeBuilder.from_name (type_name, g_alias.source);
+            var prereq_type = DataTypeBuilder.from_name (type_name, v_source);
             v_iface.add_prerequisite (prereq_type);
             v_iface.set_attribute_string ("CCode", "type_id", target.get_attribute_string ("CCode", "type_id"));
 
@@ -108,15 +110,15 @@ public class VapiBuilder : Gir.Visitor {
             /* duplicate the aliased delegate */
             var orig = (Delegate) target;
 
-            var v_dlg = new Delegate (g_alias.name, orig.return_type.copy (), g_alias.source);
+            var v_dlg = new Delegate (g_alias.name, orig.return_type.copy (), v_source);
             v_dlg.access = orig.access;
 
             foreach (var param in orig.get_parameters ()) {
                 v_dlg.add_parameter (param.copy ());
             }
 
-            var error_types = new ArrayList<DataType> ();
-            orig.get_error_types (error_types, g_alias.source);
+            var error_types = new Vala.ArrayList<DataType> ();
+            orig.get_error_types (error_types, v_source);
             foreach (var error_type in error_types) {
                 v_dlg.add_error_type (error_type.copy ());
             }
@@ -130,7 +132,7 @@ public class VapiBuilder : Gir.Visitor {
 
         else if (target == null || target is Struct) {
             /* create struct */
-            Struct v_struct = new Struct (g_alias.name, g_alias.source);
+            Struct v_struct = new Struct (g_alias.name, v_source);
             v_struct.access = PUBLIC;
             stack.peek ().add_struct (v_struct);
             stack.push (v_struct);
@@ -169,8 +171,10 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_bitfield.source);
+
         /* create enum */
-        var v_sym = new Enum (g_bitfield.name, g_bitfield.source);
+        var v_sym = new Enum (g_bitfield.name, v_source);
         v_sym.set_attribute ("Flags", true);
         v_sym.access = PUBLIC;
         stack.peek ().add_enum (v_sym);
@@ -205,11 +209,13 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_callback.source);
+
         /* return type */
         var v_return_type = build_return_type (g_callback.return_value);
 
         /* create the delegate */
-        var v_delegate = new Delegate (g_callback.name, v_return_type, g_callback.source);
+        var v_delegate = new Delegate (g_callback.name, v_return_type, v_source);
         v_delegate.access = PUBLIC;
         stack.peek ().add_delegate (v_delegate);
         stack.push (v_delegate);
@@ -254,8 +260,10 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_class.source);
+
         /* create class */
-        Class v_class = new Class (g_class.name, g_class.source);
+        Class v_class = new Class (g_class.name, v_source);
         v_class.access = PUBLIC;
         v_class.is_abstract = g_class.abstract;
         v_class.is_sealed = g_class.final;
@@ -264,13 +272,14 @@ public class VapiBuilder : Gir.Visitor {
 
         /* parent class */
         if (g_class.parent != null) {
-            var base_type = DataTypeBuilder.from_name (g_class.parent, g_class.source);
+            var base_type = DataTypeBuilder.from_name (g_class.parent, v_source);
             v_class.add_base_type (base_type);
         }
 
         /* implemented interfaces */
         foreach (var g_imp in g_class.implements) {
-            var imp_type = DataTypeBuilder.from_name (g_imp.name, g_imp.source);
+            var imp_source = to_source_reference (g_imp.source);
+            var imp_type = DataTypeBuilder.from_name (g_imp.name, imp_source);
             v_class.add_base_type (imp_type);
         }
 
@@ -321,7 +330,7 @@ public class VapiBuilder : Gir.Visitor {
         }
 
         if (no_introspectable_constructors) {
-            var v_cm = new CreationMethod (null, null, g_class.source);
+            var v_cm = new CreationMethod (null, null, v_source);
             v_cm.has_construct_function = false;
             v_cm.access = PROTECTED;
             v_class.add_method (v_cm);
@@ -337,11 +346,13 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_constant.source);
+
         /* type */
         var type = new DataTypeBuilder (g_constant.anytype).build ();
 
         /* create constant */
-        var v_const = new Constant (g_constant.name, type, null, g_constant.source);
+        var v_const = new Constant (g_constant.name, type, null, v_source);
         v_const.access = PUBLIC;
         stack.peek ().add_constant (v_const);
         stack.push (v_const);
@@ -359,11 +370,13 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
         
+        var v_source = to_source_reference (g_constructor.source);
+
         /* name */
         var name = get_constructor_name (g_constructor);
 
         /* create the constructor */
-        var v_cm = new CreationMethod (null, name, g_constructor.source);
+        var v_cm = new CreationMethod (null, name, v_source);
         v_cm.access = PUBLIC;
         v_cm.has_construct_function = false;
         stack.peek ().add_method (v_cm);
@@ -404,14 +417,16 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_enum.source);
+
         Symbol v_sym;
         if (g_enum.glib_error_domain != null) {
             /* create error domain */
-            v_sym = new ErrorDomain (g_enum.name, g_enum.source);
+            v_sym = new ErrorDomain (g_enum.name, v_source);
             stack.peek ().add_error_domain ((ErrorDomain) v_sym);
         } else {
             /* create enum */
-            v_sym = new Enum (g_enum.name, g_enum.source);
+            v_sym = new Enum (g_enum.name, v_source);
             stack.peek ().add_enum ((Enum) v_sym);
         }
 
@@ -470,11 +485,13 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_field.source);
+
         /* type */
         var v_type = new DataTypeBuilder (g_field.anytype).build ();
 
         /* create field */
-        var v_field = new Field (g_field.name, v_type, null, g_field.source);
+        var v_field = new Field (g_field.name, v_type, null, v_source);
         v_field.access = PUBLIC;
         stack.peek ().add_field (v_field);
         stack.push (v_field);
@@ -532,11 +549,13 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
         
+        var v_source = to_source_reference (g_function.source);
+
         /* return type */
         var v_return_type = build_return_type (g_function.return_value);
 
         /* create a static method */
-        var v_method = new Method (g_function.name, v_return_type, g_function.source);
+        var v_method = new Method (g_function.name, v_return_type, v_source);
         v_method.access = PUBLIC;
         v_method.binding = STATIC;
         stack.peek ().add_method (v_method);
@@ -586,15 +605,18 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_iface.source);
+
         /* create interface */
-        var v_iface = new Interface (g_iface.name, g_iface.source);
+        var v_iface = new Interface (g_iface.name, v_source);
         v_iface.access = PUBLIC;
         stack.peek ().add_interface (v_iface);
         stack.push (v_iface);
 
         /* prerequisite interfaces */
         foreach (var g_prereq in g_iface.prerequisites) {
-            var prereq_type = DataTypeBuilder.from_name (g_prereq.name, g_prereq.source);
+            var prereq_source = to_source_reference (g_prereq.source);
+            var prereq_type = DataTypeBuilder.from_name (g_prereq.name, prereq_source);
             v_iface.add_prerequisite (prereq_type);
         }
 
@@ -627,6 +649,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_member (Gir.Member g_member) {
+        var v_source = to_source_reference (g_member.source);
         var v_sym = stack.peek ();
         var common_prefix = v_sym.get_attribute_string ("CCode", "cprefix");
         var name = g_member.c_identifier
@@ -634,13 +657,13 @@ public class VapiBuilder : Gir.Visitor {
                            .ascii_up ()
                            .replace ("-", "_");
         if (v_sym is Enum) {
-            var v_value = new Vala.EnumValue (name, null, g_member.source, null);
+            var v_value = new Vala.EnumValue (name, null, v_source, null);
             unowned var v_enum = (Enum) v_sym;
             v_enum.add_value (v_value);
         } else {
             var value = new IntegerLiteral (g_member.value);
             unowned var v_err = (ErrorDomain) v_sym;
-            v_err.add_code (new ErrorCode.with_value (name, value, g_member.source));
+            v_err.add_code (new ErrorCode.with_value (name, value, v_source));
         }
     }
 
@@ -653,11 +676,13 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_method.source);
+
         /* return type */
         var v_return_type = build_return_type (g_method.return_value);
 
         /* the method itself */
-        var v_method = new Method (g_method.name, v_return_type, g_method.source);
+        var v_method = new Method (g_method.name, v_return_type, v_source);
         v_method.access = PUBLIC;
         stack.peek ().add_method (v_method);
         stack.push (v_method);
@@ -703,7 +728,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_namespace (Gir.Namespace g_ns) {
-        Namespace v_ns = new Namespace (g_ns.name, g_ns.source);
+        Namespace v_ns = new Namespace (g_ns.name, to_source_reference (g_ns.source));
         stack.peek ().add_namespace (v_ns);
         stack.push (v_ns);
 
@@ -744,9 +769,11 @@ public class VapiBuilder : Gir.Visitor {
             Gir.Parameter g_par = g_parameters.parameters[i];
             Vala.Parameter v_par;
 
+            var v_source = to_source_reference (g_par.source);
+
             /* varargs */
             if (g_par.varargs != null) {
-                v_par = new Vala.Parameter.with_ellipsis (g_par.source);
+                v_par = new Vala.Parameter.with_ellipsis (v_source);
                 v_call.add_parameter (v_par);
                 return;
             }
@@ -776,7 +803,7 @@ public class VapiBuilder : Gir.Visitor {
             v_type.nullable = g_par.nullable || (g_par.allow_none && g_par.direction != OUT);
 
             /* create the parameter */
-            v_par = new Vala.Parameter (g_par.name, v_type, g_par.source);
+            v_par = new Vala.Parameter (g_par.name, v_type, v_source);
             v_call.add_parameter (v_par);
             stack.push (v_par);
 
@@ -818,6 +845,8 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_property.source);
+
         var g_identifier = (Gir.Identifier) g_property.parent_node;
 
         /* data type */
@@ -828,7 +857,7 @@ public class VapiBuilder : Gir.Visitor {
         var name = g_property.name.replace ("-", "_");
 
         /* create the property */
-        var v_prop = new Property (name, v_type, null, null, g_property.source);
+        var v_prop = new Property (name, v_type, null, null, v_source);
         v_prop.access = PUBLIC;
         v_prop.is_abstract = g_property.parent_node is Gir.Interface;
         stack.peek ().add_property (v_prop);
@@ -928,17 +957,19 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_record.source);
+
         /* Check whether this record is a plain struct or a boxed type */
         bool is_boxed_type = g_record.glib_get_type != null;
 
         /* create a compact class (for a boxed type) or a plain struct */
         Symbol v_sym;
         if (is_boxed_type) {
-            v_sym = new Class (g_record.name, g_record.source);
+            v_sym = new Class (g_record.name, v_source);
             v_sym.set_attribute ("Compact", true);
             stack.peek ().add_class ((Class) v_sym);
         } else {
-            v_sym = new Struct (g_record.name, g_record.source);
+            v_sym = new Struct (g_record.name, v_source);
             stack.peek ().add_struct ((Struct) v_sym);
         }
         
@@ -999,6 +1030,8 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_signal.source);
+
         /* name */
         var name = g_signal.name.replace ("-", "_");
 
@@ -1006,7 +1039,7 @@ public class VapiBuilder : Gir.Visitor {
         var v_return_type = build_return_type (g_signal.return_value);
 
         /* create the signal */
-        var v_sig = new Vala.Signal (name, v_return_type, g_signal.source);
+        var v_sig = new Vala.Signal (name, v_return_type, v_source);
         v_sig.access = PUBLIC;
         stack.peek ().add_signal (v_sig);
         stack.push (v_sig);
@@ -1045,11 +1078,13 @@ public class VapiBuilder : Gir.Visitor {
             return;
         }
 
+        var v_source = to_source_reference (g_virtual_method.source);
+
         /* return type */
         var v_return_type = build_return_type (g_virtual_method.return_value);
 
         /* the method itself */
-        var v_method = new Method (g_virtual_method.name, v_return_type, g_virtual_method.source);
+        var v_method = new Method (g_virtual_method.name, v_return_type, v_source);
         v_method.access = PUBLIC;
         stack.peek ().add_method (v_method);
         stack.push (v_method);
@@ -1264,7 +1299,7 @@ public class VapiBuilder : Gir.Visitor {
             }
         }
 
-        Report.error (g_method.source, "Cannot find finish-func \"%s\"", name);
+        Report.error (to_source_reference (g_method.source), "Cannot find finish-func \"%s\"", name);
         return null;
     }
 
@@ -1525,7 +1560,7 @@ public class VapiBuilder : Gir.Visitor {
 
     /* Get all fields that are declared in this node. When the node doesn't
      * have any fields, an empty list will be returned. */
-    private static Vala.List<Gir.Field> get_gir_fields (Gir.Node node) {
+    private static Gee.List<Gir.Field> get_gir_fields (Gir.Node node) {
         if (node is Gir.AnonymousRecord) {
             return ((Gir.AnonymousRecord) node).fields;
         } else if (node is Gir.Interface) {
@@ -1537,13 +1572,13 @@ public class VapiBuilder : Gir.Visitor {
         } else if (node is Gir.Union) {
             return ((Gir.Union) node).fields;
         } else {
-            return new ArrayList<Gir.Field> ();
+            return new Gee.ArrayList<Gir.Field> ();
         }
     }
 
     /* Get all functions that are declared in this node. When the node doesn't
      * have any functions, an empty list will be returned. */
-    private static Vala.List<Gir.Function> get_gir_functions (Gir.Node node) {
+    private static Gee.List<Gir.Function> get_gir_functions (Gir.Node node) {
         if (node is Gir.Namespace) {
             return ((Gir.Namespace) node).functions;
         } else if (node is Gir.Interface) {
@@ -1561,13 +1596,13 @@ public class VapiBuilder : Gir.Visitor {
         } else if (node is Gir.Enumeration) {
             return ((Gir.Enumeration) node).functions;
         } else {
-            return new ArrayList<Gir.Function> ();
+            return new Gee.ArrayList<Gir.Function> ();
         }
     }
 
     /* Get all methods that are declared in this node. When the node doesn't
      * have any methods, an empty list will be returned. */
-    private static Vala.List<Gir.Method> get_gir_methods (Gir.Node node) {
+    private static Gee.List<Gir.Method> get_gir_methods (Gir.Node node) {
         if (node is Gir.Interface) {
             return ((Gir.Interface) node).methods;
         } else if (node is Gir.Class) {
@@ -1577,44 +1612,52 @@ public class VapiBuilder : Gir.Visitor {
         } else if (node is Gir.Union) {
             return ((Gir.Union) node).methods;
         } else {
-            return new ArrayList<Gir.Method> ();
+            return new Gee.ArrayList<Gir.Method> ();
         }
     }
 
     /* Get all virtual methods that are declared in this node. When the node
      * doesn't have any virtual methods, an empty list will be returned. */
-    private static Vala.List<Gir.VirtualMethod> get_gir_virtual_methods (Gir.Node node) {
+    private static Gee.List<Gir.VirtualMethod> get_gir_virtual_methods (Gir.Node node) {
         if (node is Gir.Interface) {
             return ((Gir.Interface) node).virtual_methods;
         } else if (node is Gir.Class) {
             return ((Gir.Class) node).virtual_methods;
         } else {
-            return new ArrayList<Gir.VirtualMethod> ();
+            return new Gee.ArrayList<Gir.VirtualMethod> ();
         }
     }
 
     /* Get all signals that are declared in this node. When the node doesn't
      * have any signals, an empty list will be returned. */
-    private static Vala.List<Gir.Signal> get_gir_signals (Gir.Node node) {
+    private static Gee.List<Gir.Signal> get_gir_signals (Gir.Node node) {
         if (node is Gir.Interface) {
             return ((Gir.Interface) node).signals;
         } else if (node is Gir.Class) {
             return ((Gir.Class) node).signals;
         } else {
-            return new ArrayList<Gir.Signal> ();
+            return new Gee.ArrayList<Gir.Signal> ();
         }
     }
     
     /* Get all properties that are declared in this node. When the node doesn't
      * have any properties, an empty list will be returned. */
-    private static Vala.List<Gir.Property> get_gir_properties (Gir.Node node) {
+    private static Gee.List<Gir.Property> get_gir_properties (Gir.Node node) {
         if (node is Gir.Interface) {
             return ((Gir.Interface) node).properties;
         } else if (node is Gir.Class) {
             return ((Gir.Class) node).properties;
         } else {
-            return new ArrayList<Gir.Property> ();
+            return new Gee.ArrayList<Gir.Property> ();
         }
+    }
+
+    /** Convert a Gir source reference to a Vala source reference */
+    public static SourceReference to_source_reference (Gir.Xml.Reference xml_ref) {
+        SourceFile* source_file = new SourceFile (CodeContext.get (), SOURCE, xml_ref.filename);
+        var begin = SourceLocation (xml_ref.begin.pos, xml_ref.begin.line, xml_ref.begin.column);
+        var end = SourceLocation (xml_ref.end.pos, xml_ref.end.line, xml_ref.end.column);
+        return new SourceReference (source_file, begin, end);
     }
 
     /* Avoids a dependency on GLib.Math */

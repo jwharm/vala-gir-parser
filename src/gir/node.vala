@@ -22,9 +22,9 @@
  */
 public abstract class Gir.Node : Object {
     public weak Node? parent_node         { get; set; default = null; }
-    public Vala.SourceReference? source   { get; set; }
+    public Gir.Xml.Reference? source   { get; set; }
 
-    protected Node (Vala.SourceReference? source) {
+    protected Node (Gir.Xml.Reference? source) {
         this.source = source;
     }
 

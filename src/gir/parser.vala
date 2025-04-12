@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-using Vala;
+using Gir.Xml;
 
 public class Gir.Parser : Object {
     /* These boolean attributes are default true, others are default false */
@@ -33,8 +33,8 @@ public class Gir.Parser : Object {
     /**
      * Get a list that only contains nodes with the specified type
      */
-    private static Vala.List<T> get_nodes<T> (ArrayList<Node> list) {
-        var result = new ArrayList<T> ();
+    private static Gee.List<T> get_nodes<T> (Gee.ArrayList<Node> list) {
+        var result = new Gee.ArrayList<T> ();
         var type = typeof (T);
         foreach (var node in list) {
             if (node.get_type ().is_a (type)) {
@@ -47,7 +47,7 @@ public class Gir.Parser : Object {
     /**
      * Get the first child node with the specified type, or `null` if not found
      */
-    private static T? get_node<T> (ArrayList<Node> children) {
+    private static T? get_node<T> (Gee.ArrayList<Node> children) {
         var type = typeof (T);
         foreach (var child in children) {
             if (child.get_type ().is_a (type)) {
@@ -61,22 +61,22 @@ public class Gir.Parser : Object {
     /**
      * Get the boolean value of this key ("1" is true, "0" is false)
      */
-    private static bool get_bool (Vala.Map<string, string> attrs, string key) {
-        return (key in attrs) ? ("1" == attrs[key]) : (key in DEFAULT_TRUE_ATTRIBUTES);
+    private static bool get_bool (Gee.Map<string, string> attrs, string key) {
+        return attrs.has_key (key) ? ("1" == attrs[key]) : (key in DEFAULT_TRUE_ATTRIBUTES);
     }
 
     /**
      * Get the int value of this key
      */
-    private static int get_int (Vala.Map<string, string> attrs, string key, int if_not_set = -1) {
-        return (key in attrs) ? (int.parse (attrs[key])) : if_not_set;
+    private static int get_int (Gee.Map<string, string> attrs, string key, int if_not_set = -1) {
+        return attrs.has_key (key) ? (int.parse (attrs[key])) : if_not_set;
     }
     
     /**
      * Get the string value of this key
      */
-    private static string? get_string (Vala.Map<string, string> attrs, string key, string? if_not_set = null) {
-        return (key in attrs) ? (attrs[key]) : if_not_set;
+    private static string? get_string (Gee.Map<string, string> attrs, string key, string? if_not_set = null) {
+        return attrs.has_key (key) ? (attrs[key]) : if_not_set;
     }
 
     /**
@@ -119,26 +119,23 @@ public class Gir.Parser : Object {
             return null;
         }
 
-        /* Manually allocating the SourceFile prevents a premature unref */
-        SourceFile* source_file = new SourceFile (CodeContext.get (), SOURCE, gir_filename);
-
         /* Parse the gir file */
-        return parse_source_file (source_file);
+        return parse_source_file (gir_filename);
     }
 
-    public Repository? parse_source_file (SourceFile source_file) {
+    public Repository? parse_source_file (string filename) {
         SourceLocation begin;
         SourceLocation end;
 
-        var reader = new MarkupReader (source_file.filename);
+        var reader = new Gir.Xml.Reader (filename);
         
         /* Find the first START_ELEMENT token in the XML file */
         while (true) {
             var token_type = reader.read_token (out begin, out end);
             if (token_type == START_ELEMENT) {
-                return parse_element (source_file, reader) as Repository;
+                return parse_element (filename, reader) as Repository;
             } else if (token_type == EOF) {
-                var source = new SourceReference (source_file, begin, end);
+                var source = new Reference (filename, begin, end);
                 Report.error (source, "No repository found");
                 return null;
             }
@@ -146,31 +143,31 @@ public class Gir.Parser : Object {
     }
 
     /* Parse one XML element (recursively), and return a new Gir Node */
-    private Node? parse_element (SourceFile source_file, MarkupReader reader) {
+    private Node? parse_element (string filename, Gir.Xml.Reader reader) {
         SourceLocation begin;
         SourceLocation end;
         var element = reader.name;
-        var children = new Vala.ArrayList<Node> ();
+        var children = new Gee.ArrayList<Node> ();
         var attrs = reader.get_attributes ();
         var content = new StringBuilder ();
 
         /* Keep parsing XML until an END_ELEMENT or EOF token is reached */
         while (true) {
             var token = reader.read_token (out begin, out end);
-            if (token == MarkupTokenType.START_ELEMENT) {
+            if (token == XmlTokenType.START_ELEMENT) {
                 /* Recursively create a child node and add it to the list */
-                Node? node = parse_element (source_file, reader);
+                Node? node = parse_element (filename, reader);
                 if (node != null) {
                     children.add (node);
                 }
-            } else if (token == MarkupTokenType.TEXT) {
+            } else if (token == XmlTokenType.TEXT) {
                 content.append (reader.content);
             } else {
                 break;
             }
         }
         
-        var source = new SourceReference (source_file, begin, end);
+        var source = new Reference (filename, begin, end);
         Node? new_node = null;
         switch (element) {
         case "alias":
@@ -761,7 +758,7 @@ public class Gir.Parser : Object {
                 source);
             break;
         case "record":
-            if ("name" in attrs) {
+            if (attrs.has_key ("name")) {
                 new_node = new Record (
                     get_bool (attrs, "introspectable"),
                     get_bool (attrs, "deprecated"),

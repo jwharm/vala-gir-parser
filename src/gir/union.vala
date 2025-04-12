@@ -35,14 +35,14 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
     public Doc? doc { get; set; }
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
-    public Vala.List<Attribute> attributes { owned get; set; }
-    public Vala.List<Field> fields { owned get; set; }
-    public Vala.List<Constructor> constructors { owned get; set; }
-    public Vala.List<Method> methods { owned get; set; }
-    public Vala.List<MethodInline> method_inlines { owned get; set; }
-    public Vala.List<Function> functions { owned get; set; }
-    public Vala.List<FunctionInline> function_inlines { owned get; set; }
-    public Vala.List<Record> records { owned get; set; }
+    public Gee.List<Attribute> attributes { owned get; set; }
+    public Gee.List<Field> fields { owned get; set; }
+    public Gee.List<Constructor> constructors { owned get; set; }
+    public Gee.List<Method> methods { owned get; set; }
+    public Gee.List<MethodInline> method_inlines { owned get; set; }
+    public Gee.List<Function> functions { owned get; set; }
+    public Gee.List<FunctionInline> function_inlines { owned get; set; }
+    public Gee.List<Record> records { owned get; set; }
 
     public Union (
             bool introspectable,
@@ -62,15 +62,15 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<Attribute> attributes,
-            Vala.List<Field> fields,
-            Vala.List<Constructor> constructors,
-            Vala.List<Method> methods,
-            Vala.List<MethodInline> method_inlines,
-            Vala.List<Function> functions,
-            Vala.List<FunctionInline> function_inlines,
-            Vala.List<Record> records,
-            Vala.SourceReference? source) {
+            Gee.List<Attribute> attributes,
+            Gee.List<Field> fields,
+            Gee.List<Constructor> constructors,
+            Gee.List<Method> methods,
+            Gee.List<MethodInline> method_inlines,
+            Gee.List<Function> functions,
+            Gee.List<FunctionInline> function_inlines,
+            Gee.List<Record> records,
+            Gir.Xml.Reference? source) {
         base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;

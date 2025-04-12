@@ -35,26 +35,28 @@ public class DataTypeBuilder {
             return new VoidType ();
         }
 
+        var v_source = VapiBuilder.to_source_reference (g_anytype.source);
+        
         /* <type> */
         if (g_anytype is Gir.TypeRef) {
             var g_type = (Gir.TypeRef) g_anytype;
-            return build_type (g_anytype.name, g_type.anytypes, g_anytype.source);
+            return build_type (g_anytype.name, g_type.anytypes, v_source);
         }
 
         /* <array> */
         var g_array = (Gir.Array) g_anytype;
         if (g_array.name == "GLib.PtrArray") {
-            var inner_types = new ArrayList<Gir.AnyType> ();
+            var inner_types = new Gee.ArrayList<Gir.AnyType> ();
             inner_types.add (g_array.anytype);
-            return build_type (g_anytype.name, inner_types, g_anytype.source);
+            return build_type (g_anytype.name, inner_types, v_source);
         }
 
-        DataType v_type = new DataTypeBuilder (g_array.anytype).build ();
-        return new ArrayType (v_type, 1, g_anytype.source);
+        var v_type = new DataTypeBuilder (g_array.anytype).build ();
+        return new ArrayType (v_type, 1, v_source);
     }
 
     /* Create Vala DataType from a Gir <type> element. */
-    private DataType build_type (string name, Vala.List<Gir.AnyType> g_inner_type, SourceReference? source) {
+    private DataType build_type (string name, Gee.List<Gir.AnyType> g_inner_type, SourceReference? source) {
         string? builtin = to_builtin_type (name);
         if (builtin != null) {
             var sym = new UnresolvedSymbol (null, builtin, source);

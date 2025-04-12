@@ -1,5 +1,8 @@
 /* vala-gir-parser
- * Copyright (C) 2025 Jan-Willem Harmannij
+ * Copyright (C) 2024-2025 Jan-Willem Harmannij
+ * 
+ * Parts of this file were copied and adapted from Vala 0.56:
+ * Copyright (C) 2008  Jürg Billeter
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -17,14 +20,28 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Varargs : Node {
+using GLib;
 
-    public Varargs (Gir.Xml.Reference? source) {
-        base(source);
-    }
+/**
+ * Represents a position in a source file.
+ */
+public struct Gir.Xml.SourceLocation {
+	public char* pos;
+	public int line;
+	public int column;
 
-    public override void accept (Visitor visitor) {
-        visitor.visit_varargs (this);
-    }
+	public SourceLocation (char* _pos, int _line, int _column) {
+		pos = _pos;
+		line = _line;
+		column = _column;
+	}
+
+	/**
+	 * Returns a string representation of this source location.
+	 *
+	 * @return human-readable string
+	 */
+	public string to_string () {
+		return ("%d.%d".printf (line, column));
+	}
 }
-

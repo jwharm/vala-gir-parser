@@ -20,7 +20,7 @@
 public class Gir.CInclude : Node {
     public string name { owned get; set; }
 
-    public CInclude (string name, Vala.SourceReference? source) {
+    public CInclude (string name, Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
     }

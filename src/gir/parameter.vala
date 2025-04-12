@@ -37,7 +37,7 @@ public class Gir.Parameter : DocElements, Node {
     public SourcePosition? source_position { get; set; }
     public AnyType? anytype { get; set; }
     public Varargs? varargs { get; set; }
-    public Vala.List<Attribute> attributes { owned get; set; }
+    public Gee.List<Attribute> attributes { owned get; set; }
 
     public Parameter (
             string? name,
@@ -59,8 +59,8 @@ public class Gir.Parameter : DocElements, Node {
             SourcePosition? source_position,
             AnyType? anytype,
             Varargs? varargs,
-            Vala.List<Attribute> attributes,
-            Vala.SourceReference? source) {
+            Gee.List<Attribute> attributes,
+            Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
         this.nullable = nullable;

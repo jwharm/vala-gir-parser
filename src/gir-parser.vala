@@ -51,6 +51,7 @@ public class GirParser2 : CodeVisitor {
         string name_and_version = Path.get_basename (source_file.filename)[:-4];
 
         var gir_context = new Gir.Context (code_context.gir_directories);
+        Gir.Context.push (gir_context);
         gir_context.queue_repository (name_and_version);
         var parser = new Gir.Parser (gir_context);
         parser.parse ();
@@ -91,6 +92,8 @@ public class GirParser2 : CodeVisitor {
             /* build the namespace(s) and everything in it */
             repository.accept (new VapiBuilder ());
         }
+            
+        Gir.Context.pop ();
     }
 
     /* Load metadata, first look into metadata directories then in the same

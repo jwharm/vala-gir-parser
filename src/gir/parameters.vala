@@ -18,13 +18,13 @@
  */
 
 public class Gir.Parameters : Node {
-    public Vala.List<Parameter> parameters { owned get; set; }
+    public Gee.List<Parameter> parameters { owned get; set; }
     public InstanceParameter? instance_parameter { get; set; }
 
     public Parameters (
-            Vala.List<Parameter> parameters,
+            Gee.List<Parameter> parameters,
             InstanceParameter? instance_parameter,
-            Vala.SourceReference? source) {
+            Gir.Xml.Reference? source) {
         base(source);
         this.parameters = parameters;
         this.instance_parameter = instance_parameter;

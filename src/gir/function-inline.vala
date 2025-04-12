@@ -62,7 +62,7 @@ public class Gir.FunctionInline : InfoAttrs, DocElements, Node, CallableAttrs {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.SourceReference? source) {
+            Gir.Xml.Reference? source) {
         base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;

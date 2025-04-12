@@ -42,21 +42,21 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
     public Doc? doc { get; set; }
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
-    public Vala.List<Attribute> attributes { owned get; set; }
-    public Vala.List<Implements> implements { owned get; set; }
-    public Vala.List<Constructor> constructors { owned get; set; }
-    public Vala.List<Method> methods { owned get; set; }
-    public Vala.List<MethodInline> method_inlines { owned get; set; }
-    public Vala.List<Function> functions { owned get; set; }
-    public Vala.List<FunctionInline> function_inlines { owned get; set; }
-    public Vala.List<VirtualMethod> virtual_methods { owned get; set; }
-    public Vala.List<Field> fields { owned get; set; }
-    public Vala.List<Property> properties { owned get; set; }
-    public Vala.List<Signal> @signals { owned get; set; }
-    public Vala.List<Union> unions { owned get; set; }
-    public Vala.List<Constant> constants { owned get; set; }
-    public Vala.List<Record> records { owned get; set; }
-    public Vala.List<Callback> callbacks { owned get; set; }
+    public Gee.List<Attribute> attributes { owned get; set; }
+    public Gee.List<Implements> implements { owned get; set; }
+    public Gee.List<Constructor> constructors { owned get; set; }
+    public Gee.List<Method> methods { owned get; set; }
+    public Gee.List<MethodInline> method_inlines { owned get; set; }
+    public Gee.List<Function> functions { owned get; set; }
+    public Gee.List<FunctionInline> function_inlines { owned get; set; }
+    public Gee.List<VirtualMethod> virtual_methods { owned get; set; }
+    public Gee.List<Field> fields { owned get; set; }
+    public Gee.List<Property> properties { owned get; set; }
+    public Gee.List<Signal> @signals { owned get; set; }
+    public Gee.List<Union> unions { owned get; set; }
+    public Gee.List<Constant> constants { owned get; set; }
+    public Gee.List<Record> records { owned get; set; }
+    public Gee.List<Callback> callbacks { owned get; set; }
 
     public Class (
             bool introspectable,
@@ -83,22 +83,22 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<Attribute> attributes,
-            Vala.List<Implements> implements,
-            Vala.List<Constructor> constructors,
-            Vala.List<Method> methods,
-            Vala.List<MethodInline> method_inlines,
-            Vala.List<Function> functions,
-            Vala.List<FunctionInline> function_inlines,
-            Vala.List<VirtualMethod> virtual_methods,
-            Vala.List<Field> fields,
-            Vala.List<Property> properties,
-            Vala.List<Signal> @signals,
-            Vala.List<Union> unions,
-            Vala.List<Constant> constants,
-            Vala.List<Record> records,
-            Vala.List<Callback> callbacks,
-            Vala.SourceReference? source) {
+            Gee.List<Attribute> attributes,
+            Gee.List<Implements> implements,
+            Gee.List<Constructor> constructors,
+            Gee.List<Method> methods,
+            Gee.List<MethodInline> method_inlines,
+            Gee.List<Function> functions,
+            Gee.List<FunctionInline> function_inlines,
+            Gee.List<VirtualMethod> virtual_methods,
+            Gee.List<Field> fields,
+            Gee.List<Property> properties,
+            Gee.List<Signal> @signals,
+            Gee.List<Union> unions,
+            Gee.List<Constant> constants,
+            Gee.List<Record> records,
+            Gee.List<Callback> callbacks,
+            Gir.Xml.Reference? source) {
         base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;

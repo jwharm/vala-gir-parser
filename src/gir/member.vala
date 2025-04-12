@@ -33,7 +33,7 @@ public class Gir.Member : InfoAttrs, DocElements, InfoElements, Node {
     public Doc? doc { get; set; }
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
-    public Vala.List<Attribute> attributes { owned get; set; }
+    public Gee.List<Attribute> attributes { owned get; set; }
 
     public Member (
             bool introspectable,
@@ -51,8 +51,8 @@ public class Gir.Member : InfoAttrs, DocElements, InfoElements, Node {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<Attribute> attributes,
-            Vala.SourceReference? source) {
+            Gee.List<Attribute> attributes,
+            Gir.Xml.Reference? source) {
         base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;

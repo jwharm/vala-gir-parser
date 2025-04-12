@@ -33,10 +33,10 @@ public class Gir.Enumeration : InfoAttrs, DocElements, InfoElements, Identifier,
     public Doc? doc { get; set; }
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
-    public Vala.List<Attribute> attributes { owned get; set; }
-    public Vala.List<Member> members { owned get; set; }
-    public Vala.List<Function> functions { owned get; set; }
-    public Vala.List<FunctionInline> function_inlines { owned get; set; }
+    public Gee.List<Attribute> attributes { owned get; set; }
+    public Gee.List<Member> members { owned get; set; }
+    public Gee.List<Function> functions { owned get; set; }
+    public Gee.List<FunctionInline> function_inlines { owned get; set; }
 
     public Enumeration (
             bool introspectable,
@@ -54,11 +54,11 @@ public class Gir.Enumeration : InfoAttrs, DocElements, InfoElements, Identifier,
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<Attribute> attributes,
-            Vala.List<Member> members,
-            Vala.List<Function> functions,
-            Vala.List<FunctionInline> function_inlines,
-            Vala.SourceReference? source) {
+            Gee.List<Attribute> attributes,
+            Gee.List<Member> members,
+            Gee.List<Function> functions,
+            Gee.List<FunctionInline> function_inlines,
+            Gir.Xml.Reference? source) {
         base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;

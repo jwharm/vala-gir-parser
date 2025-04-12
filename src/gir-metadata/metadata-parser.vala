@@ -1,7 +1,7 @@
 /* vala-gir-parser
  * Copyright (C) 2024-2025 Jan-Willem Harmannij
  * 
- * Parts of this file were copied from Vala 0.56:
+ * Parts of this file were copied and adapted from Vala 0.56:
  * Copyright (C) 2008-2012  Jürg Billeter
  * Copyright (C) 2011-2014  Luca Bruno
  *
@@ -124,7 +124,7 @@ public class GirMetadata.MetadataSet : Metadata {
         }
 
         // merge arguments and take precedence
-        foreach (var key in metadata.args.get_keys ()) {
+        foreach (var key in metadata.args.keys) {
             args[key] = metadata.args[key];
         }
 
@@ -150,8 +150,8 @@ public class GirMetadata.Metadata {
     public SourceReference source_reference;
 
     public bool used = false;
-    public Vala.Map<ArgumentType,Argument> args = new HashMap<ArgumentType,Argument> ();
-    public ArrayList<Metadata> children = new ArrayList<Metadata> ();
+    public Gee.Map<ArgumentType,Argument> args = new Gee.HashMap<ArgumentType,Argument> ();
+    public Gee.ArrayList<Metadata> children = new Gee.ArrayList<Metadata> ();
 
     public Metadata (string pattern,
                      string? selector = null,
@@ -178,7 +178,7 @@ public class GirMetadata.Metadata {
         }
 
         /* arguments */
-        foreach (var key in args.get_keys ()) {
+        foreach (var key in args.keys) {
             string nick = key.to_string ()
                              .replace ("GIR_METADATA_ARGUMENT_TYPE_", "")
                              .down ();
@@ -244,7 +244,7 @@ public class GirMetadata.Metadata {
     }
 
     public bool has_argument (ArgumentType key) {
-        return args.contains (key);
+        return args.has_key (key);
     }
 
     public Expression? get_expression (ArgumentType arg) {

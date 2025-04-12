@@ -34,7 +34,7 @@ public class Gir.Array : AnyType {
             int length,
             string? c_type,
             AnyType anytype,
-            Vala.SourceReference? source) {
+            Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
         this.zero_terminated = zero_terminated;

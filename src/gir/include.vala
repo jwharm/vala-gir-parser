@@ -21,7 +21,7 @@ public class Gir.Include : Node {
     public string name { owned get; set; }
     public string? version { owned get; set; }
 
-    public Include (string name, string? version, Vala.SourceReference? source) {
+    public Include (string name, string? version, Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
         this.version = version;

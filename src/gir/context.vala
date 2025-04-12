@@ -18,17 +18,37 @@
  */
 
 public class Gir.Context : Object {
-    internal Vala.Map<string, Gir.Repository> repositories { get; set; }
-    internal Vala.List<string> parser_queue { get; set; }
+    internal Gee.Map<string, Gir.Repository> repositories { get; set; }
+    internal Gee.List<string> parser_queue { get; set; }
     public string[] gir_directories { get; set; }
+    public Gir.Xml.Report report { get; set; }
+
+    private static Gee.Queue<Context> context_queue;
+
+    static construct {
+        context_queue = new Gee.ArrayQueue<Context> ();
+    }
 
     construct {
-        this.repositories = new Vala.HashMap<string, Gir.Repository> (str_hash, str_equal);
-        this.parser_queue = new Vala.ArrayList<string> ();
+        this.repositories = new Gee.HashMap<string, Gir.Repository> ();
+        this.parser_queue = new Gee.ArrayList<string> ();
+        this.report = new Gir.Xml.Report ();
     }
 
     public Context (string[] gir_directories) {
         this.gir_directories = gir_directories;
+    }
+
+    public static void push (Context context) {
+        context_queue.offer (context);
+    }
+
+    public new static Context get () {
+        return context_queue.peek ();
+    }
+
+    public new static Context pop () {
+        return context_queue.poll ();
     }
 
     /**
@@ -57,6 +77,6 @@ public class Gir.Context : Object {
      * Check whether a Gir repository is in the context, for example "Gtk-4.0".
      */
      public bool contains_repository (string name_and_version) {
-        return name_and_version in repositories;
+        return repositories.has_key (name_and_version);
     }
 }

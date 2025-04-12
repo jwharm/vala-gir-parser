@@ -34,20 +34,20 @@ public class Gir.Interface : InfoAttrs, DocElements, InfoElements, Identifier, N
     public Doc? doc { get; set; }
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
-    public Vala.List<Attribute> attributes { owned get; set; }
-    public Vala.List<Prerequisite> prerequisites { owned get; set; }
-    public Vala.List<Implements> implements { owned get; set; }
-    public Vala.List<Function> functions { owned get; set; }
-    public Vala.List<FunctionInline> function_inlines { owned get; set; }
+    public Gee.List<Attribute> attributes { owned get; set; }
+    public Gee.List<Prerequisite> prerequisites { owned get; set; }
+    public Gee.List<Implements> implements { owned get; set; }
+    public Gee.List<Function> functions { owned get; set; }
+    public Gee.List<FunctionInline> function_inlines { owned get; set; }
     public Constructor? constructor { get; set; }
-    public Vala.List<Method> methods { owned get; set; }
-    public Vala.List<MethodInline> method_inlines { owned get; set; }
-    public Vala.List<VirtualMethod> virtual_methods { owned get; set; }
-    public Vala.List<Field> fields { owned get; set; }
-    public Vala.List<Property> properties { owned get; set; }
-    public Vala.List<Signal> @signals { owned get; set; }
-    public Vala.List<Callback> callbacks { owned get; set; }
-    public Vala.List<Constant> constants { owned get; set; }
+    public Gee.List<Method> methods { owned get; set; }
+    public Gee.List<MethodInline> method_inlines { owned get; set; }
+    public Gee.List<VirtualMethod> virtual_methods { owned get; set; }
+    public Gee.List<Field> fields { owned get; set; }
+    public Gee.List<Property> properties { owned get; set; }
+    public Gee.List<Signal> @signals { owned get; set; }
+    public Gee.List<Callback> callbacks { owned get; set; }
+    public Gee.List<Constant> constants { owned get; set; }
 
     public Interface (
             bool introspectable,
@@ -66,21 +66,21 @@ public class Gir.Interface : InfoAttrs, DocElements, InfoElements, Identifier, N
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<Attribute> attributes,
-            Vala.List<Prerequisite> prerequisites,
-            Vala.List<Implements> implements,
-            Vala.List<Function> functions,
-            Vala.List<FunctionInline> function_inlines,
+            Gee.List<Attribute> attributes,
+            Gee.List<Prerequisite> prerequisites,
+            Gee.List<Implements> implements,
+            Gee.List<Function> functions,
+            Gee.List<FunctionInline> function_inlines,
             Constructor? constructor,
-            Vala.List<Method> methods,
-            Vala.List<MethodInline> method_inlines,
-            Vala.List<VirtualMethod> virtual_methods,
-            Vala.List<Field> fields,
-            Vala.List<Property> properties,
-            Vala.List<Signal> @signals,
-            Vala.List<Callback> callbacks,
-            Vala.List<Constant> constants,
-            Vala.SourceReference? source) {
+            Gee.List<Method> methods,
+            Gee.List<MethodInline> method_inlines,
+            Gee.List<VirtualMethod> virtual_methods,
+            Gee.List<Field> fields,
+            Gee.List<Property> properties,
+            Gee.List<Signal> @signals,
+            Gee.List<Callback> callbacks,
+            Gee.List<Constant> constants,
+            Gir.Xml.Reference? source) {
         base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;

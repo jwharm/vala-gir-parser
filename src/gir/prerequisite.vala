@@ -20,7 +20,7 @@
 public class Gir.Prerequisite : Node {
     public string name { owned get; set; }
 
-    public Prerequisite (string name, Vala.SourceReference? source) {
+    public Prerequisite (string name, Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
     }

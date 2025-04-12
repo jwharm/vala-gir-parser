@@ -28,8 +28,8 @@ public class Gir.AnonymousRecord : DocElements, Node {
     public Doc? doc { get; set; }
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
-    public Vala.List<Field> fields { owned get; set; }
-    public Vala.List<Union> unions { owned get; set; }
+    public Gee.List<Field> fields { owned get; set; }
+    public Gee.List<Union> unions { owned get; set; }
 
     public AnonymousRecord (
             DocVersion? doc_version,
@@ -37,9 +37,9 @@ public class Gir.AnonymousRecord : DocElements, Node {
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<Field> fields,
-            Vala.List<Union> unions,
-            Vala.SourceReference? source) {
+            Gee.List<Field> fields,
+            Gee.List<Union> unions,
+            Gir.Xml.Reference? source) {
         base(source);
         this.doc_version = doc_version;
         this.doc_stability = doc_stability;

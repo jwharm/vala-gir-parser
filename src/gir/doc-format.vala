@@ -20,7 +20,7 @@
 public class Gir.DocFormat : Node {
     public string name { owned get; set; }
 
-    public DocFormat (string name, Vala.SourceReference? source) {
+    public DocFormat (string name, Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
     }

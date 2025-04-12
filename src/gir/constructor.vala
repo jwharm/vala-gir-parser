@@ -37,7 +37,7 @@ public class Gir.Constructor : InfoAttrs, DocElements, InfoElements, Callable, N
     public Doc? doc { get; set; }
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
-    public Vala.List<Attribute> attributes { owned get; set; }
+    public Gee.List<Attribute> attributes { owned get; set; }
     public Parameters? parameters { get; set; }
     public ReturnValue? return_value { get; set; }
 
@@ -61,10 +61,10 @@ public class Gir.Constructor : InfoAttrs, DocElements, InfoElements, Callable, N
             Doc? doc,
             DocDeprecated? doc_deprecated,
             SourcePosition? source_position,
-            Vala.List<Attribute> attributes,
+            Gee.List<Attribute> attributes,
             Parameters? parameters,
             ReturnValue? return_value,
-            Vala.SourceReference? source) {
+            Gir.Xml.Reference? source) {
         base(source);
         this.introspectable = introspectable;
         this.deprecated = deprecated;

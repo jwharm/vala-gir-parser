@@ -24,21 +24,21 @@ public class Gir.Namespace : Node {
     public string? c_symbol_prefixes { owned get; set; }
     public string? c_prefix { owned get; set; }
     public string? shared_library { owned get; set; }
-    public Vala.List<Alias> aliases { owned get; set; }
-    public Vala.List<Class> classes { owned get; set; }
-    public Vala.List<Interface> interfaces { owned get; set; }
-    public Vala.List<Record> records { owned get; set; }
-    public Vala.List<Enumeration> enums { owned get; set; }
-    public Vala.List<Function> functions { owned get; set; }
-    public Vala.List<FunctionInline> function_inlines { owned get; set; }
-    public Vala.List<FunctionMacro> function_macros { owned get; set; }
-    public Vala.List<Union> unions { owned get; set; }
-    public Vala.List<Bitfield> bit_fields { owned get; set; }
-    public Vala.List<Callback> callbacks { owned get; set; }
-    public Vala.List<Constant> constants { owned get; set; }
-    public Vala.List<Attribute> attributes { owned get; set; }
-    public Vala.List<Boxed> boxeds { owned get; set; }
-    public Vala.List<Docsection> doc_sections { owned get; set; }
+    public Gee.List<Alias> aliases { owned get; set; }
+    public Gee.List<Class> classes { owned get; set; }
+    public Gee.List<Interface> interfaces { owned get; set; }
+    public Gee.List<Record> records { owned get; set; }
+    public Gee.List<Enumeration> enums { owned get; set; }
+    public Gee.List<Function> functions { owned get; set; }
+    public Gee.List<FunctionInline> function_inlines { owned get; set; }
+    public Gee.List<FunctionMacro> function_macros { owned get; set; }
+    public Gee.List<Union> unions { owned get; set; }
+    public Gee.List<Bitfield> bit_fields { owned get; set; }
+    public Gee.List<Callback> callbacks { owned get; set; }
+    public Gee.List<Constant> constants { owned get; set; }
+    public Gee.List<Attribute> attributes { owned get; set; }
+    public Gee.List<Boxed> boxeds { owned get; set; }
+    public Gee.List<Docsection> doc_sections { owned get; set; }
 
     public Namespace (
             string? name,
@@ -47,22 +47,22 @@ public class Gir.Namespace : Node {
             string? c_symbol_prefixes,
             string? c_prefix,
             string? shared_library,
-            Vala.List<Alias> aliases,
-            Vala.List<Class> classes,
-            Vala.List<Interface> interfaces,
-            Vala.List<Record> records,
-            Vala.List<Enumeration> enums,
-            Vala.List<Function> functions,
-            Vala.List<FunctionInline> function_inlines,
-            Vala.List<FunctionMacro> function_macros,
-            Vala.List<Union> unions,
-            Vala.List<Bitfield> bit_fields,
-            Vala.List<Callback> callbacks,
-            Vala.List<Constant> constants,
-            Vala.List<Attribute> attributes,
-            Vala.List<Boxed> boxeds,
-            Vala.List<Docsection> doc_sections,
-            Vala.SourceReference? source) {
+            Gee.List<Alias> aliases,
+            Gee.List<Class> classes,
+            Gee.List<Interface> interfaces,
+            Gee.List<Record> records,
+            Gee.List<Enumeration> enums,
+            Gee.List<Function> functions,
+            Gee.List<FunctionInline> function_inlines,
+            Gee.List<FunctionMacro> function_macros,
+            Gee.List<Union> unions,
+            Gee.List<Bitfield> bit_fields,
+            Gee.List<Callback> callbacks,
+            Gee.List<Constant> constants,
+            Gee.List<Attribute> attributes,
+            Gee.List<Boxed> boxeds,
+            Gee.List<Docsection> doc_sections,
+            Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
         this.version = version;

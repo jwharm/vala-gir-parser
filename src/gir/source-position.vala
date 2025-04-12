@@ -26,7 +26,7 @@ public class Gir.SourcePosition : Node {
             string filename,
             string line,
             string? column,
-            Vala.SourceReference? source) {
+            Gir.Xml.Reference? source) {
         base(source);
         this.filename = filename;
         this.line = line;

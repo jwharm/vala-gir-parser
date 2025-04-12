@@ -20,7 +20,7 @@
 public class Gir.DocStability : Node {
     public string? text { owned get; set; }
 
-    public DocStability (string? text, Vala.SourceReference? source) {
+    public DocStability (string? text, Gir.Xml.Reference? source) {
         base(source);
         this.text = text;
     }
