@@ -272,7 +272,7 @@ public class VapiBuilder : Gir.Visitor {
 
         /* parent class */
         if (g_class.parent != null) {
-            var base_type = DataTypeBuilder.from_name (g_class.parent, v_source);
+            var base_type = DataTypeBuilder.from_name (g_class.parent_unresolved, v_source);
             v_class.add_base_type (base_type);
         }
 
@@ -293,8 +293,8 @@ public class VapiBuilder : Gir.Visitor {
 
         /* type_cname */
         if (g_class.glib_type_struct != null
-                && g_class.glib_type_struct != generate_type_cname (g_class)) {
-            var type_cname = get_ns_prefix (g_class) + g_class.glib_type_struct;
+                && g_class.glib_type_struct.c_type != generate_type_cname (g_class)) {
+            var type_cname = get_ns_prefix (g_class) + g_class.glib_type_struct.c_type;
             v_class.set_attribute_string ("CCode", "type_cname", type_cname);
         }
 
@@ -303,8 +303,8 @@ public class VapiBuilder : Gir.Visitor {
 
         /* ref_function */
         var custom_ref = find_method_with_suffix (g_class, "_ref");
-        if (g_class.glib_ref_func != null) {
-            v_class.set_attribute_string ("CCode", "ref_function", g_class.glib_ref_func);
+        if (g_class.glib_ref_func_unresolved != null) {
+            v_class.set_attribute_string ("CCode", "ref_function", g_class.glib_ref_func_unresolved);
         }
         else if (custom_ref != null) {
             v_class.set_attribute_string ("CCode", "ref_function", custom_ref);
@@ -312,8 +312,8 @@ public class VapiBuilder : Gir.Visitor {
 
         /* unref_function */
         var custom_unref = find_method_with_suffix (g_class, "_unref");
-        if (g_class.glib_unref_func != null) {
-            v_class.set_attribute_string ("CCode", "unref_function", g_class.glib_unref_func);
+        if (g_class.glib_unref_func_unresolved != null) {
+            v_class.set_attribute_string ("CCode", "unref_function", g_class.glib_unref_func_unresolved);
         }
         else if (custom_unref != null) {
             v_class.set_attribute_string ("CCode", "unref_function", custom_unref);
@@ -512,9 +512,8 @@ public class VapiBuilder : Gir.Visitor {
             }
 
             /* length in another field */
-            else if (g_arr.length != -1) {
-                var fields = get_gir_fields (g_field.parent_node);
-                var g_length_field = fields[g_arr.length];
+            else if (g_arr.length is Gir.Field) {
+                var g_length_field = (Gir.Field) g_arr.length;
                 var g_type = g_length_field.anytype;
                 var name = g_length_field.name;
                 v_field.set_attribute_string ("CCode", "array_length_cname", name);
@@ -635,8 +634,8 @@ public class VapiBuilder : Gir.Visitor {
 
         /* type_cname */
         if (g_iface.glib_type_struct != null
-                && g_iface.glib_type_struct != generate_type_cname (g_iface)) {
-            var type_cname = get_ns_prefix (g_iface) + g_iface.glib_type_struct;
+                && g_iface.glib_type_struct.c_type != generate_type_cname (g_iface)) {
+            var type_cname = get_ns_prefix (g_iface) + g_iface.glib_type_struct.c_type;
             v_iface.set_attribute_string ("CCode", "type_cname", type_cname);
         }
 
@@ -781,7 +780,7 @@ public class VapiBuilder : Gir.Visitor {
             /* instance_pos attribute: Specifies the position of the user_data
              * argument where Vala can pass the `this` parameter to treat the 
              * callback like an instance method. */
-            if (g_call is Gir.Callback && g_par.closure != -1) {
+            if (g_call is Gir.Callback && g_par.closure != null) {
                 var pos = get_param_pos (g_call, i);
                 v_call.set_attribute_double ("CCode", "instance_pos", pos);
             }
@@ -822,7 +821,7 @@ public class VapiBuilder : Gir.Visitor {
             }
 
             /* ownership transfer */
-            if (g_par.transfer_ownership != NONE || g_par.destroy != -1) {
+            if (g_par.transfer_ownership != NONE || g_par.destroy != null) {
                 v_type.value_owned = true;
             }
 
@@ -1464,9 +1463,9 @@ public class VapiBuilder : Gir.Visitor {
         }
 
         /* length in another parameter */
-        else if (g_arr.length != -1 && g_call != null) {
-            var pos = get_param_pos (g_call, g_arr.length);
-            var lp = g_call.parameters.parameters[g_arr.length];
+        else if (g_arr.length is Gir.Parameter && g_call != null) {
+            var pos = get_param_pos (g_call, g_arr.length_unresolved);
+            var lp = (Gir.Parameter) g_arr.length;
             var g_type = lp.anytype;
 
             v_sym.set_attribute_double ("CCode", "array_length_pos", pos);
@@ -1514,20 +1513,20 @@ public class VapiBuilder : Gir.Visitor {
     private static bool is_hidden_param (Gir.Callable g_call, int idx) {
         foreach (var p in g_call.parameters.parameters) {
             /* user-data for a closure, or destroy-notify callback */
-            if (p.closure == idx || p.destroy == idx) {
+            if (p.closure_unresolved == idx || p.destroy_unresolved == idx) {
                 return true;
             }
 
             /* array length */
             var array = p.anytype as Gir.Array;
-            if (array?.length == idx) {
+            if (array?.length_unresolved == idx) {
                 return true;
             }
         }
 
         /* length of returned array */
         var array = g_call.return_value.anytype as Gir.Array;
-        if (array?.length == idx) {
+        if (array?.length_unresolved == idx) {
             return true;
         }
 
@@ -1556,24 +1555,6 @@ public class VapiBuilder : Gir.Visitor {
         }
 
         return null;
-    }
-
-    /* Get all fields that are declared in this node. When the node doesn't
-     * have any fields, an empty list will be returned. */
-    private static Gee.List<Gir.Field> get_gir_fields (Gir.Node node) {
-        if (node is Gir.AnonymousRecord) {
-            return ((Gir.AnonymousRecord) node).fields;
-        } else if (node is Gir.Interface) {
-            return ((Gir.Interface) node).fields;
-        } else if (node is Gir.Class) {
-            return ((Gir.Class) node).fields;
-        } else if (node is Gir.Record) {
-            return ((Gir.Record) node).fields;
-        } else if (node is Gir.Union) {
-            return ((Gir.Union) node).fields;
-        } else {
-            return new Gee.ArrayList<Gir.Field> ();
-        }
     }
 
     /* Get all functions that are declared in this node. When the node doesn't

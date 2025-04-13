@@ -89,6 +89,9 @@ public class GirParser2 : CodeVisitor {
             //      metadata_processor.apply (metadata);
             //  }
 
+            /* resolve Gir references */
+            repository.accept (new Gir.Resolver (gir_context));
+
             /* build the namespace(s) and everything in it */
             repository.accept (new VapiBuilder ());
         }

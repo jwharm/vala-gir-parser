@@ -21,8 +21,9 @@
  * Base class for all Gir Nodes. The parent node of the root node is `null`.
  */
 public abstract class Gir.Node : Object {
-    public weak Node? parent_node         { get; set; default = null; }
-    public Gir.Xml.Reference? source   { get; set; }
+    public weak Node? parent_node    { get; set; default = null; }
+    public Gir.Xml.Reference? source { get; set; }
+    public bool resolved             { get; set; default = false; }
 
     protected Node (Gir.Xml.Reference? source) {
         this.source = source;

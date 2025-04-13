@@ -79,4 +79,34 @@ public class Gir.Context : Object {
      public bool contains_repository (string name_and_version) {
         return repositories.has_key (name_and_version);
     }
+
+    /**
+     * Get a Gir repository from the context by name (without version), for
+     * example "Gtk". Returns null when the repository is not found.
+     */
+     public Gir.Repository? get_repository_by_name (string name) {
+        var needle = name + "-";
+        foreach (var key in repositories.keys) {
+            if (key.has_prefix (needle)) {
+                return repositories[key];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Check whether a Gir repository is in the context, by name (without
+     * version), for example "Gtk".
+     */
+     public bool contains_repository_name (string name) {
+        var needle = name + "-";
+        foreach (var key in repositories.keys) {
+            if (key.has_prefix (needle)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

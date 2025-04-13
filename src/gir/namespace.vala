@@ -33,7 +33,7 @@ public class Gir.Namespace : Node {
     public Gee.List<FunctionInline> function_inlines { owned get; set; }
     public Gee.List<FunctionMacro> function_macros { owned get; set; }
     public Gee.List<Union> unions { owned get; set; }
-    public Gee.List<Bitfield> bit_fields { owned get; set; }
+    public Gee.List<Bitfield> bitfields { owned get; set; }
     public Gee.List<Callback> callbacks { owned get; set; }
     public Gee.List<Constant> constants { owned get; set; }
     public Gee.List<Attribute> attributes { owned get; set; }
@@ -79,7 +79,7 @@ public class Gir.Namespace : Node {
         this.function_inlines = function_inlines;
         this.function_macros = function_macros;
         this.unions = unions;
-        this.bit_fields = bit_fields;
+        this.bitfields = bit_fields;
         this.callbacks = callbacks;
         this.constants = constants;
         this.attributes = attributes;
@@ -124,7 +124,7 @@ public class Gir.Namespace : Node {
             union.accept (visitor);
         }
 
-        foreach (var bit_field in bit_fields) {
+        foreach (var bit_field in bitfields) {
             bit_field.accept (visitor);
         }
 

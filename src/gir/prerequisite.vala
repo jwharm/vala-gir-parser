@@ -19,6 +19,7 @@
 
 public class Gir.Prerequisite : Node {
     public string name { owned get; set; }
+    public Identifier target { owned get; set; }
 
     public Prerequisite (string name, Gir.Xml.Reference? source) {
         base(source);

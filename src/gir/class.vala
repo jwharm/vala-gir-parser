@@ -26,12 +26,18 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
     public string name { owned get; set; }
     public string glib_type_name { owned get; set; }
     public string glib_get_type { owned get; set; }
-    public string? parent { owned get; set; }
-    public string? glib_type_struct { owned get; set; }
-    public string? glib_ref_func { owned get; set; }
-    public string? glib_unref_func { owned get; set; }
-    public string? glib_set_value_func { owned get; set; }
-    public string? glib_get_value_func { owned get; set; }
+    public Class? parent { owned get; set; }
+    public string? parent_unresolved { get; set; }
+    public Record? glib_type_struct { owned get; set; }
+    public string? glib_type_struct_unresolved { get; set; }
+    public Callable? glib_ref_func { owned get; set; }
+    public string? glib_ref_func_unresolved { get; set; }
+    public Callable? glib_unref_func { owned get; set; }
+    public string? glib_unref_func_unresolved { get; set; }
+    public Callable? glib_set_value_func { owned get; set; }
+    public string? glib_get_value_func_unresolved { get; set; }
+    public Callable? glib_get_value_func { owned get; set; }
+    public string? glib_set_value_func_unresolved { get; set; }
     public string? c_type { owned get; set; }
     public string? c_symbol_prefix { owned get; set; }
     public bool @abstract { get; set; }
@@ -108,12 +114,12 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
         this.name = name;
         this.glib_type_name = glib_type_name;
         this.glib_get_type = glib_get_type;
-        this.parent = parent;
-        this.glib_type_struct = glib_type_struct;
-        this.glib_ref_func = glib_ref_func;
-        this.glib_unref_func = glib_unref_func;
-        this.glib_set_value_func = glib_set_value_func;
-        this.glib_get_value_func = glib_get_value_func;
+        this.parent_unresolved = parent;
+        this.glib_type_struct_unresolved = glib_type_struct;
+        this.glib_ref_func_unresolved = glib_ref_func;
+        this.glib_unref_func_unresolved = glib_unref_func;
+        this.glib_set_value_func_unresolved = glib_set_value_func;
+        this.glib_get_value_func_unresolved = glib_get_value_func;
         this.c_type = c_type;
         this.c_symbol_prefix = c_symbol_prefix;
         this.@abstract = @abstract;

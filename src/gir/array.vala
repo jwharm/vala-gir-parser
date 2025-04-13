@@ -22,7 +22,8 @@ public class Gir.Array : AnyType {
     public bool zero_terminated { get; set; }
     public int fixed_size { get; set; }
     public bool introspectable { get; set; }
-    public int length { get; set; }
+    public int length_unresolved { get; set; }
+    public Node length { get; set; }
     public string? c_type { owned get; set; }
     public AnyType anytype { get; set; }
 
@@ -40,7 +41,7 @@ public class Gir.Array : AnyType {
         this.zero_terminated = zero_terminated;
         this.fixed_size = fixed_size;
         this.introspectable = introspectable;
-        this.length = length;
+        this.length_unresolved = length;
         this.c_type = c_type;
         this.anytype = anytype;
     }

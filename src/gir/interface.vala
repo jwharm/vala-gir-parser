@@ -28,7 +28,8 @@ public class Gir.Interface : InfoAttrs, DocElements, InfoElements, Identifier, N
     public string glib_get_type { owned get; set; }
     public string? c_symbol_prefix { owned get; set; }
     public string? c_type { owned get; set; }
-    public string? glib_type_struct { owned get; set; }
+    public Record? glib_type_struct { owned get; set; }
+    public string glib_type_struct_unresolved { get; set; }
     public DocVersion? doc_version { get; set; }
     public DocStability? doc_stability { get; set; }
     public Doc? doc { get; set; }
@@ -92,7 +93,7 @@ public class Gir.Interface : InfoAttrs, DocElements, InfoElements, Identifier, N
         this.glib_get_type = glib_get_type;
         this.c_symbol_prefix = c_symbol_prefix;
         this.c_type = c_type;
-        this.glib_type_struct = glib_type_struct;
+        this.glib_type_struct_unresolved = glib_type_struct;
         this.doc_version = doc_version;
         this.doc_stability = doc_stability;
         this.doc = doc;

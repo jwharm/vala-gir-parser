@@ -19,6 +19,7 @@
 
 public class Gir.Implements : Node {
     public string name { owned get; set; }
+    public Interface? target { owned get; set; }
 
     public Implements (string name, Gir.Xml.Reference? source) {
         base(source);
