@@ -448,7 +448,7 @@ public class Gir.Resolver : Gir.Visitor {
             }
         }
 
-        Gir.Xml.Report.error (source, "Type '%s' not found in namespace %s", name, ns.name);
+        context.report.error (source, "Type '%s' not found in namespace %s", name, ns.name);
         return null;
     }
 
@@ -472,7 +472,7 @@ public class Gir.Resolver : Gir.Visitor {
         string namespace_name = type_name.substring (0, dot);
         var target_repo = context.get_repository_by_name (namespace_name);
         if (target_repo == null) {
-            Gir.Xml.Report.error (source, "Namespace '%s' not found", namespace_name);
+            context.report.error (source, "Namespace '%s' not found", namespace_name);
             return null;
         }
 

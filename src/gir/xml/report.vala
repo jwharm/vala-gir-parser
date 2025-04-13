@@ -432,25 +432,25 @@ public class Gir.Xml.Report {
 		print_message (source, "error", error_color_start, error_color_end, message, verbose_errors);
 	}
 
-	/* Convenience methods calling warn and err on correct instance */
+	/* Convenience methods with printf format */
 	[PrintfFormat]
-	public static void notice (Gir.Xml.Reference? source, string msg_format, ...) {
-		Gir.Context.get ().report.note (source, msg_format.vprintf (va_list ()));
+	public void notice (Gir.Xml.Reference? source, string msg_format, ...) {
+		note (source, msg_format.vprintf (va_list ()));
 	}
 	[PrintfFormat]
-	public static void deprecated (Gir.Xml.Reference? source, string msg_format, ...) {
-		Gir.Context.get ().report.depr (source, msg_format.vprintf (va_list ()));
+	public void deprecated (Gir.Xml.Reference? source, string msg_format, ...) {
+		depr (source, msg_format.vprintf (va_list ()));
 	}
 	[PrintfFormat]
-	public static void experimental (Gir.Xml.Reference? source, string msg_format, ...) {
-		Gir.Context.get ().report.depr (source, msg_format.vprintf (va_list ()));
+	public void experimental (Gir.Xml.Reference? source, string msg_format, ...) {
+		depr (source, msg_format.vprintf (va_list ()));
 	}
 	[PrintfFormat]
-	public static void warning (Gir.Xml.Reference? source, string msg_format, ...) {
-		Gir.Context.get ().report.warn (source, msg_format.vprintf (va_list ()));
+	public void warning (Gir.Xml.Reference? source, string msg_format, ...) {
+		warn (source, msg_format.vprintf (va_list ()));
 	}
 	[PrintfFormat]
-	public static void error (Gir.Xml.Reference? source, string msg_format, ...) {
-		Gir.Context.get ().report.err (source, msg_format.vprintf (va_list ()));
+	public void error (Gir.Xml.Reference? source, string msg_format, ...) {
+		err (source, msg_format.vprintf (va_list ()));
 	}
 }

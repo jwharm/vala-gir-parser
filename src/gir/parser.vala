@@ -115,7 +115,7 @@ public class Gir.Parser : Object {
 
         /* If the gir file is not found anywhere, return null */
         if (gir_filename == null) {
-            Report.error (null, "No gir file found for %s", name_and_version);
+            context.report.error (null, "No gir file found for %s", name_and_version);
             return null;
         }
 
@@ -127,7 +127,7 @@ public class Gir.Parser : Object {
         SourceLocation begin;
         SourceLocation end;
 
-        var reader = new Gir.Xml.Reader (filename);
+        var reader = new Gir.Xml.Reader (context, filename);
         
         /* Find the first START_ELEMENT token in the XML file */
         while (true) {
@@ -136,7 +136,7 @@ public class Gir.Parser : Object {
                 return parse_element (filename, reader) as Repository;
             } else if (token_type == EOF) {
                 var source = new Reference (filename, begin, end);
-                Report.error (source, "No repository found");
+                context.report.error (source, "No repository found");
                 return null;
             }
         }
@@ -915,7 +915,7 @@ public class Gir.Parser : Object {
                 source);
             break;
         default:
-            Report.error (source, "Unsupported element '%s'", element);
+            context.report.error (source, "Unsupported element '%s'", element);
             break;
         }
 

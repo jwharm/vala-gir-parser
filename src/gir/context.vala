@@ -23,12 +23,6 @@ public class Gir.Context : Object {
     public string[] gir_directories { get; set; }
     public Gir.Xml.Report report { get; set; }
 
-    private static Gee.Queue<Context> context_queue;
-
-    static construct {
-        context_queue = new Gee.ArrayQueue<Context> ();
-    }
-
     construct {
         this.repositories = new Gee.HashMap<string, Gir.Repository> ();
         this.parser_queue = new Gee.ArrayList<string> ();
@@ -37,18 +31,6 @@ public class Gir.Context : Object {
 
     public Context (string[] gir_directories) {
         this.gir_directories = gir_directories;
-    }
-
-    public static void push (Context context) {
-        context_queue.offer (context);
-    }
-
-    public new static Context get () {
-        return context_queue.peek ();
-    }
-
-    public new static Context pop () {
-        return context_queue.poll ();
     }
 
     /**

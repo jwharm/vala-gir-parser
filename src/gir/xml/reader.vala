@@ -27,10 +27,9 @@ using Gee;
  * Simple reader for a subset of XML.
  */
 public class Gir.Xml.Reader {
+	public Gir.Context context { get; private set; }
 	public string filename { get; private set; }
-
 	public string name { get; private set; }
-
 	public string content { get; private set; }
 
 	MappedFile mapped_file;
@@ -45,7 +44,8 @@ public class Gir.Xml.Reader {
 	Map<string,string> attributes = new HashMap<string,string> ();
 	bool empty_element;
 
-	public Reader (string filename) {
+	public Reader (Gir.Context context, string filename) {
+		this.context = context;
 		this.filename = filename;
 
 		try {
@@ -58,7 +58,7 @@ public class Gir.Xml.Reader {
 			line = 1;
 			column = 1;
 		} catch (FileError e) {
-			Report.error (null, "Unable to map file `%s': %s", filename, e.message);
+			context.report.error (null, "Unable to map file `%s': %s", filename, e.message);
 		}
 	}
 
@@ -106,7 +106,7 @@ public class Gir.Xml.Reader {
 			if (u != (unichar) (-1)) {
 				current += u.to_utf8 (null);
 			} else {
-				Report.error (null, "invalid UTF-8 character");
+				context.report.error (null, "invalid UTF-8 character");
 			}
 		}
 		if (current == begin) {
@@ -237,7 +237,7 @@ public class Gir.Xml.Reader {
 		while (current < end && current[0] != end_char) {
 			unichar u = ((string) current).get_char_validated ((long) (end - current));
 			if (u == (unichar) (-1)) {
-				Report.error (null, "invalid UTF-8 character");
+				context.report.error (null, "invalid UTF-8 character");
 			} else if (u == '&') {
 				char* next_pos = current + u.to_utf8 (null);
 				char buffer[16];
