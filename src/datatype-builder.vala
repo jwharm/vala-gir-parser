@@ -51,7 +51,7 @@ public class DataTypeBuilder {
             return build_type (g_anytype.name, inner_types, v_source);
         }
 
-        var v_type = new DataTypeBuilder (g_array.anytype).build ();
+        DataType v_type = new DataTypeBuilder (g_array.anytype).build ();
         return new ArrayType (v_type, 1, v_source);
     }
 
