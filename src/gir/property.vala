@@ -28,8 +28,8 @@ public class Gir.Property : InfoAttrs, DocElements, InfoElements, Node {
     public bool readable { get; set; }
     public bool construct { get; set; }
     public bool construct_only { get; set; }
-    public string? setter { owned get; set; }
-    public string? getter { owned get; set; }
+    public Link<Method> setter { owned get; set; }
+    public Link<Method> getter { owned get; set; }
     public string? default_value { owned get; set; }
     public TransferOwnership transfer_ownership { get; set; }
     public DocVersion? doc_version { get; set; }
@@ -74,8 +74,8 @@ public class Gir.Property : InfoAttrs, DocElements, InfoElements, Node {
         this.readable = readable;
         this.construct = construct;
         this.construct_only = construct_only;
-        this.setter = setter;
-        this.getter = getter;
+        this.setter = new Link<Method> (setter);
+        this.getter = new Link<Method> (getter);
         this.default_value = default_value;
         this.transfer_ownership = transfer_ownership;
         this.doc_version = doc_version;

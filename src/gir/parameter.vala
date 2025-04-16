@@ -22,10 +22,8 @@ public class Gir.Parameter : DocElements, Node {
     public bool nullable { get; set; }
     public bool allow_none { get; set; }
     public bool introspectable { get; set; }
-    public Parameter? closure { get; set; }
-    public int closure_unresolved { get; set; }
-    public Parameter? destroy { get; set; }
-    public int destroy_unresolved { get; set; }
+    public Link<Parameter> closure { get; set; }
+    public Link<Parameter> destroy { get; set; }
     public Scope scope { get; set; }
     public Direction direction { get; set; }
     public bool caller_allocates { get; set; }
@@ -46,8 +44,8 @@ public class Gir.Parameter : DocElements, Node {
             bool nullable,
             bool allow_none,
             bool introspectable,
-            int closure,
-            int destroy,
+            string? closure,
+            string? destroy,
             Scope scope,
             Direction direction,
             bool caller_allocates,
@@ -68,8 +66,8 @@ public class Gir.Parameter : DocElements, Node {
         this.nullable = nullable;
         this.allow_none = allow_none;
         this.introspectable = introspectable;
-        this.closure_unresolved = closure;
-        this.destroy_unresolved = destroy;
+        this.closure = new Link<Parameter> (closure);
+        this.destroy = new Link<Parameter> (destroy);
         this.scope = scope;
         this.direction = direction;
         this.caller_allocates = caller_allocates;

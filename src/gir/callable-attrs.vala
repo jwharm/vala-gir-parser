@@ -18,12 +18,13 @@
  */
 
 public interface Gir.CallableAttrs : Node, InfoAttrs {
-    public abstract string name              { owned get; set; }
-    public abstract string? c_identifier     { owned get; set; }
-    public abstract string? shadowed_by      { owned get; set; }
-    public abstract string? shadows          { owned get; set; }
-    public abstract bool @throws             { get; set; }
-    public abstract string? moved_to         { owned get; set; }
-    public abstract string? glib_async_func  { owned get; set; }
-    public abstract string? glib_finish_func { owned get; set; }
+    public abstract string name                     { owned get; set; }
+    public abstract string? c_identifier            { owned get; set; }
+    public abstract Link<Callable> shadowed_by      { owned get; set; }
+    public abstract Link<Callable> shadows          { owned get; set; }
+    public abstract bool @throws                    { get; set; }
+    public abstract string? moved_to                { owned get; set; }
+    public abstract Link<Callable> glib_async_func  { owned get; set; }
+    public abstract Link<Callable> glib_sync_func   { owned get; set; }
+    public abstract Link<Callable> glib_finish_func { owned get; set; }
 }

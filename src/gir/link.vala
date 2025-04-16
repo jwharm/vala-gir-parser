@@ -17,18 +17,20 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Implements : Node {
-    public string name { owned get; set; }
-    public Link<Interface> @interface { owned get; set; }
+/**
+ * Represents a "link" to another Gir Node.
+ */
+public class Gir.Link<T> {
+    /** The literal text value from the Gir XML */
+    public string? text { get; set; }
 
-    public Implements (string name, Gir.Xml.Reference? source) {
-        base(source);
-        this.name = name;
-        this.interface = new Link<Interface> (name);
-    }
+    /** The Gir Node that the link refers to (when resolved) */
+    public T? node { get; set; default = null; }
 
-    public override void accept (Visitor visitor) {
-        visitor.visit_implements (this);
+    /** Whether the link has been resolved */
+    public bool resolved { get; set; default = false; }
+
+    public Link (string? text) {
+        this.text = text;
     }
 }
-

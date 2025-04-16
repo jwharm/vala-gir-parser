@@ -19,11 +19,12 @@
 
 public class Gir.Prerequisite : Node {
     public string name { owned get; set; }
-    public Identifier target { owned get; set; }
+    public Link<Identifier> identifier { owned get; set; }
 
     public Prerequisite (string name, Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
+        this.identifier = new Link<Identifier> (name);
     }
 
     public override void accept (Visitor visitor) {

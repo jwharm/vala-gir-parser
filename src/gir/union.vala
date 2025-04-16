@@ -28,8 +28,8 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
     public string? c_symbol_prefix { owned get; set; }
     public string? glib_type_name { owned get; set; }
     public string? glib_get_type { owned get; set; }
-    public string? copy_function { owned get; set; }
-    public string? free_function { owned get; set; }
+    public Link<Callable> copy_function { owned get; set; }
+    public Link<Callable> free_function { owned get; set; }
     public DocVersion? doc_version { get; set; }
     public DocStability? doc_stability { get; set; }
     public Doc? doc { get; set; }
@@ -82,8 +82,8 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
         this.c_symbol_prefix = c_symbol_prefix;
         this.glib_type_name = glib_type_name;
         this.glib_get_type = glib_get_type;
-        this.copy_function = copy_function;
-        this.free_function = free_function;
+        this.copy_function = new Link<Callable> (copy_function);
+        this.free_function = new Link<Callable> (free_function);
         this.doc_version = doc_version;
         this.doc_stability = doc_stability;
         this.doc = doc;

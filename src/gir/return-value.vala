@@ -20,11 +20,9 @@
 public class Gir.ReturnValue : DocElements, Node {
     public bool introspectable { get; set; }
     public bool nullable { get; set; }
-    public Parameter? closure { get; set; }
-    public int closure_unresolved { get; set; }
+    public Link<Parameter> closure { get; set; }
     public Scope scope { get; set; }
-    public Parameter? destroy { get; set; }
-    public int destroy_unresolved { get; set; }
+    public Link<Parameter> destroy { get; set; }
     public bool skip { get; set; }
     public bool allow_none { get; set; }
     public TransferOwnership transfer_ownership { get; set; }
@@ -39,9 +37,9 @@ public class Gir.ReturnValue : DocElements, Node {
     public ReturnValue (
             bool introspectable,
             bool nullable,
-            int closure,
+            string? closure,
             Scope scope,
-            int destroy,
+            string? destroy,
             bool skip,
             bool allow_none,
             TransferOwnership transfer_ownership,
@@ -56,9 +54,9 @@ public class Gir.ReturnValue : DocElements, Node {
         base(source);
         this.introspectable = introspectable;
         this.nullable = nullable;
-        this.closure_unresolved = closure;
+        this.closure = new Link<Parameter> (closure);
         this.scope = scope;
-        this.destroy_unresolved = destroy;
+        this.destroy = new Link<Parameter> (destroy);
         this.skip = skip;
         this.allow_none = allow_none;
         this.transfer_ownership = transfer_ownership;

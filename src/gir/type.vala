@@ -27,7 +27,7 @@ public class Gir.TypeRef : DocElements, AnyType {
     public DocDeprecated? doc_deprecated { get; set; }
     public SourcePosition? source_position { get; set; }
     public Gee.List<AnyType> anytypes { owned get; set; }
-    public Identifier? target { owned get; set; }
+    public Link<Identifier> identifier { owned get; set; }
 
     public TypeRef (
             string? name,
@@ -50,6 +50,7 @@ public class Gir.TypeRef : DocElements, AnyType {
         this.doc_deprecated = doc_deprecated;
         this.source_position = source_position;
         this.anytypes = anytypes;
+        this.identifier = new Link<Identifier> (name);
     }
 
     public override void accept (Visitor visitor) {

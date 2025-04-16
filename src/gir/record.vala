@@ -33,8 +33,8 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
     public string? c_symbol_prefix { owned get; set; }
     public bool foreign { get; set; }
     public string? glib_is_gtype_struct_for { owned get; set; }
-    public string? copy_function { owned get; set; }
-    public string? free_function { owned get; set; }
+    public Link<Callable> copy_function { owned get; set; }
+    public Link<Callable> free_function { owned get; set; }
     public DocVersion? doc_version { get; set; }
     public DocStability? doc_stability { get; set; }
     public Doc? doc { get; set; }
@@ -97,8 +97,8 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
         this.c_symbol_prefix = c_symbol_prefix;
         this.foreign = foreign;
         this.glib_is_gtype_struct_for = glib_is_gtype_struct_for;
-        this.copy_function = copy_function;
-        this.free_function = free_function;
+        this.copy_function = new Link<Callable> (copy_function);
+        this.free_function = new Link<Callable> (free_function);
         this.doc_version = doc_version;
         this.doc_stability = doc_stability;
         this.doc = doc;

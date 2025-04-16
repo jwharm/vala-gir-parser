@@ -25,15 +25,15 @@ public class Gir.Method : InfoAttrs, DocElements, InfoElements, Callable, Node, 
     public string? stability { owned get; set; }
     public string name { owned get; set; }
     public string? c_identifier { owned get; set; }
-    public string? shadowed_by { owned get; set; }
-    public string? shadows { owned get; set; }
+    public Link<Callable> shadowed_by { owned get; set; }
+    public Link<Callable> shadows { owned get; set; }
     public bool @throws { get; set; }
     public string? moved_to { owned get; set; }
-    public string? glib_async_func { owned get; set; }
-    public string? glib_sync_func { owned get; set; }
-    public string? glib_finish_func { owned get; set; }
-    public string? glib_set_property { owned get; set; }
-    public string? glib_get_property { owned get; set; }
+    public Link<Callable> glib_async_func { owned get; set; }
+    public Link<Callable> glib_sync_func { owned get; set; }
+    public Link<Callable> glib_finish_func { owned get; set; }
+    public Link<Property> glib_set_property { owned get; set; }
+    public Link<Property> glib_get_property { owned get; set; }
     public DocVersion? doc_version { get; set; }
     public DocStability? doc_stability { get; set; }
     public Doc? doc { get; set; }
@@ -77,15 +77,15 @@ public class Gir.Method : InfoAttrs, DocElements, InfoElements, Callable, Node, 
         this.stability = stability;
         this.name = name;
         this.c_identifier = c_identifier;
-        this.shadowed_by = shadowed_by;
-        this.shadows = shadows;
+        this.shadowed_by = new Link<Callable> (shadowed_by);
+        this.shadows = new Link<Callable> (shadows);
         this.throws = @throws;
         this.moved_to = moved_to;
-        this.glib_async_func = glib_async_func;
-        this.glib_sync_func = glib_sync_func;
-        this.glib_finish_func = glib_finish_func;
-        this.glib_set_property = glib_set_property;
-        this.glib_get_property = glib_get_property;
+        this.glib_async_func = new Link<Callable> (glib_async_func);
+        this.glib_sync_func = new Link<Callable> (glib_sync_func);
+        this.glib_finish_func = new Link<Callable> (glib_finish_func);
+        this.glib_set_property = new Link<Property> (glib_set_property);
+        this.glib_get_property = new Link<Property> (glib_get_property);
         this.doc_version = doc_version;
         this.doc_stability = doc_stability;
         this.doc = doc;

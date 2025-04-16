@@ -25,14 +25,14 @@ public class Gir.VirtualMethod : InfoAttrs, DocElements, InfoElements, Callable,
     public string? stability { owned get; set; }
     public string name { owned get; set; }
     public string? c_identifier { owned get; set; }
-    public string? shadowed_by { owned get; set; }
-    public string? shadows { owned get; set; }
+    public Link<Callable> shadowed_by { owned get; set; }
+    public Link<Callable> shadows { owned get; set; }
     public bool @throws { get; set; }
     public string? moved_to { owned get; set; }
-    public string? glib_async_func { owned get; set; }
-    public string? glib_sync_func { owned get; set; }
-    public string? glib_finish_func { owned get; set; }
-    public string? invoker { owned get; set; }
+    public Link<Callable> glib_async_func { owned get; set; }
+    public Link<Callable> glib_sync_func { owned get; set; }
+    public Link<Callable> glib_finish_func { owned get; set; }
+    public Link<Callable> invoker { owned get; set; }
     public bool glib_static { get; set; }
     public DocVersion? doc_version { get; set; }
     public DocStability? doc_stability { get; set; }
@@ -77,14 +77,14 @@ public class Gir.VirtualMethod : InfoAttrs, DocElements, InfoElements, Callable,
         this.stability = stability;
         this.name = name;
         this.c_identifier = c_identifier;
-        this.shadowed_by = shadowed_by;
-        this.shadows = shadows;
+        this.shadowed_by = new Link<Callable> (shadowed_by);
+        this.shadows = new Link<Callable> (shadows);
         this.throws = @throws;
         this.moved_to = moved_to;
-        this.glib_async_func = glib_async_func;
-        this.glib_sync_func = glib_sync_func;
-        this.glib_finish_func = glib_finish_func;
-        this.invoker = invoker;
+        this.glib_async_func = new Link<Callable> (glib_async_func);
+        this.glib_sync_func = new Link<Callable> (glib_sync_func);
+        this.glib_finish_func = new Link<Callable> (glib_finish_func);
+        this.invoker = new Link<Callable> (invoker);
         this.glib_static = glib_static;
         this.doc_version = doc_version;
         this.doc_stability = doc_stability;

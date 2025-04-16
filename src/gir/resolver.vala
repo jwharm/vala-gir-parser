@@ -76,24 +76,26 @@ public class Gir.Resolver : Gir.Visitor {
     public override void visit_array (Array array) {
         this.source = array.source;
 
-        /* Resolve array.length */
-        if (array.length_unresolved != -1) {
+        /* Resolve array.length to a parameter (in a call) or field (in a struct) */
+        if (array.length.text != null) {
+            int idx = int.parse (array.length.text);
+
             /* array field, length is in another field */
             if (array.parent_node is Field) {
                 var fields = get_gir_fields (array.parent_node.parent_node);
-                array.length = fields[array.length_unresolved];
+                array.length.node = fields[idx];
             }
             
             /* array parameter, length is in another parameter */
             else if (array.parent_node is Parameter) {
                 var parameters = (Parameters) array.parent_node.parent_node;
-                array.length = parameters.parameters[array.length_unresolved];
+                array.length.node = parameters.parameters[idx];
             }
             
             /* array return-value, length is in a parameter */
             else if (array.parent_node is ReturnValue) {
                 var parameters = ((Callable) array.parent_node.parent_node).parameters;
-                array.length = parameters.parameters[array.length_unresolved];
+                array.length.node = parameters.parameters[idx];
             }
         }
 
@@ -130,14 +132,14 @@ public class Gir.Resolver : Gir.Visitor {
         this.source = cls.source;
         var ns = get_namespace (cls);
         
-        /* Resolve class.parent */
-        if (cls.parent_unresolved != null) {
-            cls.parent = resolve_type (ns, cls.parent_unresolved) as Class;
+        /* Resolve class.parent to a class */
+        if (cls.parent.text != null) {
+            cls.parent.node = resolve_type (ns, cls.parent.text) as Class;
         }
 
-        /* Resolve class.glib_type_struct */
-        if (cls.glib_type_struct_unresolved != null) {
-            cls.glib_type_struct = resolve_type (ns, cls.glib_type_struct_unresolved) as Record;
+        /* Resolve class.glib_type_struct to a record */
+        if (cls.glib_type_struct.text != null) {
+            cls.glib_type_struct.node = resolve_type (ns, cls.glib_type_struct.text) as Record;
         }
 
         /* TODO: Resolve identifiers */
@@ -214,9 +216,9 @@ public class Gir.Resolver : Gir.Visitor {
     public override void visit_implements (Implements implements) {
         this.source = implements.source;
 
-        /* Resolve implements.name */
+        /* Resolve implements.name to an interface */
         var ns = get_namespace (implements);
-        implements.target = resolve_type (ns, implements.name) as Interface;
+        implements.interface.node = resolve_type (ns, implements.name) as Interface;
         
         implements.accept_children (this);
         implements.resolved = true;
@@ -225,8 +227,8 @@ public class Gir.Resolver : Gir.Visitor {
     public override void visit_include (Include include) {
         this.source = include.source;
 
-        /* Resolve include.name */
-        include.target = context.get_repository (include.name + "-" + include.version);
+        /* Resolve include.name-version to a repository */
+        include.repository.node = context.get_repository (include.repository.text);
         include.accept_children (this);
         include.resolved = true;
     }
@@ -239,10 +241,10 @@ public class Gir.Resolver : Gir.Visitor {
     public override void visit_interface (Interface iface) {
         this.source = iface.source;
 
-        /* Resolve interface.glib_type_struct */
+        /* Resolve interface.glib_type_struct to a record */
         var ns = get_namespace (iface);
-        if (iface.glib_type_struct_unresolved != null) {
-            iface.glib_type_struct = resolve_type (ns, iface.glib_type_struct_unresolved) as Record;
+        if (iface.glib_type_struct.text != null) {
+            iface.glib_type_struct.node = resolve_type (ns, iface.glib_type_struct.text) as Record;
         }
 
         iface.accept_children (this);
@@ -277,16 +279,18 @@ public class Gir.Resolver : Gir.Visitor {
     public override void visit_parameter (Parameter parameter) {
         this.source = parameter.source;
 
-        /* Resolve parameter.closure */
-        if (parameter.closure_unresolved != -1) {
+        /* Resolve parameter.closure to a parameter */
+        if (parameter.closure.text != null) {
             var parameters = (Parameters) parameter.parent_node;
-            parameter.closure = parameters.parameters[parameter.closure_unresolved];
+            var idx = int.parse (parameter.closure.text);
+            parameter.closure.node = parameters.parameters[idx];
         }
 
-        /* Resolve parameter.destroy */
-        if (parameter.destroy_unresolved != -1) {
+        /* Resolve parameter.destroy to a parameter */
+        if (parameter.destroy.text != null) {
             var parameters = (Parameters) parameter.parent_node;
-            parameter.destroy = parameters.parameters[parameter.destroy_unresolved];
+            var idx = int.parse (parameter.destroy.text);
+            parameter.destroy.node = parameters.parameters[idx];
         }
         
         parameter.accept_children (this);
@@ -301,14 +305,26 @@ public class Gir.Resolver : Gir.Visitor {
     public override void visit_prerequisite (Prerequisite prerequisite) {
         this.source = prerequisite.source;
 
-        /* Resolve prerequisite.name */
+        /* Resolve prerequisite.name to a class or interface */
         var ns = get_namespace (prerequisite);
-        prerequisite.target = resolve_type (ns, prerequisite.name);
+        prerequisite.identifier.node = resolve_type (ns, prerequisite.name);
         prerequisite.accept_children (this);
         prerequisite.resolved = true;
     }
 
     public override void visit_property (Property property) {
+        /* Resolve property.getter to a method or function */
+        if (property.getter.text != null) {
+            var identifier = (Identifier) property.parent_node;
+            property.getter.node = resolve_method (identifier, property.getter.text);
+        }
+
+        /* Resolve property.setter to a method or function */
+        if (property.setter.text != null) {
+            var identifier = (Identifier) property.parent_node;
+            property.setter.node = resolve_method (identifier, property.setter.text);
+        }
+
         property.accept_children (this);
         property.resolved = true;
     }
@@ -326,16 +342,18 @@ public class Gir.Resolver : Gir.Visitor {
     public override void visit_return_value (ReturnValue return_value) {
         this.source = return_value.source;
 
-        /* Resolve return_value.closure */
-        if (return_value.closure_unresolved != -1) {
+        /* Resolve return_value.closure to a parameter */
+        if (return_value.closure.text != null) {
             var parameters = ((Callable) return_value.parent_node).parameters;
-            return_value.closure = parameters.parameters[return_value.closure_unresolved];
+            var idx = int.parse (return_value.closure.text);
+            return_value.closure.node = parameters.parameters[idx];
         }
 
-        /* Resolve return_value.destroy */
-        if (return_value.destroy_unresolved != -1) {
+        /* Resolve return_value.destroy to a parameter */
+        if (return_value.destroy.text != null) {
             var parameters = ((Callable) return_value.parent_node).parameters;
-            return_value.destroy = parameters.parameters[return_value.destroy_unresolved];
+            var idx = int.parse (return_value.closure.text);
+            return_value.destroy.node = parameters.parameters[idx];
         }
 
         return_value.accept_children (this);
@@ -355,10 +373,10 @@ public class Gir.Resolver : Gir.Visitor {
     public override void visit_type (TypeRef type) {
         this.source = type.source;
 
-        /* Resolve type.name */
+        /* Resolve type.name to a registered type identifier */
         var ns = get_namespace (type);
         if (! (type.name in SIMPLE_TYPES || type.name == "none" || type.name == "va_list")) {
-            type.target = resolve_type (ns, type.name);
+            type.identifier.node = resolve_type (ns, type.name);
         }
         
         type.accept_children (this);
@@ -482,6 +500,19 @@ public class Gir.Resolver : Gir.Visitor {
         return get_identifier (target_namespace, identifier_name);
     }
 
+    /* Find a method in this type with the requested name */
+    private static Gir.Method? resolve_method (Gir.Identifier g_identifier, string? name) {
+        if (name != null) {
+            foreach (var m in get_gir_methods (g_identifier)) {
+                if (m.name == name) {
+                    return m;
+                }
+            }
+        }
+
+        return null;
+    }
+
     /* Get all fields that are declared in this node. When the node doesn't
      * have any fields, an empty list will be returned. */
     private static Gee.List<Field> get_gir_fields (Gir.Node node) {
@@ -497,6 +528,22 @@ public class Gir.Resolver : Gir.Visitor {
             return ((Union) node).fields;
         } else {
             return new Gee.ArrayList<Field> ();
+        }
+    }
+
+    /* Get all methods that are declared in this node. When the node doesn't
+     * have any methods, an empty list will be returned. */
+     private static Gee.List<Gir.Method> get_gir_methods (Gir.Node node) {
+        if (node is Gir.Interface) {
+            return ((Gir.Interface) node).methods;
+        } else if (node is Gir.Class) {
+            return ((Gir.Class) node).methods;
+        } else if (node is Gir.Record) {
+            return ((Gir.Record) node).methods;
+        } else if (node is Gir.Union) {
+            return ((Gir.Union) node).methods;
+        } else {
+            return new Gee.ArrayList<Gir.Method> ();
         }
     }
 }

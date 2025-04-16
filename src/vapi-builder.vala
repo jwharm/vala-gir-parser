@@ -271,8 +271,8 @@ public class VapiBuilder : Gir.Visitor {
         stack.push (v_class);
 
         /* parent class */
-        if (g_class.parent != null) {
-            var base_type = DataTypeBuilder.from_name (g_class.parent_unresolved, v_source);
+        if (g_class.parent.text != null) {
+            var base_type = DataTypeBuilder.from_name (g_class.parent.text, v_source);
             v_class.add_base_type (base_type);
         }
 
@@ -292,9 +292,9 @@ public class VapiBuilder : Gir.Visitor {
         add_info_attrs (g_class);
 
         /* type_cname */
-        if (g_class.glib_type_struct != null
-                && g_class.glib_type_struct.c_type != generate_type_cname (g_class)) {
-            var type_cname = get_ns_prefix (g_class) + g_class.glib_type_struct.c_type;
+        if (g_class.glib_type_struct.node != null
+                && g_class.glib_type_struct.node.name != generate_type_cname (g_class)) {
+            var type_cname = g_class.glib_type_struct.node.c_type;
             v_class.set_attribute_string ("CCode", "type_cname", type_cname);
         }
 
@@ -303,8 +303,8 @@ public class VapiBuilder : Gir.Visitor {
 
         /* ref_function */
         var custom_ref = find_method_with_suffix (g_class, "_ref");
-        if (g_class.glib_ref_func_unresolved != null) {
-            v_class.set_attribute_string ("CCode", "ref_function", g_class.glib_ref_func_unresolved);
+        if (g_class.glib_ref_func.text != null) {
+            v_class.set_attribute_string ("CCode", "ref_function", g_class.glib_ref_func.text);
         }
         else if (custom_ref != null) {
             v_class.set_attribute_string ("CCode", "ref_function", custom_ref);
@@ -312,8 +312,8 @@ public class VapiBuilder : Gir.Visitor {
 
         /* unref_function */
         var custom_unref = find_method_with_suffix (g_class, "_unref");
-        if (g_class.glib_unref_func_unresolved != null) {
-            v_class.set_attribute_string ("CCode", "unref_function", g_class.glib_unref_func_unresolved);
+        if (g_class.glib_unref_func.text != null) {
+            v_class.set_attribute_string ("CCode", "unref_function", g_class.glib_unref_func.text);
         }
         else if (custom_unref != null) {
             v_class.set_attribute_string ("CCode", "unref_function", custom_unref);
@@ -468,7 +468,7 @@ public class VapiBuilder : Gir.Visitor {
 
         /* Skip the parent instance pointer in a class */
         if (g_field.parent_node is Gir.Class
-                && ((Gir.Class) g_field.parent_node).parent != null
+                && ((Gir.Class) g_field.parent_node).parent.node != null
                 && ((Gir.Class) g_field.parent_node).fields[0] == g_field) {
             return;
         }
@@ -633,9 +633,9 @@ public class VapiBuilder : Gir.Visitor {
         add_info_attrs (g_iface);
 
         /* type_cname */
-        if (g_iface.glib_type_struct != null
-                && g_iface.glib_type_struct.c_type != generate_type_cname (g_iface)) {
-            var type_cname = get_ns_prefix (g_iface) + g_iface.glib_type_struct.c_type;
+        if (g_iface.glib_type_struct.node != null
+                && g_iface.glib_type_struct.node.name != generate_type_cname (g_iface)) {
+            var type_cname = g_iface.glib_type_struct.node.c_type;
             v_iface.set_attribute_string ("CCode", "type_cname", type_cname);
         }
 
@@ -702,7 +702,7 @@ public class VapiBuilder : Gir.Visitor {
         }
 
         /* async */
-        if (g_method.glib_finish_func != null) {
+        if (g_method.glib_finish_func.text != null) {
             /* mark as async method */
             v_method.coroutine = true;
 
@@ -821,7 +821,7 @@ public class VapiBuilder : Gir.Visitor {
             }
 
             /* ownership transfer */
-            if (g_par.transfer_ownership != NONE || g_par.destroy != null) {
+            if (g_par.transfer_ownership != NONE || g_par.destroy.text != null) {
                 v_type.value_owned = true;
             }
 
@@ -846,8 +846,6 @@ public class VapiBuilder : Gir.Visitor {
 
         var v_source = to_source_reference (g_property.source);
 
-        var g_identifier = (Gir.Identifier) g_property.parent_node;
-
         /* data type */
         var v_type = new DataTypeBuilder (g_property.anytype).build ();
         v_type.value_owned = g_property.transfer_ownership != NONE;
@@ -865,7 +863,7 @@ public class VapiBuilder : Gir.Visitor {
         /* get-accessor */
         if (g_property.readable) {
             var getter_type = v_type.copy ();
-            var getter = find_method_by_name (g_identifier, g_property.getter);
+            var getter = g_property.getter.node;
             if (getter != null) {
                 getter_type.value_owned = getter.return_value.transfer_ownership != NONE;
 
@@ -896,7 +894,7 @@ public class VapiBuilder : Gir.Visitor {
         /* set-accessor */
         if (g_property.writable || g_property.construct_only) {
             var setter_type = v_type.copy ();
-            var setter = find_method_by_name (g_identifier, g_property.setter);
+            var setter = g_property.setter.node;
             if (setter != null) {
                 setter_type.value_owned = setter.parameters.parameters[0].transfer_ownership != NONE;
 
@@ -988,8 +986,8 @@ public class VapiBuilder : Gir.Visitor {
 
         /* copy_function */
         var custom_ref = find_method_with_suffix (g_record, "_ref");
-        if (g_record.copy_function != null) {
-            v_sym.set_attribute_string ("CCode", "copy_function", g_record.copy_function);
+        if (g_record.copy_function.text != null) {
+            v_sym.set_attribute_string ("CCode", "copy_function", g_record.copy_function.text);
         }
         /* custom ref function */
         else if (custom_ref != null) {
@@ -1002,8 +1000,8 @@ public class VapiBuilder : Gir.Visitor {
 
         /* free_function */
         var custom_unref = find_method_with_suffix (g_record, "_unref");
-        if (g_record.free_function != null) {
-            v_sym.set_attribute_string ("CCode", "free_function", g_record.free_function);
+        if (g_record.free_function.text != null) {
+            v_sym.set_attribute_string ("CCode", "free_function", g_record.free_function.text);
         }
         /* custom unref function */
         else if (custom_unref != null) {
@@ -1150,19 +1148,6 @@ public class VapiBuilder : Gir.Visitor {
         }
     }
 
-    /* Find a method in this type with the requested name */
-    private static Gir.Method? find_method_by_name (Gir.Identifier g_identifier, string? name) {
-        if (name != null) {
-            foreach (var m in get_gir_methods (g_identifier)) {
-                if (m.name == name) {
-                    return m;
-                }
-            }
-        }
-
-        return null;
-    }
-
     /* Find a method in this type whose name ends with the requested suffix */
     private static string? find_method_with_suffix (Gir.Identifier g_identifier, string suffix) {
         foreach (var g_method in get_gir_methods (g_identifier)) {
@@ -1264,13 +1249,13 @@ public class VapiBuilder : Gir.Visitor {
         }
 
         foreach (var m in get_gir_methods (g_virtual_method.parent_node)) {
-            if (g_virtual_method.invoker == m.name || equal_names (g_virtual_method.name, m.name)) {
+            if (g_virtual_method.invoker.text == m.name || equal_names (g_virtual_method.name, m.name)) {
                 return m;
             }
         }
 
         foreach (var f in get_gir_functions (g_virtual_method.parent_node)) {
-            if (g_virtual_method.invoker == f.name || equal_names (g_virtual_method.name, f.name)) {
+            if (g_virtual_method.invoker.text == f.name || equal_names (g_virtual_method.name, f.name)) {
                 return f;
             }
         }
@@ -1281,7 +1266,7 @@ public class VapiBuilder : Gir.Visitor {
     /* Check if this method is the glib:finish-func of an async method */
     private static bool is_async_finish_method (Gir.Method g_method) {
         foreach (var m in get_gir_methods (g_method.parent_node)) {
-            if (m.glib_finish_func == g_method.name) {
+            if (m.glib_finish_func.text == g_method.name) {
                 return true;
             }
         }
@@ -1291,7 +1276,7 @@ public class VapiBuilder : Gir.Visitor {
 
     /* Find the glib:finish-func of this async method */
     private static Gir.Method? get_async_finish_method (Gir.Method g_method) {
-        var name = g_method.glib_finish_func;
+        var name = g_method.glib_finish_func.text;
         foreach (var m in get_gir_methods (g_method.parent_node)) {
             if (m.name == name || m.c_identifier == name) {
                 return m;
@@ -1440,8 +1425,8 @@ public class VapiBuilder : Gir.Visitor {
             }
 
             var expected = name + "_finish";
-            if (g_callable_attrs.glib_finish_func != expected) {
-                v_sym.set_attribute_string ("CCode", "finish_name", g_callable_attrs.glib_finish_func);
+            if (g_callable_attrs.glib_finish_func.text != expected) {
+                v_sym.set_attribute_string ("CCode", "finish_name", g_callable_attrs.glib_finish_func.text);
             }
 		}
     }
@@ -1463,9 +1448,10 @@ public class VapiBuilder : Gir.Visitor {
         }
 
         /* length in another parameter */
-        else if (g_arr.length is Gir.Parameter && g_call != null) {
-            var pos = get_param_pos (g_call, g_arr.length_unresolved);
-            var lp = (Gir.Parameter) g_arr.length;
+        else if (g_arr.length.text != null && g_call != null) {
+            var idx = int.parse (g_arr.length.text);
+            var pos = get_param_pos (g_call, idx);
+            var lp = (Gir.Parameter) g_arr.length.node;
             var g_type = lp.anytype;
 
             v_sym.set_attribute_double ("CCode", "array_length_pos", pos);
@@ -1512,27 +1498,34 @@ public class VapiBuilder : Gir.Visitor {
      * destroy-notify callback. */
     private static bool is_hidden_param (Gir.Callable g_call, int idx) {
         foreach (var p in g_call.parameters.parameters) {
-            /* user-data for a closure, or destroy-notify callback */
-            if (p.closure_unresolved == idx || p.destroy_unresolved == idx) {
+            /* user-data for a closure */
+            if (p.closure.text != null && int.parse (p.closure.text) == idx) {
+                return true;
+            }
+
+            /* user-data for a destroy-notify callback */
+            if (p.destroy.text != null && int.parse (p.destroy.text) == idx) {
                 return true;
             }
 
             /* array length */
             var array = p.anytype as Gir.Array;
-            if (array?.length_unresolved == idx) {
+            var length_idx = int.parse (array?.length?.text ?? "-1");
+            if (length_idx == idx) {
                 return true;
             }
         }
 
         /* length of returned array */
         var array = g_call.return_value.anytype as Gir.Array;
-        if (array?.length_unresolved == idx) {
+        var length_idx = int.parse (array?.length?.text ?? "-1");
+        if (length_idx == idx) {
             return true;
         }
 
         /* GAsycnReadyCallback */
         var g_method = g_call as Gir.Method;
-        if (g_method?.glib_finish_func != null) {
+        if (g_method?.glib_finish_func?.text != null) {
             var p = g_method.parameters.parameters[idx];
             var p_type = p.anytype as Gir.TypeRef;
             if (p_type?.c_type == "GAsyncReadyCallback") {
