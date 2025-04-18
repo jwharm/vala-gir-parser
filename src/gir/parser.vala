@@ -126,14 +126,13 @@ public class Gir.Parser : Object {
     public Repository? parse_source_file (string filename) {
         SourceLocation begin;
         SourceLocation end;
-
         var reader = new Gir.Xml.Reader (context, filename);
         
         /* Find the first START_ELEMENT token in the XML file */
         while (true) {
             var token_type = reader.read_token (out begin, out end);
             if (token_type == START_ELEMENT) {
-                return parse_element (filename, reader) as Repository;
+                return parse_element (reader, new Reference (filename, begin, end)) as Repository;
             } else if (token_type == EOF) {
                 var source = new Reference (filename, begin, end);
                 context.report.error (source, "No repository found");
@@ -143,7 +142,7 @@ public class Gir.Parser : Object {
     }
 
     /* Parse one XML element (recursively), and return a new Gir Node */
-    private Node? parse_element (string filename, Gir.Xml.Reader reader) {
+    private Node? parse_element (Gir.Xml.Reader reader, Reference source) {
         SourceLocation begin;
         SourceLocation end;
         var element = reader.name;
@@ -156,7 +155,7 @@ public class Gir.Parser : Object {
             var token = reader.read_token (out begin, out end);
             if (token == XmlTokenType.START_ELEMENT) {
                 /* Recursively create a child node and add it to the list */
-                Node? node = parse_element (filename, reader);
+                Node? node = parse_element (reader, new Reference (source.filename, begin, end));
                 if (node != null) {
                     children.add (node);
                 }
@@ -167,7 +166,6 @@ public class Gir.Parser : Object {
             }
         }
         
-        var source = new Reference (filename, begin, end);
         Node? new_node = null;
         switch (element) {
         case "alias":
@@ -915,7 +913,7 @@ public class Gir.Parser : Object {
                 source);
             break;
         default:
-            context.report.error (source, "Unsupported element '%s'", element);
+            context.report.warning (source, "Skipping unsupported element '%s'", element);
             break;
         }
 
