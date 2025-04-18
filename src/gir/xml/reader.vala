@@ -112,6 +112,7 @@ public class Gir.Xml.Reader {
 		if (current == begin) {
 			// syntax error: invalid name
 		}
+		column += (int) (current - begin);
 		return ((string) begin).substring (0, (int) (current - begin));
 	}
 
@@ -138,6 +139,7 @@ public class Gir.Xml.Reader {
 			type = XmlTokenType.EOF;
 		} else if (current[0] == '<') {
 			current++;
+			column++;
 			if (current >= end) {
 				// error
 			} else if (current[0] == '?') {
@@ -158,6 +160,7 @@ public class Gir.Xml.Reader {
 							column = 0;
 						}
 						current++;
+						column++;
 					}
 
 					// ignore comment, read next token
@@ -166,11 +169,13 @@ public class Gir.Xml.Reader {
 			} else if (current[0] == '/') {
 				type = XmlTokenType.END_ELEMENT;
 				current++;
+				column++;
 				name = read_name ();
 				if (current >= end || current[0] != '>') {
 					// error
 				}
 				current++;
+				column++;
 			} else {
 				type = XmlTokenType.START_ELEMENT;
 				name = read_name ();
@@ -182,12 +187,14 @@ public class Gir.Xml.Reader {
 						// error
 					}
 					current++;
+					column++;
 					space ();
 					if (current >= end || current[0] != '"' || current[0] != '\'') {
 						// error
 					}
 					char quote = current[0];
 					current++;
+					column++;
 
 					string attr_value = text (quote, false);
 
@@ -195,12 +202,14 @@ public class Gir.Xml.Reader {
 						// error
 					}
 					current++;
+					column++;
 					attributes.set (attr_name, attr_value);
 					space ();
 				}
 				if (current[0] == '/') {
 					empty_element = true;
 					current++;
+					column++;
 					space ();
 				} else {
 					empty_element = false;
@@ -209,6 +218,7 @@ public class Gir.Xml.Reader {
 					// error
 				}
 				current++;
+				column++;
 			}
 		} else {
 			space ();
