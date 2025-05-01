@@ -17,12 +17,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node {
-    public bool introspectable { get; set; }
-    public bool deprecated { get; set; }
-    public string? deprecated_version { owned get; set; }
-    public string? version { owned get; set; }
-    public string? stability { owned get; set; }
+public class Gir.Record : InfoAttrs, InfoElements, Identifier, Node {
+    protected InfoAttrsValues info_attrs_values { get; set; }
     public string name { owned get; set; }
     public string? c_type { owned get; set; }
     public bool disguised { get; set; }
@@ -35,12 +31,7 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
     public string? glib_is_gtype_struct_for { owned get; set; }
     public Link<Callable> copy_function { owned get; set; }
     public Link<Callable> free_function { owned get; set; }
-    public DocVersion? doc_version { get; set; }
-    public DocStability? doc_stability { get; set; }
-    public Doc? doc { get; set; }
-    public DocDeprecated? doc_deprecated { get; set; }
-    public SourcePosition? source_position { get; set; }
-    public Gee.List<Attribute> attributes { owned get; set; }
+    protected InfoElementsValues info_elements_values { get; set; }
     public Gee.List<Field> fields { owned get; set; }
     public Gee.List<Function> functions { owned get; set; }
     public Gee.List<FunctionInline> function_inlines { owned get; set; }
@@ -50,11 +41,7 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
     public Gee.List<Constructor> constructors { owned get; set; }
 
     public Record (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsValues info_attrs_values,
             string name,
             string? c_type,
             bool disguised,
@@ -67,12 +54,7 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
             string? glib_is_gtype_struct_for,
             string? copy_function,
             string? free_function,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsValues info_elements_values,
             Gee.List<Field> fields,
             Gee.List<Function> functions,
             Gee.List<FunctionInline> function_inlines,
@@ -82,11 +64,7 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
             Gee.List<Constructor> constructors,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        this.info_attrs_values = info_attrs_values;
         this.name = name;
         this.c_type = c_type;
         this.disguised = disguised;
@@ -99,12 +77,7 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
         this.glib_is_gtype_struct_for = glib_is_gtype_struct_for;
         this.copy_function = new Link<Callable> (copy_function);
         this.free_function = new Link<Callable> (free_function);
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        this.info_elements_values = info_elements_values;
         this.fields = fields;
         this.functions = functions;
         this.function_inlines = function_inlines;

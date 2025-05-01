@@ -17,8 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public interface Gir.Callable : Node, DocElements, InfoAttrs {
-    public abstract string name               { owned get; set; }
+public interface Gir.Callable : Node {
     public abstract Parameters? parameters    { get; set; }
     public abstract ReturnValue? return_value { get; set; }
 }

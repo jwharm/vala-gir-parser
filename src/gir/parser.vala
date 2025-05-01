@@ -170,19 +170,10 @@ public class Gir.Parser : Object {
         switch (element) {
         case "alias":
             new_node = new Alias (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_string (attrs, "c:type"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_node <AnyType> (children),
                 source);
             break;
@@ -205,21 +196,12 @@ public class Gir.Parser : Object {
             break;
         case "bitfield":
             new_node = new Bitfield (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_string (attrs, "c:type"),
                 get_string (attrs, "glib:type-name"),
                 get_string (attrs, "glib:get-type"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_nodes <Member> (children),
                 get_nodes <Function> (children),
                 get_nodes <FunctionInline> (children),
@@ -230,31 +212,18 @@ public class Gir.Parser : Object {
             break;
         case "callback":
             new_node = new Callback (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_string (attrs, "c:type"),
                 get_bool (attrs, "throws"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_node <Parameters> (children),
                 get_node <ReturnValue> (children),
                 source);
             break;
         case "class":
             new_node = new Class (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_string (attrs, "glib:type-name"),
                 get_string (attrs, "glib:get-type"),
@@ -269,12 +238,7 @@ public class Gir.Parser : Object {
                 get_bool (attrs, "abstract"),
                 get_bool (attrs, "glib:fundamental"),
                 get_bool (attrs, "final"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_nodes <Implements> (children),
                 get_nodes <Constructor> (children),
                 get_nodes <Method> (children),
@@ -293,46 +257,19 @@ public class Gir.Parser : Object {
             break;
         case "constant":
             new_node = new Constant (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_string (attrs, "value"),
                 get_string (attrs, "c:type"),
                 get_string (attrs, "c:identifier"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_node <AnyType> (children),
                 source);
             break;
         case "constructor":
             new_node = new Constructor (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
-                get_string (attrs, "name"),
-                get_string (attrs, "c:identifier"),
-                get_string (attrs, "shadowed-by"),
-                get_string (attrs, "shadows"),
-                get_bool (attrs, "throws"),
-                get_string (attrs, "moved-to"),
-                get_string (attrs, "glib:async-func"),
-                get_string (attrs, "glib:sync-func"),
-                get_string (attrs, "glib:finish-func"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_callable_attrs (attrs),
+                parse_info_elements (children),
                 get_node <Parameters> (children),
                 get_node <ReturnValue> (children),
                 source);
@@ -360,31 +297,18 @@ public class Gir.Parser : Object {
         case "docsection":
             new_node = new Docsection (
                 get_string (attrs, "name"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
+                parse_doc_elements (children),
                 source);
             break;
         case "enumeration":
             new_node = new Enumeration (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_string (attrs, "c:type"),
                 get_string (attrs, "glib:type-name"),
                 get_string (attrs, "glib:get-type"),
                 get_string (attrs, "glib:error-domain"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_nodes <Member> (children),
                 get_nodes <Function> (children),
                 get_nodes <FunctionInline> (children),
@@ -392,128 +316,55 @@ public class Gir.Parser : Object {
             break;
         case "field":
             new_node = new Field (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_bool (attrs, "writable"),
                 get_bool (attrs, "readable"),
                 get_bool (attrs, "private"),
                 get_int (attrs, "bits"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
+                get_node <Callback> (children),
+                get_node <AnyType> (children),
                 source);
             break;
         case "function-inline":
             new_node = new FunctionInline (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
-                get_string (attrs, "name"),
-                get_string (attrs, "c:identifier"),
-                get_string (attrs, "shadowed-by"),
-                get_string (attrs, "shadows"),
-                get_bool (attrs, "throws"),
-                get_string (attrs, "moved-to"),
-                get_string (attrs, "glib:async-func"),
-                get_string (attrs, "glib:sync-func"),
-                get_string (attrs, "glib:finish-func"),
+                parse_callable_attrs (attrs),
                 get_node <Parameters> (children),
                 get_node <ReturnValue> (children),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
+                parse_doc_elements (children),
                 source);
             break;
         case "function-macro":
             new_node = new FunctionMacro (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
-                get_string (attrs, "name"),
-                get_string (attrs, "c:identifier"),
-                get_string (attrs, "shadowed-by"),
-                get_string (attrs, "shadows"),
-                get_bool (attrs, "throws"),
-                get_string (attrs, "moved-to"),
-                get_string (attrs, "glib:async-func"),
-                get_string (attrs, "glib:sync-func"),
-                get_string (attrs, "glib:finish-func"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_callable_attrs (attrs),
+                parse_info_elements (children),
                 get_node <Parameters> (children),
                 source);
             break;
         case "function":
             new_node = new Function (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
-                get_string (attrs, "name"),
-                get_string (attrs, "c:identifier"),
-                get_string (attrs, "shadowed-by"),
-                get_string (attrs, "shadows"),
-                get_bool (attrs, "throws"),
-                get_string (attrs, "moved-to"),
-                get_string (attrs, "glib:async-func"),
-                get_string (attrs, "glib:sync-func"),
-                get_string (attrs, "glib:finish-func"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_callable_attrs (attrs),
+                parse_info_elements (children),
                 get_node <Parameters> (children),
                 get_node <ReturnValue> (children),
                 source);
             break;
         case "glib:boxed":
             new_node = new Boxed (
+                parse_info_attrs (attrs),
                 get_string (attrs, "glib:name"),
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
                 get_string (attrs, "c:symbol-prefix"),
                 get_string (attrs, "glib:type-name"),
                 get_string (attrs, "glib:get-type"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_nodes <Function> (children),
                 get_nodes <FunctionInline> (children),
                 source);
             break;
         case "glib:signal":
             new_node = new Signal (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_bool (attrs, "detailed"),
                 When.from_string (get_string (attrs, "when")),
@@ -521,12 +372,7 @@ public class Gir.Parser : Object {
                 get_bool (attrs, "no-hooks"),
                 get_bool (attrs, "no-recurse"),
                 get_string (attrs, "emitter"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_node <Parameters> (children),
                 get_node <ReturnValue> (children),
                 source);
@@ -553,33 +399,20 @@ public class Gir.Parser : Object {
                 Direction.from_string (get_string (attrs, "direction")),
                 get_bool (attrs, "caller-allocates"),
                 TransferOwnership.from_string (get_string (attrs, "transfer-ownership")),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
+                parse_doc_elements (children),
                 get_node <TypeRef> (children),
                 source);
             break;
         case "interface":
             new_node = new Interface (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_string (attrs, "glib:type-name"),
                 get_string (attrs, "glib:get-type"),
                 get_string (attrs, "c:symbol-prefix"),
                 get_string (attrs, "c:type"),
                 get_string (attrs, "glib:type-struct"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_nodes <Prerequisite> (children),
                 get_nodes <Implements> (children),
                 get_nodes <Function> (children),
@@ -597,74 +430,29 @@ public class Gir.Parser : Object {
             break;
         case "member":
             new_node = new Member (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_string (attrs, "value"),
                 get_string (attrs, "c:identifier"),
                 get_string (attrs, "glib:nick"),
                 get_string (attrs, "glib:name"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 source);
             break;
         case "method-inline":
             new_node = new MethodInline (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
-                get_string (attrs, "name"),
-                get_string (attrs, "c:identifier"),
-                get_string (attrs, "shadowed-by"),
-                get_string (attrs, "shadows"),
-                get_bool (attrs, "throws"),
-                get_string (attrs, "moved-to"),
-                get_string (attrs, "glib:async-func"),
-                get_string (attrs, "glib:sync-func"),
-                get_string (attrs, "glib:finish-func"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_callable_attrs (attrs),
+                parse_info_elements (children),
                 get_node <Parameters> (children),
                 get_node <ReturnValue> (children),
                 source);
             break;
         case "method":
             new_node = new Method (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
-                get_string (attrs, "name"),
-                get_string (attrs, "c:identifier"),
-                get_string (attrs, "shadowed-by"),
-                get_string (attrs, "shadows"),
-                get_bool (attrs, "throws"),
-                get_string (attrs, "moved-to"),
-                get_string (attrs, "glib:async-func"),
-                get_string (attrs, "glib:sync-func"),
-                get_string (attrs, "glib:finish-func"),
+                parse_callable_attrs (attrs),
                 get_string (attrs, "glib:set-property"),
                 get_string (attrs, "glib:get-property"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_node <Parameters> (children),
                 get_node <ReturnValue> (children),
                 source);
@@ -711,11 +499,7 @@ public class Gir.Parser : Object {
                 get_bool (attrs, "optional"),
                 get_bool (attrs, "skip"),
                 TransferOwnership.from_string (get_string (attrs, "transfer-ownership")),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
+                parse_doc_elements (children),
                 get_node <AnyType> (children),
                 get_node <Varargs> (children),
                 get_nodes <Attribute> (children),
@@ -732,11 +516,7 @@ public class Gir.Parser : Object {
             break;
         case "property":
             new_node = new Property (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_bool (attrs, "writable"),
                 get_bool (attrs, "readable"),
@@ -746,23 +526,14 @@ public class Gir.Parser : Object {
                 get_string (attrs, "getter"),
                 get_string (attrs, "default_value"),
                 TransferOwnership.from_string (get_string (attrs, "transfer-ownership")),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_node <AnyType> (children),
                 source);
             break;
         case "record":
             if (attrs.has_key ("name")) {
                 new_node = new Record (
-                    get_bool (attrs, "introspectable"),
-                    get_bool (attrs, "deprecated"),
-                    get_string (attrs, "deprecated-version"),
-                    get_string (attrs, "version"),
-                    get_string (attrs, "stability"),
+                    parse_info_attrs (attrs),
                     get_string (attrs, "name"),
                     get_string (attrs, "c:type"),
                     get_bool (attrs, "disguised"),
@@ -775,12 +546,7 @@ public class Gir.Parser : Object {
                     get_string (attrs, "glib:is-gtype-struct-for"),
                     get_string (attrs, "copy-function"),
                     get_string (attrs, "free-function"),
-                    get_node <DocVersion> (children),
-                    get_node <DocStability> (children),
-                    get_node <Doc> (children),
-                    get_node <DocDeprecated> (children),
-                    get_node <SourcePosition> (children),
-                    get_nodes <Attribute> (children),
+                    parse_info_elements (children),
                     get_nodes <Field> (children),
                     get_nodes <Function> (children),
                     get_nodes <FunctionInline> (children),
@@ -791,11 +557,7 @@ public class Gir.Parser : Object {
                     source);
             } else {
                 new_node = new AnonymousRecord (
-                    get_node <DocVersion> (children),
-                    get_node <DocStability> (children),
-                    get_node <Doc> (children),
-                    get_node <DocDeprecated> (children),
-                    get_node <SourcePosition> (children),
+                    parse_doc_elements (children),
                     get_nodes <Field> (children),
                     get_nodes <Union> (children),
                     source);
@@ -823,11 +585,7 @@ public class Gir.Parser : Object {
                 get_bool (attrs, "skip"),
                 get_bool (attrs, "allow-none"),
                 TransferOwnership.from_string (get_string (attrs, "transfer-ownership")),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
+                parse_doc_elements (children),
                 get_nodes <Attribute> (children),
                 get_node <AnyType> (children),
                 source);
@@ -844,21 +602,13 @@ public class Gir.Parser : Object {
                 get_string (attrs, "name"),
                 get_string (attrs, "c:type"),
                 get_bool (attrs, "introspectable"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
+                parse_doc_elements (children),
                 get_nodes <AnyType> (children),
                 source);
             break;
         case "union":
             new_node = new Union (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
+                parse_info_attrs (attrs),
                 get_string (attrs, "name"),
                 get_string (attrs, "c:type"),
                 get_string (attrs, "c:symbol-prefix"),
@@ -866,12 +616,7 @@ public class Gir.Parser : Object {
                 get_string (attrs, "glib:get-type"),
                 get_string (attrs, "copy-function"),
                 get_string (attrs, "free-function"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_nodes <Field> (children),
                 get_nodes <Constructor> (children),
                 get_nodes <Method> (children),
@@ -886,28 +631,10 @@ public class Gir.Parser : Object {
             break;
         case "virtual-method":
             new_node = new VirtualMethod (
-                get_bool (attrs, "introspectable"),
-                get_bool (attrs, "deprecated"),
-                get_string (attrs, "deprecated-version"),
-                get_string (attrs, "version"),
-                get_string (attrs, "stability"),
-                get_string (attrs, "name"),
-                get_string (attrs, "c:identifier"),
-                get_string (attrs, "shadowed-by"),
-                get_string (attrs, "shadows"),
-                get_bool (attrs, "throws"),
-                get_string (attrs, "moved-to"),
-                get_string (attrs, "glib:async-func"),
-                get_string (attrs, "glib:sync-func"),
-                get_string (attrs, "glib:finish-func"),
+                parse_callable_attrs (attrs),
                 get_string (attrs, "invoker"),
                 get_bool (attrs, "glib:static"),
-                get_node <DocVersion> (children),
-                get_node <DocStability> (children),
-                get_node <Doc> (children),
-                get_node <DocDeprecated> (children),
-                get_node <SourcePosition> (children),
-                get_nodes <Attribute> (children),
+                parse_info_elements (children),
                 get_node <Parameters> (children),
                 get_node <ReturnValue> (children),
                 source);
@@ -922,5 +649,47 @@ public class Gir.Parser : Object {
         }
 
         return new_node;
+    }
+
+    private static InfoAttrsValues parse_info_attrs (Gee.Map<string, string> attrs) {
+        return InfoAttrsValues () {
+            introspectable = get_bool (attrs, "introspectable"),
+            deprecated = get_bool (attrs, "deprecated"),
+            deprecated_version = get_string (attrs, "deprecated-version"),
+            version = get_string (attrs, "version"),
+            stability = get_string (attrs, "stability")
+        };
+    }
+
+    private static CallableAttrsValues parse_callable_attrs (Gee.Map<string, string> attrs) {
+        return CallableAttrsValues () {
+            info_attrs_values = parse_info_attrs (attrs),
+            name = get_string (attrs, "name"),
+            c_identifier = get_string (attrs, "c:identifier"),
+            shadowed_by = new Link<Callable> (get_string (attrs, "shadowed-by")),
+            shadows = new Link<Callable> (get_string (attrs, "shadows")),
+            @throws = get_bool (attrs, "throws"),
+            moved_to = get_string (attrs, "moved-to"),
+            glib_async_func = new Link<Callable> (get_string (attrs, "glib:async-func")),
+            glib_sync_func = new Link<Callable> (get_string (attrs, "glib:sync-func")),
+            glib_finish_func = new Link<Callable> (get_string (attrs, "glib:finish-func"))
+        };
+    }
+
+    private static DocElementsValues parse_doc_elements (Gee.ArrayList<Node> children) {
+        return DocElementsValues () {
+            doc_version = get_node <DocVersion> (children),
+            doc_stability = get_node <DocStability> (children),
+            doc = get_node <Doc> (children),
+            doc_deprecated = get_node <DocDeprecated> (children),
+            source_position = get_node <SourcePosition> (children)
+        };
+    }
+
+    private static InfoElementsValues parse_info_elements (Gee.ArrayList<Node> children) {
+        return InfoElementsValues () {
+            doc_elements_values = parse_doc_elements (children),
+            attributes = get_nodes <Attribute> (children)
+        };
     }
 }

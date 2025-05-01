@@ -18,11 +18,32 @@
  */
 
  public interface Gir.DocElements : Node {
-    public abstract DocVersion? doc_version         { get; set; }
-    public abstract DocStability? doc_stability     { get; set; }
-    public abstract Doc? doc                        { get; set; }
-    public abstract DocDeprecated? doc_deprecated   { get; set; }
-    public abstract SourcePosition? source_position { get; set; }
+    protected abstract DocElementsValues doc_elements_values { get; set; }
+
+    public DocVersion? doc_version {
+        get { return doc_elements_values.doc_version; }
+        set { doc_elements_values.doc_version = value; }
+    }
+
+    public DocStability? doc_stability {
+        get { return doc_elements_values.doc_stability; }
+        set { doc_elements_values.doc_stability = value; }
+    }
+
+    public Doc? doc {
+        get { return doc_elements_values.doc; }
+        set { doc_elements_values.doc = value; }
+    }
+
+    public DocDeprecated? doc_deprecated {
+        get { return doc_elements_values.doc_deprecated; }
+        set { doc_elements_values.doc_deprecated = value; }
+    }
+
+    public SourcePosition? source_position {
+        get { return doc_elements_values.source_position; }
+        set { doc_elements_values.source_position = value; }
+    }
 
     public void accept_doc_elements (Visitor visitor) {
         doc_version?.accept (visitor);
@@ -31,4 +52,12 @@
         doc_deprecated?.accept (visitor);
         source_position?.accept (visitor);
     }
+}
+
+public struct Gir.DocElementsValues {
+    DocVersion? doc_version;
+    DocStability? doc_stability;
+    Doc? doc;
+    DocDeprecated? doc_deprecated;
+    SourcePosition? source_position;
 }

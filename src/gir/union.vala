@@ -17,12 +17,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
-    public bool introspectable { get; set; }
-    public bool deprecated { get; set; }
-    public string? deprecated_version { owned get; set; }
-    public string? version { owned get; set; }
-    public string? stability { owned get; set; }
+public class Gir.Union : InfoAttrs, InfoElements, Node {
+    protected InfoAttrsValues info_attrs_values { get; set; }
     public string? name { owned get; set; }
     public string? c_type { owned get; set; }
     public string? c_symbol_prefix { owned get; set; }
@@ -30,12 +26,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
     public string? glib_get_type { owned get; set; }
     public Link<Callable> copy_function { owned get; set; }
     public Link<Callable> free_function { owned get; set; }
-    public DocVersion? doc_version { get; set; }
-    public DocStability? doc_stability { get; set; }
-    public Doc? doc { get; set; }
-    public DocDeprecated? doc_deprecated { get; set; }
-    public SourcePosition? source_position { get; set; }
-    public Gee.List<Attribute> attributes { owned get; set; }
+    protected InfoElementsValues info_elements_values { get; set; }
     public Gee.List<Field> fields { owned get; set; }
     public Gee.List<Constructor> constructors { owned get; set; }
     public Gee.List<Method> methods { owned get; set; }
@@ -45,11 +36,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
     public Gee.List<Record> records { owned get; set; }
 
     public Union (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsValues info_attrs_values,
             string? name,
             string? c_type,
             string? c_symbol_prefix,
@@ -57,12 +44,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
             string? glib_get_type,
             string? copy_function,
             string? free_function,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsValues info_elements_values,
             Gee.List<Field> fields,
             Gee.List<Constructor> constructors,
             Gee.List<Method> methods,
@@ -72,11 +54,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
             Gee.List<Record> records,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        this.info_attrs_values = info_attrs_values;
         this.name = name;
         this.c_type = c_type;
         this.c_symbol_prefix = c_symbol_prefix;
@@ -84,12 +62,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
         this.glib_get_type = glib_get_type;
         this.copy_function = new Link<Callable> (copy_function);
         this.free_function = new Link<Callable> (free_function);
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        this.info_elements_values = info_elements_values;
         this.fields = fields;
         this.constructors = constructors;
         this.methods = methods;

@@ -18,9 +18,38 @@
  */
 
 public interface Gir.InfoAttrs : Node {
-    public abstract bool introspectable        { get; set; }
-    public abstract bool deprecated            { get; set; }
-    public abstract string? deprecated_version { owned get; set; }
-    public abstract string? version            { owned get; set; }
-    public abstract string? stability          { owned get; set; }
+    protected abstract InfoAttrsValues info_attrs_values { get; set; }
+
+    public bool introspectable {
+        get { return info_attrs_values.introspectable; }
+        set { info_attrs_values.introspectable = value; }
+    }
+    
+    public bool deprecated {
+        get { return info_attrs_values.deprecated; }
+        set { info_attrs_values.deprecated = value; }
+    }
+    
+    public string? deprecated_version {
+        owned get { return info_attrs_values.deprecated_version; }
+        set { info_attrs_values.deprecated_version = value; }
+    }
+    
+    public string? version {
+        owned get { return info_attrs_values.version; }
+        set { info_attrs_values.version = value; }
+    }
+    
+    public string? stability {
+        owned get { return info_attrs_values.stability; }
+        set { info_attrs_values.stability = value; }
+    }
+}
+
+public struct Gir.InfoAttrsValues {
+    bool introspectable;
+    bool deprecated;
+    string? deprecated_version;
+    string? version;
+    string? stability;
 }

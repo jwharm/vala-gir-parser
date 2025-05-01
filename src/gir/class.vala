@@ -17,12 +17,8 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node {
-    public bool introspectable { get; set; }
-    public bool deprecated { get; set; }
-    public string? deprecated_version { owned get; set; }
-    public string? version { owned get; set; }
-    public string? stability { owned get; set; }
+public class Gir.Class : InfoAttrs, InfoElements, Identifier, Node {
+    protected InfoAttrsValues info_attrs_values { get; set; }
     public string name { owned get; set; }
     public string glib_type_name { owned get; set; }
     public string glib_get_type { owned get; set; }
@@ -37,12 +33,7 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
     public bool @abstract { get; set; }
     public bool glib_fundamental { get; set; }
     public bool @final { get; set; }
-    public DocVersion? doc_version { get; set; }
-    public DocStability? doc_stability { get; set; }
-    public Doc? doc { get; set; }
-    public DocDeprecated? doc_deprecated { get; set; }
-    public SourcePosition? source_position { get; set; }
-    public Gee.List<Attribute> attributes { owned get; set; }
+    protected InfoElementsValues info_elements_values { get; set; }
     public Gee.List<Implements> implements { owned get; set; }
     public Gee.List<Constructor> constructors { owned get; set; }
     public Gee.List<Method> methods { owned get; set; }
@@ -59,11 +50,7 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
     public Gee.List<Callback> callbacks { owned get; set; }
 
     public Class (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsValues info_attrs_values,
             string name,
             string glib_type_name,
             string glib_get_type,
@@ -78,12 +65,7 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
             bool @abstract,
             bool glib_fundamental,
             bool @final,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsValues info_elements_values,
             Gee.List<Implements> implements,
             Gee.List<Constructor> constructors,
             Gee.List<Method> methods,
@@ -100,11 +82,7 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
             Gee.List<Callback> callbacks,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        this.info_attrs_values = info_attrs_values;
         this.name = name;
         this.glib_type_name = glib_type_name;
         this.glib_get_type = glib_get_type;
@@ -119,12 +97,7 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
         this.@abstract = @abstract;
         this.glib_fundamental = glib_fundamental;
         this.@final = @final;
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        this.info_elements_values = info_elements_values;
         this.implements = implements;
         this.constructors = constructors;
         this.methods = methods;

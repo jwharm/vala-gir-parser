@@ -17,11 +17,11 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public interface Gir.EnumBase : Node, InfoAttrs, DocElements, InfoElements, Identifier {
-    public abstract string name                                { owned get; set; }
-    public abstract string c_type                              { owned get; set; }
-    public abstract string? glib_type_name                     { owned get; set; }
-    public abstract string? glib_get_type                      { owned get; set; }
+public interface Gir.EnumBase : Node, InfoAttrs, InfoElements, Identifier {
+    public abstract string name                               { owned get; set; }
+    public abstract string c_type                             { owned get; set; }
+    public abstract string? glib_type_name                    { owned get; set; }
+    public abstract string? glib_get_type                     { owned get; set; }
     public abstract Gee.List<Member> members                  { owned get; set; }
     public abstract Gee.List<Function> functions              { owned get; set; }
     public abstract Gee.List<FunctionInline> function_inlines { owned get; set; }
