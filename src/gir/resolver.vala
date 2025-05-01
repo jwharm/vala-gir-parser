@@ -117,17 +117,17 @@ public class Gir.Resolver : Gir.Visitor {
 
     public override void visit_class (Class cls) {
         /* Resolve class.parent to a class */
-        cls.parent.node = resolve_type (cls, cls.parent.text) as Class;
+        cls.parent.node = resolve_type<Class> (cls, cls.parent.text);
 
         /* Resolve class.glib_type_struct to a record */
-        cls.glib_type_struct.node = resolve_type (cls, cls.glib_type_struct.text) as Record;
+        cls.glib_type_struct.node = resolve_type<Record> (cls, cls.glib_type_struct.text);
 
         /* Resolve class.glib_ref_func, glib_unref_func, set_value_func and
          * get_value_func to a method or function */
-        cls.glib_ref_func.node = resolve_c_identifier (cls, cls.glib_ref_func.text) as Callable;
-        cls.glib_unref_func.node = resolve_c_identifier (cls, cls.glib_unref_func.text) as Callable;
-        cls.glib_set_value_func.node = resolve_c_identifier (cls, cls.glib_set_value_func.text) as Callable;
-        cls.glib_get_value_func.node = resolve_c_identifier (cls, cls.glib_get_value_func.text) as Callable;
+        cls.glib_ref_func.node = resolve_c_identifier<Callable> (cls, cls.glib_ref_func.text);
+        cls.glib_unref_func.node = resolve_c_identifier<Callable> (cls, cls.glib_unref_func.text);
+        cls.glib_set_value_func.node = resolve_c_identifier<Callable> (cls, cls.glib_set_value_func.text);
+        cls.glib_get_value_func.node = resolve_c_identifier<Callable> (cls, cls.glib_get_value_func.text);
 
         cls.accept_children (this);
     }
@@ -189,7 +189,7 @@ public class Gir.Resolver : Gir.Visitor {
 
     public override void visit_implements (Implements implements) {
         /* Resolve implements.name to an interface */
-        implements.interface.node = resolve_type (implements, implements.name) as Interface;
+        implements.interface.node = resolve_type<Interface> (implements, implements.name);
         implements.accept_children (this);
     }
 
@@ -205,7 +205,7 @@ public class Gir.Resolver : Gir.Visitor {
 
     public override void visit_interface (Interface iface) {
         /* Resolve interface.glib_type_struct to a record */
-        iface.glib_type_struct.node = resolve_type (iface, iface.glib_type_struct.text) as Record;
+        iface.glib_type_struct.node = resolve_type<Record> (iface, iface.glib_type_struct.text);
         iface.accept_children (this);
     }
 
@@ -261,15 +261,15 @@ public class Gir.Resolver : Gir.Visitor {
 
     public override void visit_property (Property property) {
         /* Resolve property.getter and setter to a method or function */
-        property.getter.node = get_child_by_name (property.parent_node, property.getter.text) as Method;
-        property.setter.node = get_child_by_name (property.parent_node, property.setter.text) as Method;
+        property.getter.node = get_child_by_name<Method> (property.parent_node, property.getter.text);
+        property.setter.node = get_child_by_name<Method> (property.parent_node, property.setter.text);
         property.accept_children (this);
     }
 
     public override void visit_record (Record record) {
         /* Resolve record.copy_function and free_function to a method or function */
-        record.copy_function.node = resolve_c_identifier (record, record.copy_function.text) as Callable;
-        record.free_function.node = resolve_c_identifier (record, record.free_function.text) as Callable;
+        record.copy_function.node = resolve_c_identifier<Callable> (record, record.copy_function.text);
+        record.free_function.node = resolve_c_identifier<Callable> (record, record.free_function.text);
         record.accept_children (this);
     }
 
@@ -314,8 +314,8 @@ public class Gir.Resolver : Gir.Visitor {
 
     public override void visit_union (Union union) {
         /* Resolve union.copy_function and free_function to a method or function */
-        union.copy_function.node = resolve_c_identifier (union, union.copy_function.text) as Callable;
-        union.free_function.node = resolve_c_identifier (union, union.free_function.text) as Callable;
+        union.copy_function.node = resolve_c_identifier<Callable> (union, union.copy_function.text);
+        union.free_function.node = resolve_c_identifier<Callable> (union, union.free_function.text);
 
         union.accept_children (this);
     }
@@ -346,20 +346,20 @@ public class Gir.Resolver : Gir.Visitor {
 
     /* Find a child node with the requested name in the requested node. If not
      * found, this will return null. */
-    private static Node? get_child_by_name (Node node, string? child_node_name) {
+    private static T? get_child_by_name<T> (Node node, string? child_node_name) {
         if (child_node_name == null) {
             return null;
         }
 
         var resolver = new NameResolver (child_node_name);
         node.accept_children (resolver);
-        return resolver.result;
+        return (T) resolver.result;
     }
 
     /* Resolve a type name relative to the namespace of this node. The type name
      * can be "Namespace.TypeName" or, when the type is in the same namespace,
      * simply "TypeName". */
-    private Identifier? resolve_type (Node node, string? name) {
+    private T? resolve_type<T> (Node node, string? name) {
         if (name == null) {
             return null;
         }
@@ -375,12 +375,12 @@ public class Gir.Resolver : Gir.Visitor {
         int dot = type_name.index_of_char ('.', 0);
         if (dot == -1) {
             /* Lookup in the same namespace */
-            Identifier id = get_child_by_name (ns, type_name) as Identifier;
+            Node id = get_child_by_name (ns, type_name);
             if (id == null) {
                 context.report.warning (node.source, "Type '%s' not found in namespace %s", type_name, ns.name);
             }
 
-            return id;
+            return (T) id;
         }
 
         /* Lookup the target namespace */
@@ -394,17 +394,17 @@ public class Gir.Resolver : Gir.Visitor {
         /* Lookup the type name in the target namespace */
         Namespace target_namespace = target_repo.namespaces.first ();
         string identifier_name = type_name.substring (dot + 1);
-        Identifier id = get_child_by_name (target_namespace, identifier_name) as Identifier;
+        Node id = get_child_by_name (target_namespace, identifier_name);
         if (id == null) {
             context.report.warning (node.source, "Type '%s' not found in namespace %s", identifier_name, target_namespace.name);
         }
 
-        return id;
+        return (T) id;
     }
 
     /* Use the CIdentifierResolver visitor class to resolve the requested
      * C identifier. Returns null if the C identifier is not found. */
-    private Gir.Node? resolve_c_identifier (Gir.Node node, string? c_identifier) {
+    private T? resolve_c_identifier<T> (Gir.Node node, string? c_identifier) {
         if (c_identifier == null) {
             return null;
         }
@@ -415,7 +415,7 @@ public class Gir.Resolver : Gir.Visitor {
             context.report.warning (node.source, "C identifier '%s' not found", c_identifier);
         }
         
-        return resolver.result;
+        return (T) resolver.result;
     }
 
     /* Resolve CallableAttrs cross-references to the corresponding Gir Method or
@@ -423,11 +423,11 @@ public class Gir.Resolver : Gir.Visitor {
      * sync-func and finish-func) contain a function or method name (in the
      * nodes own scope) so it's a relatively simple lookup. */
     private static void resolve_callable_attrs (Gir.CallableAttrs callable) {
-        callable.shadowed_by.node      = get_child_by_name (callable, callable.shadowed_by.text) as Callable;
-        callable.shadows.node          = get_child_by_name (callable, callable.shadows.text) as Callable;
-        callable.glib_async_func.node  = get_child_by_name (callable, callable.glib_async_func.text) as Callable;
-        callable.glib_sync_func.node   = get_child_by_name (callable, callable.glib_sync_func.text) as Callable;
-        callable.glib_finish_func.node = get_child_by_name (callable, callable.glib_finish_func.text) as Callable;
+        callable.shadowed_by.node      = get_child_by_name<Callable> (callable, callable.shadowed_by.text);
+        callable.shadows.node          = get_child_by_name<Callable> (callable, callable.shadows.text);
+        callable.glib_async_func.node  = get_child_by_name<Callable> (callable, callable.glib_async_func.text);
+        callable.glib_sync_func.node   = get_child_by_name<Callable> (callable, callable.glib_sync_func.text);
+        callable.glib_finish_func.node = get_child_by_name<Callable> (callable, callable.glib_finish_func.text);
     }
 
     /* Get all fields that are declared in this node. When the node doesn't
