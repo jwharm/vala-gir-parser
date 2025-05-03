@@ -18,7 +18,6 @@
  */
 
 public interface Gir.Callable : Node, DocElements, InfoAttrs {
-    public abstract string name               { owned get; set; }
     public abstract Parameters? parameters    { get; set; }
     public abstract ReturnValue? return_value { get; set; }
 }

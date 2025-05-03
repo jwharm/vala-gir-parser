@@ -1227,7 +1227,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     /* Find a virtual method with the same name as this method. */
-    private static bool is_invoker_method (Gir.Callable g_call) {
+    private static bool is_invoker_method (Gir.CallableAttrs g_call) {
         if (! (g_call is Gir.Method || g_call is Gir.Function)) {
             return false;
         }
@@ -1242,7 +1242,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     /* Find a method or function that invokes this virtual method. */
-    private static Gir.Callable? get_invoker_method (Gir.Callable g_call) {
+    private static Gir.CallableAttrs? get_invoker_method (Gir.Callable g_call) {
         unowned var g_virtual_method = g_call as Gir.VirtualMethod;
         if (g_virtual_method == null) {
             return null;
@@ -1289,7 +1289,7 @@ public class VapiBuilder : Gir.Visitor {
 
     /* Find a signal with the same name and type signature as this method or
      * virtual method. */
-    private static bool is_signal_emitter_method (Gir.Callable g_call) {
+    private static bool is_signal_emitter_method (Gir.CallableAttrs g_call) {
         if (! (g_call is Gir.Method || g_call is Gir.VirtualMethod)) {
             return false;
         }
@@ -1305,7 +1305,7 @@ public class VapiBuilder : Gir.Visitor {
 
     /* Find a property with the same name as this method. If found, the property
      * takes precedence. */
-    private static bool is_property_accessor (Gir.Callable g_call) {
+    private static bool is_property_accessor (Gir.CallableAttrs g_call) {
         foreach (var p in get_gir_properties (g_call.parent_node)) {
             if (equal_names (p.name, g_call.name)) {
                 return true;
@@ -1317,7 +1317,7 @@ public class VapiBuilder : Gir.Visitor {
 
     /* Generate the C function name from the GIR name and all prefixes, for
      * example "gtk_window_new" */
-    private static string generate_symbol_cname (Gir.Callable call) {
+    private static string generate_symbol_cname (Gir.CallableAttrs call) {
         var sb = new StringBuilder (call.name);
         unowned var node = call.parent_node;
         while (node != null) {
