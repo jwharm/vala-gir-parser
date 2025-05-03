@@ -27,4 +27,30 @@ public interface Gir.CallableAttrs : Node, InfoAttrs {
     public abstract Link<Callable> glib_async_func  { owned get; set; }
     public abstract Link<Callable> glib_sync_func   { owned get; set; }
     public abstract Link<Callable> glib_finish_func { owned get; set; }
+
+    internal void init_callable_attrs (CallableAttrsParameters parameters) {
+        init_info_attrs (parameters.info_attrs);
+        this.name = parameters.name;
+        this.c_identifier = parameters.c_identifier;
+        this.shadowed_by = parameters.shadowed_by;
+        this.shadows = parameters.shadows;
+        this.throws = parameters.throws;
+        this.moved_to = parameters.moved_to;
+        this.glib_async_func = parameters.glib_async_func;
+        this.glib_sync_func = parameters.glib_sync_func;
+        this.glib_finish_func = parameters.glib_finish_func;
+    }
+}
+
+public struct Gir.CallableAttrsParameters {
+    InfoAttrsParameters info_attrs;
+    string name;
+    string? c_identifier;
+    Link<Callable> shadowed_by;
+    Link<Callable> shadows;
+    bool @throws;
+    string? moved_to;
+    Link<Callable> glib_async_func;
+    Link<Callable> glib_sync_func;
+    Link<Callable> glib_finish_func;
 }

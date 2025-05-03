@@ -26,4 +26,14 @@ public interface Gir.InfoElements : Node, DocElements {
             attribute.accept (visitor);
         }
     }
+
+    internal void init_info_elements (InfoElementsParameters parameters) {
+        init_doc_elements (parameters.doc_elements);
+        this.attributes = parameters.attributes;
+    }
+}
+
+public struct Gir.InfoElementsParameters {
+    DocElementsParameters doc_elements;
+    Gee.List<Attribute> attributes;
 }

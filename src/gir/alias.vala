@@ -34,35 +34,17 @@ public class Gir.Alias : InfoAttrs, DocElements, InfoElements, Identifier, Node 
     public AnyType? anytype { get; set; }
 
     public Alias (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsParameters info_attrs,
             string name,
             string c_type,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsParameters info_elements,
             AnyType? anytype,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        init_info_attrs (info_attrs);
         this.name = name;
         this.c_type = c_type;
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        init_info_elements (info_elements);
         this.anytype = anytype;
     }
 

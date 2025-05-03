@@ -23,4 +23,20 @@ public interface Gir.InfoAttrs : Node {
     public abstract string? deprecated_version { owned get; set; }
     public abstract string? version            { owned get; set; }
     public abstract string? stability          { owned get; set; }
+
+    internal void init_info_attrs (InfoAttrsParameters parameters) {
+        this.introspectable = parameters.introspectable;
+        this.deprecated = parameters.deprecated;
+        this.deprecated_version = parameters.deprecated_version;
+        this.version = parameters.version;
+        this.stability = parameters.stability;
+    }
+}
+
+public struct Gir.InfoAttrsParameters {
+    bool introspectable;
+    bool deprecated;
+    string? deprecated_version;
+    string? version;
+    string? stability;
 }

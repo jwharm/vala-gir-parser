@@ -38,41 +38,23 @@ public class Gir.Bitfield : InfoAttrs, DocElements, InfoElements, Identifier, En
     public Gee.List<FunctionInline> function_inlines { owned get; set; }
 
     public Bitfield (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsParameters info_attrs,
             string name,
             string c_type,
             string? glib_type_name,
             string? glib_get_type,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsParameters info_elements,
             Gee.List<Member> members,
             Gee.List<Function> functions,
             Gee.List<FunctionInline> function_inlines,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        init_info_attrs (info_attrs);
         this.name = name;
         this.c_type = c_type;
         this.glib_type_name = glib_type_name;
         this.glib_get_type = glib_get_type;
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        init_info_elements (info_elements);
         this.members = members;
         this.functions = functions;
         this.function_inlines = function_inlines;

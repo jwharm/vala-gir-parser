@@ -41,50 +41,16 @@ public class Gir.FunctionInline : InfoAttrs, DocElements, Node, Callable, Callab
     public SourcePosition? source_position { get; set; }
 
     public FunctionInline (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
-            string name,
-            string? c_identifier,
-            string? shadowed_by,
-            string? shadows,
-            bool @throws,
-            string? moved_to,
-            string? glib_async_func,
-            string? glib_sync_func,
-            string? glib_finish_func,
+            CallableAttrsParameters callable_attrs,
             Parameters? parameters,
             ReturnValue? return_value,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
+            DocElementsParameters doc_elements,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
-        this.name = name;
-        this.c_identifier = c_identifier;
-        this.shadowed_by = new Link<Callable> (shadowed_by);
-        this.shadows = new Link<Callable> (shadows);
-        this.throws = @throws;
-        this.moved_to = moved_to;
-        this.glib_async_func = new Link<Callable> (glib_async_func);
-        this.glib_sync_func = new Link<Callable> (glib_sync_func);
-        this.glib_finish_func = new Link<Callable> (glib_finish_func);
+        init_callable_attrs (callable_attrs);
         this.parameters = parameters;
         this.return_value = return_value;
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
+        init_doc_elements (doc_elements);
     }
 
     public override void accept (Visitor visitor) {

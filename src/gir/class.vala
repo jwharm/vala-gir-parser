@@ -59,11 +59,7 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
     public Gee.List<Callback> callbacks { owned get; set; }
 
     public Class (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsParameters info_attrs,
             string name,
             string glib_type_name,
             string glib_get_type,
@@ -78,12 +74,7 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
             bool @abstract,
             bool glib_fundamental,
             bool @final,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsParameters info_elements,
             Gee.List<Implements> implements,
             Gee.List<Constructor> constructors,
             Gee.List<Method> methods,
@@ -100,11 +91,7 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
             Gee.List<Callback> callbacks,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        init_info_attrs (info_attrs);
         this.name = name;
         this.glib_type_name = glib_type_name;
         this.glib_get_type = glib_get_type;
@@ -119,12 +106,7 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
         this.@abstract = @abstract;
         this.glib_fundamental = glib_fundamental;
         this.@final = @final;
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        init_info_elements (info_elements);
         this.implements = implements;
         this.constructors = constructors;
         this.methods = methods;

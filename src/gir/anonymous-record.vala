@@ -32,20 +32,12 @@ public class Gir.AnonymousRecord : DocElements, Node {
     public Gee.List<Union> unions { owned get; set; }
 
     public AnonymousRecord (
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
+            DocElementsParameters doc_elements,
             Gee.List<Field> fields,
             Gee.List<Union> unions,
             Gir.Xml.Reference? source) {
         base(source);
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
+        init_doc_elements (doc_elements);
         this.fields = fields;
         this.unions = unions;
     }

@@ -38,11 +38,7 @@ public class Gir.InstanceParameter : DocElements, Node {
             Direction direction,
             bool caller_allocates,
             TransferOwnership transfer_ownership,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
+            DocElementsParameters doc_elements,
             TypeRef type_ref,
             Gir.Xml.Reference? source) {
         base(source);
@@ -52,11 +48,7 @@ public class Gir.InstanceParameter : DocElements, Node {
         this.direction = direction;
         this.caller_allocates = caller_allocates;
         this.transfer_ownership = transfer_ownership;
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
+        init_doc_elements (doc_elements);
         this.type_ref = type_ref;
     }
 

@@ -50,23 +50,14 @@ public class Gir.Interface : InfoAttrs, DocElements, InfoElements, Identifier, N
     public Gee.List<Constant> constants { owned get; set; }
 
     public Interface (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsParameters info_attrs,
             string name,
             string glib_type_name,
             string glib_get_type,
             string? c_symbol_prefix,
             string? c_type,
             string? glib_type_struct,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsParameters info_elements,
             Gee.List<Prerequisite> prerequisites,
             Gee.List<Implements> implements,
             Gee.List<Function> functions,
@@ -82,23 +73,14 @@ public class Gir.Interface : InfoAttrs, DocElements, InfoElements, Identifier, N
             Gee.List<Constant> constants,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        init_info_attrs (info_attrs);
         this.name = name;
         this.glib_type_name = glib_type_name;
         this.glib_get_type = glib_get_type;
         this.c_symbol_prefix = c_symbol_prefix;
         this.c_type = c_type;
         this.glib_type_struct = new Link<Record> (glib_type_struct);
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        init_info_elements (info_elements);
         this.prerequisites = prerequisites;
         this.implements = implements;
         this.functions = functions;

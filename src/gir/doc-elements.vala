@@ -31,4 +31,20 @@
         doc_deprecated?.accept (visitor);
         source_position?.accept (visitor);
     }
+
+    internal void init_doc_elements (DocElementsParameters parameters) {
+        this.doc_version = parameters.doc_version;
+        this.doc_stability = parameters.doc_stability;
+        this.doc = parameters.doc;
+        this.doc_deprecated = parameters.doc_deprecated;
+        this.source_position = parameters.source_position;
+    }
+}
+
+public struct Gir.DocElementsParameters {
+    DocVersion? doc_version;
+    DocStability? doc_stability;
+    Doc? doc;
+    DocDeprecated? doc_deprecated;
+    SourcePosition? source_position;
 }

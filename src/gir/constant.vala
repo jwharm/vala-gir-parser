@@ -36,39 +36,21 @@ public class Gir.Constant : InfoAttrs, DocElements, InfoElements, Node {
     public AnyType? anytype { get; set; }
 
     public Constant (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsParameters info_attrs,
             string name,
             string value,
             string? c_type,
             string? c_identifier,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsParameters info_elements,
             AnyType? anytype,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        init_info_attrs (info_attrs);
         this.name = name;
         this.value = value;
         this.c_type = c_type;
         this.c_identifier = c_identifier;
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        init_info_elements (info_elements);
         this.anytype = anytype;
     }
 

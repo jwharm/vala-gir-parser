@@ -33,22 +33,14 @@ public class Gir.TypeRef : DocElements, AnyType {
             string? name,
             string? c_type,
             bool introspectable,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
+            DocElementsParameters doc_elements,
             Gee.List<AnyType> anytypes,
             Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
         this.c_type = c_type;
         this.introspectable = introspectable;
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
+        init_doc_elements (doc_elements);
         this.anytypes = anytypes;
         this.identifier = new Link<Identifier> (name);
     }

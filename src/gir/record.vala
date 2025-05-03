@@ -50,11 +50,7 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
     public Gee.List<Constructor> constructors { owned get; set; }
 
     public Record (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsParameters info_attrs,
             string name,
             string? c_type,
             bool disguised,
@@ -67,12 +63,7 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
             string? glib_is_gtype_struct_for,
             string? copy_function,
             string? free_function,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsParameters info_elements,
             Gee.List<Field> fields,
             Gee.List<Function> functions,
             Gee.List<FunctionInline> function_inlines,
@@ -82,11 +73,7 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
             Gee.List<Constructor> constructors,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        init_info_attrs (info_attrs);
         this.name = name;
         this.c_type = c_type;
         this.disguised = disguised;
@@ -99,12 +86,7 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
         this.glib_is_gtype_struct_for = glib_is_gtype_struct_for;
         this.copy_function = new Link<Callable> (copy_function);
         this.free_function = new Link<Callable> (free_function);
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        init_info_elements (info_elements);
         this.fields = fields;
         this.functions = functions;
         this.function_inlines = function_inlines;

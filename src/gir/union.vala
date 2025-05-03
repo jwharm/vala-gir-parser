@@ -45,11 +45,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
     public Gee.List<Record> records { owned get; set; }
 
     public Union (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsParameters info_attrs,
             string? name,
             string? c_type,
             string? c_symbol_prefix,
@@ -57,12 +53,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
             string? glib_get_type,
             string? copy_function,
             string? free_function,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsParameters info_elements,
             Gee.List<Field> fields,
             Gee.List<Constructor> constructors,
             Gee.List<Method> methods,
@@ -72,11 +63,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
             Gee.List<Record> records,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        init_info_attrs (info_attrs);
         this.name = name;
         this.c_type = c_type;
         this.c_symbol_prefix = c_symbol_prefix;
@@ -84,12 +71,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
         this.glib_get_type = glib_get_type;
         this.copy_function = new Link<Callable> (copy_function);
         this.free_function = new Link<Callable> (free_function);
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        init_info_elements (info_elements);
         this.fields = fields;
         this.constructors = constructors;
         this.methods = methods;

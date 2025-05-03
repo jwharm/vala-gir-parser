@@ -41,11 +41,7 @@ public class Gir.Property : InfoAttrs, DocElements, InfoElements, Node {
     public AnyType anytype { get; set; }
 
     public Property (
-            bool introspectable,
-            bool deprecated,
-            string? deprecated_version,
-            string? version,
-            string? stability,
+            InfoAttrsParameters info_attrs,
             string name,
             bool writable,
             bool readable,
@@ -55,20 +51,11 @@ public class Gir.Property : InfoAttrs, DocElements, InfoElements, Node {
             string? getter,
             string? default_value,
             TransferOwnership transfer_ownership,
-            DocVersion? doc_version,
-            DocStability? doc_stability,
-            Doc? doc,
-            DocDeprecated? doc_deprecated,
-            SourcePosition? source_position,
-            Gee.List<Attribute> attributes,
+            InfoElementsParameters info_elements,
             AnyType anytype,
             Gir.Xml.Reference? source) {
         base(source);
-        this.introspectable = introspectable;
-        this.deprecated = deprecated;
-        this.deprecated_version = deprecated_version;
-        this.version = version;
-        this.stability = stability;
+        init_info_attrs (info_attrs);
         this.name = name;
         this.writable = writable;
         this.readable = readable;
@@ -78,12 +65,7 @@ public class Gir.Property : InfoAttrs, DocElements, InfoElements, Node {
         this.getter = new Link<Method> (getter);
         this.default_value = default_value;
         this.transfer_ownership = transfer_ownership;
-        this.doc_version = doc_version;
-        this.doc_stability = doc_stability;
-        this.doc = doc;
-        this.doc_deprecated = doc_deprecated;
-        this.source_position = source_position;
-        this.attributes = attributes;
+        init_info_elements (info_elements);
         this.anytype = anytype;
     }
 
