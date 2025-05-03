@@ -27,7 +27,7 @@ public class Gir.SourcePosition : Node {
             string line,
             string? column,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.filename = filename;
         this.line = line;
         this.column = column;

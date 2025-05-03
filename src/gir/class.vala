@@ -90,7 +90,7 @@ public class Gir.Class : InfoAttrs, DocElements, InfoElements, Identifier, Node 
             Gee.List<Record> records,
             Gee.List<Callback> callbacks,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_info_attrs (info_attrs);
         this.name = name;
         this.glib_type_name = glib_type_name;

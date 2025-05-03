@@ -44,7 +44,7 @@ public class Gir.Member : InfoAttrs, DocElements, InfoElements, Node {
             string? glib_name,
             InfoElementsParameters info_elements,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_info_attrs (info_attrs);
         this.name = name;
         this.value = value;

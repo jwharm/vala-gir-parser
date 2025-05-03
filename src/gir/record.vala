@@ -72,7 +72,7 @@ public class Gir.Record : InfoAttrs, DocElements, InfoElements, Identifier, Node
             Gee.List<MethodInline> method_inlines,
             Gee.List<Constructor> constructors,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_info_attrs (info_attrs);
         this.name = name;
         this.c_type = c_type;

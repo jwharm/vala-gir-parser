@@ -21,7 +21,7 @@ public class Gir.DocVersion : Node {
     public string? text { owned get; set; }
 
     public DocVersion (string? text, Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.text = text;
     }
 

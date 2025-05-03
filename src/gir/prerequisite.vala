@@ -22,7 +22,7 @@ public class Gir.Prerequisite : Node {
     public Link<Identifier> identifier { owned get; set; }
 
     public Prerequisite (string name, Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
         this.identifier = new Link<Identifier> (name);
     }

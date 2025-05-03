@@ -35,7 +35,7 @@ public class Gir.Array : AnyType {
             string? c_type,
             AnyType anytype,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
         this.zero_terminated = zero_terminated;
         this.fixed_size = fixed_size;

@@ -62,7 +62,7 @@ public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
             Gee.List<FunctionInline> function_inlines,
             Gee.List<Record> records,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_info_attrs (info_attrs);
         this.name = name;
         this.c_type = c_type;

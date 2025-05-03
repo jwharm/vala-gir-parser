@@ -47,7 +47,7 @@ public class Gir.Function : InfoAttrs, DocElements, InfoElements, Callable, Node
             Parameters? parameters,
             ReturnValue? return_value,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_callable_attrs (callable_attrs);
         init_info_elements (info_elements);
         this.parameters = parameters;

@@ -37,7 +37,7 @@ public class Gir.Repository : Node {
             Gee.List<Namespace> namespaces,
             Gee.List<DocFormat> doc_formats,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.version = version;
         this.c_identifier_prefixes = c_identifier_prefixes;
         this.c_symbol_prefixes = c_symbol_prefixes;

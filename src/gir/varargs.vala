@@ -20,7 +20,7 @@
 public class Gir.Varargs : Node {
 
     public Varargs (Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
     }
 
     public override void accept (Visitor visitor) {

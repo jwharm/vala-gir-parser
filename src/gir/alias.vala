@@ -40,7 +40,7 @@ public class Gir.Alias : InfoAttrs, DocElements, InfoElements, Identifier, Node 
             InfoElementsParameters info_elements,
             AnyType? anytype,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_info_attrs (info_attrs);
         this.name = name;
         this.c_type = c_type;

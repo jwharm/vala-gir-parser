@@ -36,7 +36,7 @@ public class Gir.TypeRef : DocElements, AnyType {
             DocElementsParameters doc_elements,
             Gee.List<AnyType> anytypes,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
         this.c_type = c_type;
         this.introspectable = introspectable;

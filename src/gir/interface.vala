@@ -72,7 +72,7 @@ public class Gir.Interface : InfoAttrs, DocElements, InfoElements, Identifier, N
             Gee.List<Callback> callbacks,
             Gee.List<Constant> constants,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_info_attrs (info_attrs);
         this.name = name;
         this.glib_type_name = glib_type_name;

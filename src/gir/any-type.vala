@@ -21,6 +21,6 @@ public abstract class Gir.AnyType : Gir.Node {
     public abstract string? name { owned get; set; }
 
     protected AnyType(Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
     }
 }

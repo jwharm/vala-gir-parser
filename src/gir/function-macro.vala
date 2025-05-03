@@ -45,7 +45,7 @@ public class Gir.FunctionMacro : InfoAttrs, DocElements, InfoElements, Node, Cal
             InfoElementsParameters info_elements,
             Parameters? parameters,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_callable_attrs (callable_attrs);
         init_info_elements (info_elements);
         this.parameters = parameters;

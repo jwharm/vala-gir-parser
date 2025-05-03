@@ -29,7 +29,7 @@ public class Gir.Doc : Node {
             string? column,
             string? text,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.filename = filename;
         this.line = line;
         this.column = column;

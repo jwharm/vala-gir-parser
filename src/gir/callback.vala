@@ -44,7 +44,7 @@ public class Gir.Callback : DocElements, InfoAttrs, InfoElements, Callable, Iden
             Parameters? parameters,
             ReturnValue? return_value,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_info_attrs (info_attrs);
         this.name = name;
         this.c_type = c_type;

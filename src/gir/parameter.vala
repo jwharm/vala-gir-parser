@@ -57,7 +57,7 @@ public class Gir.Parameter : DocElements, Node {
             Varargs? varargs,
             Gee.List<Attribute> attributes,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
         this.nullable = nullable;
         this.allow_none = allow_none;

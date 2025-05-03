@@ -47,7 +47,7 @@ public class Gir.ReturnValue : DocElements, Node {
             Gee.List<Attribute> attributes,
             AnyType anytype,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.introspectable = introspectable;
         this.nullable = nullable;
         this.closure = new Link<Parameter> (closure);

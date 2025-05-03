@@ -22,7 +22,7 @@ public class Gir.Implements : Node {
     public Link<Interface> @interface { owned get; set; }
 
     public Implements (string name, Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
         this.interface = new Link<Interface> (name);
     }

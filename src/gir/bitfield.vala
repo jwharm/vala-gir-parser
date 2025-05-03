@@ -48,7 +48,7 @@ public class Gir.Bitfield : InfoAttrs, DocElements, InfoElements, Identifier, En
             Gee.List<Function> functions,
             Gee.List<FunctionInline> function_inlines,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_info_attrs (info_attrs);
         this.name = name;
         this.c_type = c_type;

@@ -48,7 +48,7 @@ public class Gir.Field : InfoAttrs, DocElements, InfoElements, Node {
             Callback? callback,
             AnyType? anytype,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_info_attrs (info_attrs);
         this.name = name;
         this.writable = writable;

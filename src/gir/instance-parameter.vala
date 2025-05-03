@@ -41,7 +41,7 @@ public class Gir.InstanceParameter : DocElements, Node {
             DocElementsParameters doc_elements,
             TypeRef type_ref,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
         this.nullable = nullable;
         this.allow_none = allow_none;

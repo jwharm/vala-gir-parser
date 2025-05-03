@@ -63,7 +63,7 @@ public class Gir.Namespace : Node {
             Gee.List<Boxed> boxeds,
             Gee.List<Docsection> doc_sections,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
         this.version = version;
         this.c_identifier_prefixes = c_identifier_prefixes;

@@ -21,7 +21,7 @@ public class Gir.Package : Node {
     public string name { owned get; set; }
 
     public Package (string name, Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
     }
 

@@ -29,7 +29,7 @@ public class Gir.Docsection : DocElements, Node {
             string name,
             DocElementsParameters doc_elements,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
         init_doc_elements (doc_elements);
     }

@@ -36,7 +36,7 @@ public class Gir.AnonymousRecord : DocElements, Node {
             Gee.List<Field> fields,
             Gee.List<Union> unions,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_doc_elements (doc_elements);
         this.fields = fields;
         this.unions = unions;

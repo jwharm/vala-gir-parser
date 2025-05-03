@@ -25,7 +25,7 @@ public class Gir.Parameters : Node {
             Gee.List<Parameter> parameters,
             InstanceParameter? instance_parameter,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.parameters = parameters;
         this.instance_parameter = instance_parameter;
     }

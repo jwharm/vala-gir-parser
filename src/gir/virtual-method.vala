@@ -51,7 +51,7 @@ public class Gir.VirtualMethod : InfoAttrs, DocElements, InfoElements, Callable,
             Parameters? parameters,
             ReturnValue? return_value,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         init_callable_attrs (callable_attrs);
         this.invoker = new Link<Callable> (invoker);
         this.glib_static = glib_static;

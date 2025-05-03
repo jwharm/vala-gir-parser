@@ -46,7 +46,7 @@ public class Gir.Boxed : InfoAttrs, DocElements, InfoElements, Identifier, Node 
             Gee.List<Function> functions,
             Gee.List<FunctionInline> function_inlines,
             Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
         init_info_attrs (info_attrs);
         this.c_symbol_prefix = c_symbol_prefix;

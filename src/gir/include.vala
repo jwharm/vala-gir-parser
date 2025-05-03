@@ -23,7 +23,7 @@ public class Gir.Include : Node {
     public Link<Repository> repository {owned get; set; }
 
     public Include (string name, string? version, Gir.Xml.Reference? source) {
-        base(source);
+        base (source);
         this.name = name;
         this.version = version;
         this.repository = new Link<Repository> (name + "-" + version);
