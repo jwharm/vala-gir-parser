@@ -28,6 +28,6 @@
  * - Record
  * - Union
  */
-public interface Gir.Identifier : Gir.Node, Gir.InfoAttrs, Gir.InfoElements {
+public interface Gir.Identifier : Gir.Node, Gir.InfoAttrs, Gir.DocElements, Gir.InfoElements {
     public abstract string name { owned get; set; }
 }

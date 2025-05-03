@@ -19,15 +19,27 @@
 
 public class Gir.Docsection : DocElements, Node {
     public string name { owned get; set; }
-    protected DocElementsValues doc_elements_values { get; set; }
+    public DocVersion? doc_version { get; set; }
+    public DocStability? doc_stability { get; set; }
+    public Doc? doc { get; set; }
+    public DocDeprecated? doc_deprecated { get; set; }
+    public SourcePosition? source_position { get; set; }
 
     public Docsection (
             string name,
-            DocElementsValues doc_elements_values,
+            DocVersion? doc_version,
+            DocStability? doc_stability,
+            Doc? doc,
+            DocDeprecated? doc_deprecated,
+            SourcePosition? source_position,
             Gir.Xml.Reference? source) {
         base(source);
         this.name = name;
-        this.doc_elements_values = doc_elements_values;
+        this.doc_version = doc_version;
+        this.doc_stability = doc_stability;
+        this.doc = doc;
+        this.doc_deprecated = doc_deprecated;
+        this.source_position = source_position;
     }
 
     public override void accept (Visitor visitor) {

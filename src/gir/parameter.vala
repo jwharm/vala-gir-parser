@@ -30,7 +30,11 @@ public class Gir.Parameter : DocElements, Node {
     public bool optional { get; set; }
     public bool skip { get; set; }
     public TransferOwnership transfer_ownership { get; set; }
-    protected DocElementsValues doc_elements_values { get; set; }
+    public DocVersion? doc_version { get; set; }
+    public DocStability? doc_stability { get; set; }
+    public Doc? doc { get; set; }
+    public DocDeprecated? doc_deprecated { get; set; }
+    public SourcePosition? source_position { get; set; }
     public AnyType? anytype { get; set; }
     public Varargs? varargs { get; set; }
     public Gee.List<Attribute> attributes { owned get; set; }
@@ -48,7 +52,11 @@ public class Gir.Parameter : DocElements, Node {
             bool optional,
             bool skip,
             TransferOwnership transfer_ownership,
-            DocElementsValues doc_elements_values,
+            DocVersion? doc_version,
+            DocStability? doc_stability,
+            Doc? doc,
+            DocDeprecated? doc_deprecated,
+            SourcePosition? source_position,
             AnyType? anytype,
             Varargs? varargs,
             Gee.List<Attribute> attributes,
@@ -66,7 +74,11 @@ public class Gir.Parameter : DocElements, Node {
         this.optional = optional;
         this.skip = skip;
         this.transfer_ownership = transfer_ownership;
-        this.doc_elements_values = doc_elements_values;
+        this.doc_version = doc_version;
+        this.doc_stability = doc_stability;
+        this.doc = doc;
+        this.doc_deprecated = doc_deprecated;
+        this.source_position = source_position;
         this.anytype = anytype;
         this.varargs = varargs;
         this.attributes = attributes;

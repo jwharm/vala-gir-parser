@@ -17,31 +17,58 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Constant : InfoAttrs, InfoElements, Node {
-    protected InfoAttrsValues info_attrs_values { get; set; }
+public class Gir.Constant : InfoAttrs, DocElements, InfoElements, Node {
+    public bool introspectable { get; set; }
+    public bool deprecated { get; set; }
+    public string? deprecated_version { owned get; set; }
+    public string? version { owned get; set; }
+    public string? stability { owned get; set; }
     public string name { owned get; set; }
     public string value { owned get; set; }
     public string? c_type { owned get; set; }
     public string? c_identifier { owned get; set; }
-    protected InfoElementsValues info_elements_values { get; set; }
+    public DocVersion? doc_version { get; set; }
+    public DocStability? doc_stability { get; set; }
+    public Doc? doc { get; set; }
+    public DocDeprecated? doc_deprecated { get; set; }
+    public SourcePosition? source_position { get; set; }
+    public Gee.List<Attribute> attributes { owned get; set; }
     public AnyType? anytype { get; set; }
 
     public Constant (
-            InfoAttrsValues info_attrs_values,
+            bool introspectable,
+            bool deprecated,
+            string? deprecated_version,
+            string? version,
+            string? stability,
             string name,
             string value,
             string? c_type,
             string? c_identifier,
-            InfoElementsValues info_elements_values,
+            DocVersion? doc_version,
+            DocStability? doc_stability,
+            Doc? doc,
+            DocDeprecated? doc_deprecated,
+            SourcePosition? source_position,
+            Gee.List<Attribute> attributes,
             AnyType? anytype,
             Gir.Xml.Reference? source) {
         base(source);
-        this.info_attrs_values = info_attrs_values;
+        this.introspectable = introspectable;
+        this.deprecated = deprecated;
+        this.deprecated_version = deprecated_version;
+        this.version = version;
+        this.stability = stability;
         this.name = name;
         this.value = value;
         this.c_type = c_type;
         this.c_identifier = c_identifier;
-        this.info_elements_values = info_elements_values;
+        this.doc_version = doc_version;
+        this.doc_stability = doc_stability;
+        this.doc = doc;
+        this.doc_deprecated = doc_deprecated;
+        this.source_position = source_position;
+        this.attributes = attributes;
         this.anytype = anytype;
     }
 
