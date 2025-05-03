@@ -83,7 +83,7 @@ This is a major departure from the current GIR parser: The metadata transforms
 the GIR data, and the resulting GIR data is used to generate the VAPI.
 
 Most metadata rules can applied 1-on-1 in the GIR. In some cases (like compact
-classes), a "custom" GIR attribute (e.g. `<class ... vala:compact="1">`) is
+classes), a "custom" GIR attribute (e.g. `<record ... vala:compact="1">`) is
 added.
 
 ### VAPI generator
