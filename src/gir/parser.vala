@@ -663,7 +663,7 @@ public class Gir.Parser : Object {
 
     private static CallableAttrsParameters parse_callable_attrs (Gee.Map<string, string> attrs) {
         return CallableAttrsParameters () {
-            info_attrs = parse_info_attrs (attrs),
+            info_attrs_parameters = parse_info_attrs (attrs),
             name = get_string (attrs, "name"),
             c_identifier = get_string (attrs, "c:identifier"),
             shadowed_by = new Link<Callable> (get_string (attrs, "shadowed-by")),
@@ -688,7 +688,7 @@ public class Gir.Parser : Object {
 
     private static InfoElementsParameters parse_info_elements (Gee.ArrayList<Node> children) {
         return InfoElementsParameters () {
-            doc_elements = parse_doc_elements (children),
+            doc_elements_parameters = parse_doc_elements (children),
             attributes = get_nodes <Attribute> (children)
         };
     }

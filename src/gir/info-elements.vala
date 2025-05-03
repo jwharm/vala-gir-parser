@@ -28,12 +28,12 @@ public interface Gir.InfoElements : Node, DocElements {
     }
 
     internal void init_info_elements (InfoElementsParameters parameters) {
-        init_doc_elements (parameters.doc_elements);
+        init_doc_elements (parameters.doc_elements_parameters);
         this.attributes = parameters.attributes;
     }
 }
 
 public struct Gir.InfoElementsParameters {
-    DocElementsParameters doc_elements;
+    DocElementsParameters doc_elements_parameters;
     Gee.List<Attribute> attributes;
 }

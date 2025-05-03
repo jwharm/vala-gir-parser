@@ -29,7 +29,7 @@ public interface Gir.CallableAttrs : Node, InfoAttrs {
     public abstract Link<Callable> glib_finish_func { owned get; set; }
 
     internal void init_callable_attrs (CallableAttrsParameters parameters) {
-        init_info_attrs (parameters.info_attrs);
+        init_info_attrs (parameters.info_attrs_parameters);
         this.name = parameters.name;
         this.c_identifier = parameters.c_identifier;
         this.shadowed_by = parameters.shadowed_by;
@@ -43,7 +43,7 @@ public interface Gir.CallableAttrs : Node, InfoAttrs {
 }
 
 public struct Gir.CallableAttrsParameters {
-    InfoAttrsParameters info_attrs;
+    InfoAttrsParameters info_attrs_parameters;
     string name;
     string? c_identifier;
     Link<Callable> shadowed_by;
