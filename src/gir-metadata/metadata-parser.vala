@@ -150,7 +150,7 @@ public class GirMetadata.Metadata {
     public SourceReference source_reference;
 
     public bool used = false;
-    public Gee.Map<ArgumentType,Argument> args = new Gee.HashMap<ArgumentType,Argument> ();
+    public Gee.Map<string,string> args = new Gee.HashMap<string,string> ();
     public Gee.ArrayList<Metadata> children = new Gee.ArrayList<Metadata> ();
 
     public Metadata (string pattern,
@@ -179,12 +179,10 @@ public class GirMetadata.Metadata {
 
         /* arguments */
         foreach (var key in args.keys) {
-            string nick = key.to_string ()
-                             .replace ("GIR_METADATA_ARGUMENT_TYPE_", "")
-                             .down ();
+            string nick = key;
             sb.append (" ")
               .append (nick);
-            var value = args[key].expression.to_string ();
+            var value = args[key];
             if (value != "true") { /* omit "=true" */
                 sb.append ("=")
                   .append (value);
@@ -239,62 +237,12 @@ public class GirMetadata.Metadata {
         return result;
     }
 
-    public void add_argument (ArgumentType key, Argument value) {
+    public void add_argument (string key, string value) {
         args.set (key, value);
     }
 
-    public bool has_argument (ArgumentType key) {
+    public bool has_argument (string key) {
         return args.has_key (key);
-    }
-
-    public Expression? get_expression (ArgumentType arg) {
-        var val = args.get (arg);
-        if (val != null) {
-            val.used = true;
-            return val.expression;
-        }
-        return null;
-    }
-
-    public string? get_string (ArgumentType arg) {
-        var lit = get_expression (arg) as StringLiteral;
-        if (lit != null) {
-            return lit.eval ();
-        }
-        return null;
-    }
-
-    public int get_integer (ArgumentType arg) {
-        var unary = get_expression (arg) as UnaryExpression;
-        if (unary != null && unary.operator == UnaryOperator.MINUS) {
-            var lit = unary.inner as IntegerLiteral;
-            if (lit != null) {
-                return -int.parse (lit.value);
-            }
-        } else {
-            var lit = get_expression (arg) as IntegerLiteral;
-            if (lit != null) {
-                return int.parse (lit.value);
-            }
-        }
-
-        return 0;
-    }
-
-    public bool get_bool (ArgumentType arg, bool default_value = false) {
-        var lit = get_expression (arg) as BooleanLiteral;
-        if (lit != null) {
-            return lit.value;
-        }
-        return default_value;
-    }
-
-    public SourceReference? get_source_reference (ArgumentType arg) {
-        var val = args.get (arg);
-        if (val != null) {
-            return val.source_reference;
-        }
-        return null;
     }
 }
 
@@ -454,19 +402,18 @@ public class GirMetadata.MetadataParser {
         return metadata;
     }
 
-    Expression? parse_expression () {
-        var begin = this.begin;
+    string? parse_expression () {
         var src = get_current_src ();
-        Expression expr = null;
+        string expr = null;
         switch (current) {
         case NULL:
-            expr = new NullLiteral (src);
+            expr = "null";
             break;
         case TRUE:
-            expr = new BooleanLiteral (true, src);
+            expr = "true";
             break;
         case FALSE:
-            expr = new BooleanLiteral (false, src);
+            expr = "false";
             break;
         case MINUS:
             next ();
@@ -474,26 +421,26 @@ public class GirMetadata.MetadataParser {
             if (inner == null) {
                 Report.error (src, "expected expression after `-', got `%s'", current.to_string ());
             } else {
-                expr = new UnaryExpression (UnaryOperator.MINUS, inner, get_src (begin));
+                expr = "-" + inner;
             }
             return expr;
         case INTEGER_LITERAL:
-            expr = new IntegerLiteral (get_string (), src);
+            expr = get_string ();
             break;
         case REAL_LITERAL:
-            expr = new RealLiteral (get_string (), src);
+            expr = get_string ();
             break;
         case STRING_LITERAL:
-            expr = new StringLiteral (get_string (), src);
+            expr = get_string ();
             break;
         case IDENTIFIER:
-            expr = new MemberAccess (null, get_string (), src);
+            expr = get_string ();
             while (next () == DOT) {
                 if (next () != IDENTIFIER) {
                     Report.error (get_current_src (), "expected identifier got `%s'", current.to_string ());
                     break;
                 }
-                expr = new MemberAccess (expr, get_string (), get_current_src ());
+                expr = expr + "." + get_string ();
             }
             return expr;
         case OPEN_PARENS:
@@ -502,7 +449,7 @@ public class GirMetadata.MetadataParser {
                 Report.error (get_current_src (), "expected `)', got `%s'", current.to_string ());
                 break;
             }
-            expr = new Tuple (src);
+            expr = "()";
             break;
         default:
             Report.error (src, "expected literal or symbol got %s", current.to_string ());
@@ -519,7 +466,7 @@ public class GirMetadata.MetadataParser {
             if (id == null) {
                 return false;
             }
-            var arg_type = ArgumentType.from_string (id);
+            var arg_type = id;
             if (arg_type == null) {
                 Report.warning (get_src (begin, old_end), "unknown argument `%s'", id);
                 continue;
@@ -527,17 +474,16 @@ public class GirMetadata.MetadataParser {
 
             if (current != ASSIGN) {
                 // treat as `true'
-                metadata.add_argument (arg_type, new Argument (
-                    new BooleanLiteral (true, get_src (begin)), get_src (begin)));
+                metadata.add_argument (arg_type, "true");
                 continue;
             }
             next ();
 
-            Expression expr = parse_expression ();
+            string expr = parse_expression ();
             if (expr == null) {
                 return false;
             }
-            metadata.add_argument (arg_type, new Argument (expr, get_src (begin)));
+            metadata.add_argument (arg_type, expr);
         }
 
         return true;

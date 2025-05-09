@@ -82,12 +82,12 @@ public class GirParser2 : CodeVisitor {
                 code_context.add_external_package (dep);
             }
 
-            /* apply metadata */
-            //  var metadata = load_metadata (context, source_file);
-            //  if (metadata != Metadata.empty) {
-            //      var metadata_processor = new MetadataProcessor (repository);
-            //      metadata_processor.apply (metadata);
-            //  }
+            /* load metadata */
+            var metadata = load_metadata (CodeContext.get (), source_file);
+            if (metadata != Metadata.empty) {
+                var m2g = new MetadataToGir ();
+                m2g.process (metadata, repository);
+            }
 
             /* resolve Gir references */
             repository.accept (new Gir.Resolver (gir_context));
@@ -99,15 +99,15 @@ public class GirParser2 : CodeVisitor {
 
     /* Load metadata, first look into metadata directories then in the same
      * directory of the .gir. */
-    //  private Metadata load_metadata (CodeContext context, SourceFile gir_file) {
-    //      string? filename = context.get_metadata_path (gir_file.filename);
-    //      if (filename != null && FileUtils.test (filename, EXISTS)) {
-    //          var parser = new MetadataParser ();
-    //          var file = new SourceFile (context, gir_file.file_type, filename);
-    //          context.add_source_file (file);
-    //          return parser.parse_metadata (file);
-    //      } else {
-    //          return Metadata.empty;
-    //      }
-    //  }
+    private Metadata load_metadata (CodeContext context, SourceFile gir_file) {
+        string? filename = context.get_metadata_path (gir_file.filename);
+        if (filename != null && FileUtils.test (filename, EXISTS)) {
+            var parser = new MetadataParser ();
+            var file = new SourceFile (context, gir_file.file_type, filename);
+            context.add_source_file (file);
+            return parser.parse_metadata (file);
+        } else {
+            return Metadata.empty;
+        }
+    }
 }
