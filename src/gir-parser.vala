@@ -85,8 +85,8 @@ public class GirParser2 : CodeVisitor {
             /* load metadata */
             var metadata = load_metadata (CodeContext.get (), source_file);
             if (metadata != Metadata.empty) {
-                var m2g = new MetadataToGir ();
-                m2g.process (metadata, repository);
+                var m2g = new MetadataToGir (gir_context);
+                m2g.process (name_and_version, metadata);
             }
 
             /* resolve Gir references */

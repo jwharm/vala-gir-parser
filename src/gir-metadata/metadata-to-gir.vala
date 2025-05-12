@@ -22,14 +22,23 @@
  * `<attribute name="vala:..." value="..." />` elements.
  */
 public class GirMetadata.MetadataToGir : Gir.Visitor {
+    /**
+     * The Gir Context
+     */
+    public Gir.Context context { get; set; }
+
     private Gee.List<Metadata> metadata_stack = new Gee.ArrayList<Metadata> ();
 
-    public void process (Metadata metadata, Gir.Node repository) {
+    public MetadataToGir (Gir.Context context) {
+        this.context = context;
+    }
+
+    public void process (string repo_name_and_version, Metadata metadata) {
         metadata_stack.add (metadata);
-        repository.accept (this);
+        context.get_repository (repo_name_and_version).accept (this);
         metadata_stack.clear ();
     }
-    
+
     public override void visit_alias (Gir.Alias alias) {
         alias.accept_children (this);
     }
@@ -249,7 +258,7 @@ public class GirMetadata.MetadataToGir : Gir.Visitor {
         if (name == null) {
             return Metadata.empty;
         }
-        
+
         var child_selector = selector.replace ("-", "_");
         var child_name = name.replace ("-", "_");
         var result = peek_metadata ().match_child (child_name, child_selector);
