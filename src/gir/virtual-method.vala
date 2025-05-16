@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.VirtualMethod : InfoAttrs, DocElements, InfoElements, Callable, Node, CallableAttrs {
+public class Gir.VirtualMethod : Node, Named, InfoAttrs, DocElements, InfoElements, Callable, CallableAttrs {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }

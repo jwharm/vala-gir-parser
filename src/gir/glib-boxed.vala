@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Boxed : InfoAttrs, DocElements, InfoElements, Identifier, Node {
+public class Gir.Boxed : Node, Named, InfoAttrs, DocElements, InfoElements, Identifier {
     public string name { owned get; set; }
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }

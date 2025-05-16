@@ -22,7 +22,7 @@
  * This is annoying because records are otherwise guaranteed to have a name. To
  * resolve this issue, the AnonymousRecord type represents an unnamed record.
  */
-public class Gir.AnonymousRecord : DocElements, Node {
+public class Gir.AnonymousRecord : Node, DocElements {
     public DocVersion? doc_version { get; set; }
     public DocStability? doc_stability { get; set; }
     public Doc? doc { get; set; }

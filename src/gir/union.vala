@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Union : InfoAttrs, DocElements, InfoElements, Node {
+public class Gir.Union : Node, InfoAttrs, DocElements, InfoElements {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }

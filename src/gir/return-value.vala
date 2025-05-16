@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.ReturnValue : DocElements, Node {
+public class Gir.ReturnValue : Node, DocElements {
     public bool introspectable { get; set; }
     public bool nullable { get; set; }
     public Link<Parameter> closure { get; set; }

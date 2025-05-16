@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Constructor : InfoAttrs, DocElements, InfoElements, Callable, Node, CallableAttrs {
+public class Gir.Constructor : Node, Named, InfoAttrs, DocElements, InfoElements, Callable, CallableAttrs {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }

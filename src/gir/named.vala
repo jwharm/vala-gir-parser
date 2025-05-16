@@ -17,18 +17,6 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Attribute : Node, Named {
-    public string name { owned get; set; }
-    public string value { owned get; set; }
-
-    public Attribute (string name, string value, Gir.Xml.Reference? source) {
-        base (source);
-        this.name = name;
-        this.value = value;
-    }
-
-    public override void accept (Visitor visitor) {
-        visitor.visit_attribute (this);
-    }
+public interface Gir.Named : Node {
+    public abstract string name { owned get; set; }
 }
-

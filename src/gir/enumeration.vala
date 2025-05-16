@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Enumeration : InfoAttrs, DocElements, InfoElements, Identifier, EnumBase, Node {
+public class Gir.Enumeration : Node, Named, InfoAttrs, DocElements, InfoElements, Identifier, EnumBase {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }

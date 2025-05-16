@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.FunctionInline : InfoAttrs, DocElements, Node, Callable, CallableAttrs {
+public class Gir.FunctionInline : Node, Named, InfoAttrs, DocElements, Callable, CallableAttrs {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }

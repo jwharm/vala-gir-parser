@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Docsection : DocElements, Node {
+public class Gir.Docsection : Node, Named, DocElements {
     public string name { owned get; set; }
     public DocVersion? doc_version { get; set; }
     public DocStability? doc_stability { get; set; }

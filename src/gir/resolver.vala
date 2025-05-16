@@ -344,16 +344,25 @@ public class Gir.Resolver : Gir.Visitor {
         }
     }
 
-    /* Find a child node with the requested name in the requested node. If not
-     * found, this will return null. */
+    /* Find a child node with the requested name and type in the requested node.
+     * Returns null when not found. */
     private static T? get_child_by_name<T> (Node node, string? child_node_name) {
         if (child_node_name == null) {
             return null;
         }
 
-        var resolver = new NameResolver (child_node_name);
-        node.accept_children (resolver);
-        return (T) resolver.result;
+        T result = null;
+        node.accept_children (new ForeachVisitor (child => {
+            if (child is T && child is Named) {
+                if (child_node_name == ((Named) child).name) {
+                    result = (T) child;
+                    return ForeachResult.STOP;
+                }
+            }
+
+            return ForeachResult.SKIP;
+        }));
+        return result;
     }
 
     /* Resolve a type name relative to the namespace of this node. The type name
@@ -375,12 +384,12 @@ public class Gir.Resolver : Gir.Visitor {
         int dot = type_name.index_of_char ('.', 0);
         if (dot == -1) {
             /* Lookup in the same namespace */
-            Node id = get_child_by_name (ns, type_name);
+            T id = get_child_by_name<T> (ns, type_name);
             if (id == null) {
                 context.report.warning (node.source, "Type '%s' not found in namespace %s", type_name, ns.name);
             }
 
-            return (T) id;
+            return id;
         }
 
         /* Lookup the target namespace */
@@ -394,12 +403,12 @@ public class Gir.Resolver : Gir.Visitor {
         /* Lookup the type name in the target namespace */
         Namespace target_namespace = target_repo.namespaces.first ();
         string identifier_name = type_name.substring (dot + 1);
-        Node id = get_child_by_name (target_namespace, identifier_name);
+        T id = get_child_by_name<T> (target_namespace, identifier_name);
         if (id == null) {
             context.report.warning (node.source, "Type '%s' not found in namespace %s", identifier_name, target_namespace.name);
         }
 
-        return (T) id;
+        return id;
     }
 
     /* Use the CIdentifierResolver visitor class to resolve the requested
@@ -409,13 +418,21 @@ public class Gir.Resolver : Gir.Visitor {
             return null;
         }
 
-        var resolver = new CIdentifierResolver (c_identifier);
-        node.accept (resolver);
-        if (!resolver.found) {
+        T result = null;
+        node.accept_children (new ForeachVisitor (child => {
+            if (child is T && child is CallableAttrs && (c_identifier == ((CallableAttrs) child).c_identifier)) {
+                result = (T) child;
+                return ForeachResult.STOP;
+            }
+
+            return ForeachResult.SKIP;
+        }));
+
+        if (result == null) {
             context.report.warning (node.source, "C identifier '%s' not found", c_identifier);
         }
-        
-        return (T) resolver.result;
+
+        return result;
     }
 
     /* Resolve CallableAttrs cross-references to the corresponding Gir Method or

@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Package : Node {
+public class Gir.Package : Node, Named {
     public string name { owned get; set; }
 
     public Package (string name, Gir.Xml.Reference? source) {

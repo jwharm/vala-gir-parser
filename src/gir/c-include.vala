@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.CInclude : Node {
+public class Gir.CInclude : Node, Named {
     public string name { owned get; set; }
 
     public CInclude (string name, Gir.Xml.Reference? source) {

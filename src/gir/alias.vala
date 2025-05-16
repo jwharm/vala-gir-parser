@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Alias : InfoAttrs, DocElements, InfoElements, Identifier, Node {
+public class Gir.Alias : Node, Named, InfoAttrs, DocElements, InfoElements, Identifier {
     public bool introspectable { get; set; }
     public bool deprecated { get; set; }
     public string? deprecated_version { owned get; set; }

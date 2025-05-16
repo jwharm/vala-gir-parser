@@ -17,8 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public interface Gir.CallableAttrs : Node, InfoAttrs {
-    public abstract string name                     { owned get; set; }
+public interface Gir.CallableAttrs : Node, Named, InfoAttrs {
     public abstract string? c_identifier            { owned get; set; }
     public abstract Link<Callable> shadowed_by      { owned get; set; }
     public abstract Link<Callable> shadows          { owned get; set; }

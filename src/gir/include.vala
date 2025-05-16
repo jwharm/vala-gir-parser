@@ -17,7 +17,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Gir.Include : Node {
+public class Gir.Include : Node, Named {
     public string name { owned get; set; }
     public string? version { owned get; set; }
     public Link<Repository> repository {owned get; set; }
