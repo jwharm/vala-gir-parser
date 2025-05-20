@@ -344,8 +344,8 @@ public class Gir.Resolver : Gir.Visitor {
         }
     }
 
-    /* Find a child node with the requested name and type in the requested node.
-     * Returns null when not found. */
+    /* Find a child node with the requested name and type in immediate children
+     * of the requested node. Returns null when not found. */
     private static T? get_child_by_name<T> (Node node, string? child_node_name) {
         if (child_node_name == null) {
             return null;
