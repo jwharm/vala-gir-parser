@@ -33,4 +33,31 @@ public abstract class Gir.Node : Object {
 
     public virtual void accept_children (Visitor visitor) {
     }
+
+    /**
+     * Convert "GirTypeName" to "element-name" format.
+     */
+    public string tag_name () {
+        Type type = get_type ();
+        if (type == typeof (TypeRef)) {
+            return "type";
+        } else if (type == typeof (CInclude)) {
+            return "c:include";
+        } else if (type == typeof (Boxed)) {
+            return "glib:boxed";
+        } else if (type == typeof (Signal)) {
+            return "glib:signal";
+        }
+
+        string name = type.name ();
+        var sb = new StringBuilder ();
+        for (int i = 3; i < name.length; i++) {
+            if (i > 3 && name[i].isupper ()) {
+                sb.append_c ('-');
+            }
+            sb.append_c (name[i].tolower ());
+        }
+
+        return sb.str;
+    }
 }

@@ -18,7 +18,6 @@
  */
 
 using Gir;
-using GirMetadata;
 using Vala;
 
 /**
@@ -82,11 +81,13 @@ public class GirParser2 : CodeVisitor {
                 code_context.add_external_package (dep);
             }
 
-            /* load metadata */
-            var metadata = load_metadata (CodeContext.get (), source_file);
-            if (metadata != Metadata.empty) {
-                var m2g = new MetadataToGir (gir_context);
-                m2g.process (name_and_version, metadata);
+            /* add metadata */
+            string metadata_filename = get_metadata_path (code_context.metadata_directories,
+                                                          Path.get_dirname (source_file.filename),
+                                                          name_and_version);
+            if (metadata_filename != null) {
+                var metadata_parser = new Gir.Metadata.Parser (gir_context);
+                metadata_parser.parse (metadata_filename, name_and_version);
             }
 
             /* resolve Gir references */
@@ -97,17 +98,25 @@ public class GirParser2 : CodeVisitor {
         }
     }
 
-    /* Load metadata, first look into metadata directories then in the same
-     * directory of the .gir. */
-    private Metadata load_metadata (CodeContext context, SourceFile gir_file) {
-        string? filename = context.get_metadata_path (gir_file.filename);
-        if (filename != null && FileUtils.test (filename, EXISTS)) {
-            var parser = new MetadataParser ();
-            var file = new SourceFile (context, gir_file.file_type, filename);
-            context.add_source_file (file);
-            return parser.parse_metadata (file);
-        } else {
-            return Metadata.empty;
+    /* Find a metadata file for the gir file. */
+    private string? get_metadata_path (string[] metadata_directories, string base_dir, string name_and_version) {
+        /* Find the metadata file in one of the metadata directories */
+        foreach (string dir in metadata_directories) {
+            if (FileUtils.test (dir, IS_DIR)) {
+                string path = Path.build_filename (dir, name_and_version + ".metadata", null);
+                if (FileUtils.test (path, EXISTS)) {
+                    return path;
+                }
+            }
         }
+
+        /* Find the metadata file in the directory of the gir file */
+        string path = Path.build_filename (base_dir, name_and_version + ".metadata", null);
+        if (FileUtils.test (path, EXISTS)) {
+            return path;
+        }
+
+        /* If the metadata file is not found anywhere, return null */
+        return null;
     }
 }
