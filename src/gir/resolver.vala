@@ -344,8 +344,8 @@ public class Gir.Resolver : Gir.Visitor {
         }
     }
 
-    /* Find a child node with the requested name and type in immediate children
-     * of the requested node. Returns null when not found. */
+    /* Find a child node with the requested name and type in the immediate
+     * children of the requested node. Returns null when not found. */
     private static T? get_child_by_name<T> (Node node, string? child_node_name) {
         if (child_node_name == null) {
             return null;
@@ -353,11 +353,9 @@ public class Gir.Resolver : Gir.Visitor {
 
         T result = null;
         node.accept_children (new ForeachVisitor (child => {
-            if (child is T && child is Named) {
-                if (child_node_name == ((Named) child).name) {
-                    result = (T) child;
-                    return ForeachResult.STOP;
-                }
+            if (child is T && child is Named && child_node_name == ((Named) child).name) {
+                result = (T) child;
+                return ForeachResult.STOP;
             }
 
             return ForeachResult.SKIP;
@@ -411,8 +409,8 @@ public class Gir.Resolver : Gir.Visitor {
         return id;
     }
 
-    /* Use the CIdentifierResolver visitor class to resolve the requested
-     * C identifier. Returns null if the C identifier is not found. */
+    /* Resolve the requested C identifier in the immediate children of the
+     * requested node. Returns null if the C identifier is not found. */
     private T? resolve_c_identifier<T> (Gir.Node node, string? c_identifier) {
         if (c_identifier == null) {
             return null;
