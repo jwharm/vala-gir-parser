@@ -30,11 +30,11 @@ public class VapiBuilder : Gir.Visitor {
         public void push (Symbol sym) {
             stack.add (sym);
         }
-    
+
         public Symbol peek () {
             return stack.get (stack.size - 1);
         }
-    
+
         public Symbol pop () {
             return stack.remove_at (stack.size - 1);
         }
@@ -85,7 +85,7 @@ public class VapiBuilder : Gir.Visitor {
             g_alias.accept_children (this);
             stack.pop ();
         }
-        
+
         else if (target is Interface) {
             /* this is not a correct alias, but what can we do otherwise? */
             var v_iface = new Interface (g_alias.name, v_source);
@@ -105,7 +105,7 @@ public class VapiBuilder : Gir.Visitor {
             g_alias.accept_children (this);
             stack.pop ();
         }
-        
+
         else if (target is Delegate) {
             /* duplicate the aliased delegate */
             var orig = (Delegate) target;
@@ -136,7 +136,7 @@ public class VapiBuilder : Gir.Visitor {
             v_struct.access = PUBLIC;
             stack.peek ().add_struct (v_struct);
             stack.push (v_struct);
-            
+
             /* set type_id */
             v_struct.set_attribute_string ("CCode", "type_id", target.get_attribute_string ("CCode", "type_id"));
 
@@ -223,7 +223,7 @@ public class VapiBuilder : Gir.Visitor {
         /* cname */
         if (g_callback.parent_node is Gir.Namespace) {
             /* string cname = generate_identifier_cname (g_callback);
-             * 
+             *
              * generate_identifier_cname() doesn't work for a Gir.Callback
              * instance, because after casting to a Gir.Identifier, the "name"
              * property returns null. I'm reasonably sure this is a Vala bug,
@@ -231,7 +231,7 @@ public class VapiBuilder : Gir.Visitor {
              */
             var ns_prefix = get_ns_prefix (g_callback);
             string cname = ns_prefix == null ? null : ns_prefix + g_callback.name;
-    
+
             if (g_callback.c_type != cname) {
                 v_delegate.set_attribute_string ("CCode", "cname", g_callback.c_type);
             }
@@ -369,7 +369,7 @@ public class VapiBuilder : Gir.Visitor {
         if (! g_constructor.introspectable || is_constructor_for_abstract_class (g_constructor)) {
             return;
         }
-        
+
         var v_source = to_source_reference (g_constructor.source);
 
         /* name */
@@ -547,7 +547,7 @@ public class VapiBuilder : Gir.Visitor {
                 || is_property_accessor (g_function)) {
             return;
         }
-        
+
         var v_source = to_source_reference (g_function.source);
 
         /* return type */
@@ -570,7 +570,7 @@ public class VapiBuilder : Gir.Visitor {
                 var self_type = (self.anytype as Gir.TypeRef)?.name;
                 if (parent_type != null && self_type != null && self_type == parent_type) {
                     v_method.binding = INSTANCE;
-                }                
+                }
             }
         }
 
@@ -778,7 +778,7 @@ public class VapiBuilder : Gir.Visitor {
             }
 
             /* instance_pos attribute: Specifies the position of the user_data
-             * argument where Vala can pass the `this` parameter to treat the 
+             * argument where Vala can pass the `this` parameter to treat the
              * callback like an instance method. */
             if (g_call is Gir.Callback && g_par.closure != null) {
                 var pos = get_param_pos (g_call, i);
@@ -969,7 +969,7 @@ public class VapiBuilder : Gir.Visitor {
             v_sym = new Struct (g_record.name, v_source);
             stack.peek ().add_struct ((Struct) v_sym);
         }
-        
+
         v_sym.access = PUBLIC;
         stack.push (v_sym);
 
@@ -1055,7 +1055,7 @@ public class VapiBuilder : Gir.Visitor {
                 v_sig.set_attribute ("HasEmitter", true);
             }
         }
-        
+
         /* find virtual emitter method */
         foreach (var g_vm in get_gir_virtual_methods (g_signal.parent_node)) {
             if (equal_names (g_signal.name, g_vm.name)) {
@@ -1143,7 +1143,7 @@ public class VapiBuilder : Gir.Visitor {
             if (! type_id.has_suffix (")")) {
                 type_id += " ()";
             }
-            
+
             v_sym.set_attribute_string ("CCode", "type_id", type_id);
         }
     }
@@ -1168,7 +1168,7 @@ public class VapiBuilder : Gir.Visitor {
 
         return null;
     }
-    
+
     /* Generate the Vala DataType of this method's return type */
     private DataType build_return_type (Gir.ReturnValue g_return) {
         /* create the return type */
@@ -1196,7 +1196,7 @@ public class VapiBuilder : Gir.Visitor {
         foreach (var type_arg in v_return_type.get_type_arguments ()) {
             type_arg.value_owned = g_return.transfer_ownership != CONTAINER;
         }
-        
+
         return v_return_type;
     }
 
@@ -1428,7 +1428,7 @@ public class VapiBuilder : Gir.Visitor {
             if (g_callable_attrs.glib_finish_func.text != expected) {
                 v_sym.set_attribute_string ("CCode", "finish_name", g_callable_attrs.glib_finish_func.text);
             }
-		}
+        }
     }
 
     /* Set attributes to specify the array length */
@@ -1613,7 +1613,7 @@ public class VapiBuilder : Gir.Visitor {
             return new Gee.ArrayList<Gir.Signal> ();
         }
     }
-    
+
     /* Get all properties that are declared in this node. When the node doesn't
      * have any properties, an empty list will be returned. */
     private static Gee.List<Gir.Property> get_gir_properties (Gir.Node node) {
