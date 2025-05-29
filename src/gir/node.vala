@@ -41,8 +41,12 @@ public abstract class Gir.Node : Object {
         Type type = get_type ();
         if (type == typeof (TypeRef)) {
             return "type";
+        } else if (type == typeof (AnonymousRecord)) {
+            return "record";
         } else if (type == typeof (CInclude)) {
             return "c:include";
+        } else if (type == typeof (DocFormat)) {
+            return "doc:format";
         } else if (type == typeof (Boxed)) {
             return "glib:boxed";
         } else if (type == typeof (Signal)) {
