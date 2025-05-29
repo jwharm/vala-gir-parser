@@ -9,6 +9,7 @@ add_project_arguments('-Wno-unused-but-set-variable', language: 'c')
 dependencies = [
     dependency('glib-2.0', version: '>=2.70'),
     dependency('gobject-2.0'),
+    dependency('gio-2.0'),
 	dependency('gee-0.8'),
     dependency('libvala-0.56'),
 ]
@@ -85,6 +86,7 @@ sources = files(
 		'src/gir/xml/source-location.vala',
 		'src/gir/xml/reader.vala',
 		'src/gir/xml/reference.vala',
+		'src/gir/xml/writer.vala',
 )
 
 executable('vapigen', sources, dependencies: dependencies)

@@ -21,7 +21,7 @@ using Gir.Xml;
 
 public class Gir.Parser : Object {
     /* These boolean attributes are default true, others are default false */
-    private const string[] DEFAULT_TRUE_ATTRIBUTES = {
+    public const string[] DEFAULT_TRUE_ATTRIBUTES = {
         "caller-allocates",
         "introspectable",
         "readable",
