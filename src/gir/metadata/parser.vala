@@ -127,6 +127,7 @@ public class Gir.Metadata.Parser {
         if (next () == "#") {
             selector = next ();
             end = pos;
+            next();
         }
 
         var child_nodes = match_identifier (nodes, identifier, selector);
@@ -264,6 +265,13 @@ public class Gir.Metadata.Parser {
         var result = new Gee.ArrayList<Gir.Node> ();
         foreach (var node in nodes) {
             node.accept_children (new ForeachVisitor (child => {
+                /* recursively descent into the <parameters> node */
+                if (child is Parameters) {
+                    var list = new Gee.ArrayList<Gir.Node> ();
+                    list.add (child);
+                    result.add_all (match_identifier (list, pattern, selector));
+                }
+
                 /* name matches pattern? */
                 if (child is Named && pattern_spec.match_string (((Named) child).name)) {
                     /* node type matches selector? */
