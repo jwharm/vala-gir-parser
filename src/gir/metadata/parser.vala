@@ -92,7 +92,7 @@ public class Gir.Metadata.Parser {
     private void parse_metadata (Repository repository) {
         next (); /* read first token */
         do {
-            parse_identifier (repository.namespaces);
+            parse_identifier (repository.namespaces, false);
         } while (token != null); /* "token == null" means end of file */
     }
 
@@ -102,7 +102,7 @@ public class Gir.Metadata.Parser {
      * wildcards (*.Bar.Baz). The "nodes" parameter is the list of gir nodes
      * matched by the parent metadata identifier.
      */
-    private void parse_identifier (Gee.List<Gir.Node> nodes) {
+    private void parse_identifier (Gee.List<Gir.Node> nodes, bool is_subidentifier) {
         /* skip empty lines */
         while (token == "\n") {
             next ();
@@ -113,9 +113,13 @@ public class Gir.Metadata.Parser {
         }
 
         if (token == ".") {
-            context.report.error (get_source_reference (pos), "Unexpected '%s', expected a pattern.\n", token);
-            token = null;
-            return;
+            if (is_subidentifier) {
+                next ();
+            } else {
+                context.report.error (get_source_reference (pos), "Unexpected '%s', expected a pattern.\n", token);
+                token = null;
+                return;
+            }
         }
 
         /* remember the current position for logging purposes */
@@ -137,47 +141,58 @@ public class Gir.Metadata.Parser {
             context.report.warn (get_source_reference (begin, end), "Rule does not match anything");
         }
 
-        while (token != "\n" || next () == ".") {
-            if (token == ".") {
-                next ();
-                parse_identifier (child_nodes);
-            } else {
-                parse_attributes (child_nodes);
-                return;
-            }
+        switch (token) {
+        case ".":
+            /* parse sub-identifiers on the same line (recursively) */
+            next ();
+            parse_identifier (child_nodes, false);
+            break;
+        case "\n":
+            /* parse sub-identifiers on new lines (in a loop) */
+            do {
+                parse_identifier (child_nodes, true);
+            } while (token == "\n" && peek() == ".");
+            break;
+        default:
+            parse_attributes (child_nodes);
+            break;
         }
     }
 
     /* Parse attributes and write the values in the gir nodes. */
     private void parse_attributes (Gee.List<Gir.Node> nodes) {
+        while (! (token == null || token == "\n")) {
+            string? key = token;
+            next ();
+
+            if (token == "=") {
+                /* next token is the attribute value */
+                set_attribute (nodes, key, read_value ());
+                next ();
+            } else {
+                /* when no value is specified, default to "1" (true) */
+                set_attribute (nodes, key, "1");
+            }
+        }
+
         if (token == "\n" || token == null) {
             return;
         }
+    }
 
-        string? key = token;
-        while (next () != null) {
-            if (token == "=") {
-                /* next token is the attribute value */
-                string? val = read_value ();
-                if (val != null) {
-                    set_attribute (nodes, key, val);
-                } else {
-                    return;
-                }
+    /* Same as next() but don't update the global state. */
+    private string? peek () {
+        string? previous_token = token;
+        int previous_pos = pos;
 
-                key = next ();
-                if (token == "\n" || token == null) {
-                    return;
-                }
-            } else {
-                /* when no value is specified, default to "true" */
-                set_attribute (nodes, key, "true");
-                key = token;
-                if (token == "\n") {
-                    return;
-                }
-            }
+        string? new_token = next();
+        while (new_token == "\n") {
+            new_token = next();
         }
+        
+        token = previous_token;
+        pos = previous_pos;
+        return new_token;
     }
 
     /* Read a literal value from an attribute. */
@@ -272,11 +287,19 @@ public class Gir.Metadata.Parser {
                     result.add_all (match_identifier (list, pattern, selector));
                 }
 
+                /* match all nodes? */
+                bool matches_everything = (pattern == "*");
+
                 /* name matches pattern? */
-                if (child is Named && pattern_spec.match_string (((Named) child).name)) {
-                    /* node type matches selector? */
-                    if (selector == null || selector == child.tag_name ()) {
-                        result.add (child);
+                if (child is Named) {
+                    string name = ((Named) child).name;
+                    bool matches_pattern = pattern_spec.match_string (name);
+
+                    if (matches_everything || matches_pattern) {
+                        /* node type matches selector? */
+                        if (selector == null || selector == child.tag_name ()) {
+                            result.add (child);
+                        }
                     }
                 }
 
@@ -288,7 +311,17 @@ public class Gir.Metadata.Parser {
     }
 
     /* Create a gir attribute element in the provided gir nodes */
-    private void set_attribute (Gee.List<Gir.Node> nodes, string key, string val) {
+    private void set_attribute (Gee.List<Gir.Node> nodes, string key, string? val) {
+        if (val == null) {
+            context.report.error (get_source_reference (pos - 1), "Unexpected end of file");
+            return;
+        }
+
+        if (val == "\n") {
+            context.report.error (get_source_reference (pos - 1), "Unexpected end of line");
+            return;
+        }
+
         foreach (var node in nodes) {
             if (node is InfoElements) {
                 var info_elements = (InfoElements) node;
