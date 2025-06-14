@@ -189,7 +189,7 @@ public class Gir.Metadata.Parser {
         while (new_token == "\n") {
             new_token = next();
         }
-        
+
         token = previous_token;
         pos = previous_pos;
         return new_token;
@@ -282,24 +282,29 @@ public class Gir.Metadata.Parser {
             node.accept_children (new ForeachVisitor (child => {
                 /* recursively descent into the <parameters> node */
                 if (child is Parameters) {
-                    var list = new Gee.ArrayList<Gir.Node> ();
-                    list.add (child);
-                    result.add_all (match_identifier (list, pattern, selector));
+                    return ForeachResult.CONTINUE;
                 }
 
                 /* match all nodes? */
                 bool matches_everything = (pattern == "*");
 
                 /* name matches pattern? */
+                bool matches_pattern = false;
+                string? name = null;
                 if (child is Named) {
-                    string name = ((Named) child).name;
-                    bool matches_pattern = pattern_spec.match_string (name);
+                    name = ((Named) child).name;
+                } else if (child is Parameter) {
+                    name = ((Parameter) child).name;
+                }
 
-                    if (matches_everything || matches_pattern) {
-                        /* node type matches selector? */
-                        if (selector == null || selector == child.tag_name ()) {
-                            result.add (child);
-                        }
+                if (name != null) {
+                    matches_pattern = pattern_spec.match_string (name);
+                }
+
+                if (matches_everything || matches_pattern) {
+                    /* node type matches selector? */
+                    if (selector == null || selector == child.tag_name ()) {
+                        result.add (child);
                     }
                 }
 
@@ -326,6 +331,12 @@ public class Gir.Metadata.Parser {
             if (node is InfoElements) {
                 var info_elements = (InfoElements) node;
                 info_elements.attributes.add (new Attribute (key, val, null));
+            } else if (node is Parameter) {
+                var parameter = (Parameter) node;
+                parameter.attributes.add (new Attribute (key, val, null));
+            } else if (node is ReturnValue) {
+                var parameter = (ReturnValue) node;
+                parameter.attributes.add (new Attribute (key, val, null));
             }
         }
     }
