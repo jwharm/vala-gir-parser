@@ -20,7 +20,7 @@
 using Gir;
 
 /**
- * Gir Visitor that writes Xml to a Gio OutputStream.
+ * Gir Visitor that writes Xml to a Gio FileStream.
  */
 public class Gir.Xml.Writer : Gir.Visitor {
     /**
