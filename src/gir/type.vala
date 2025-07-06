@@ -17,6 +17,10 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Represents a Gir `<type />` element. To avoid confusion with `GLib.Type`,
+ * the class is named `TypeRef`.
+ */
 public class Gir.TypeRef : DocElements, AnyType {
     public override string? name { owned get; set; }
     public string? c_type { owned get; set; }

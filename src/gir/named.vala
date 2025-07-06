@@ -17,6 +17,12 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * The `Named` interface is implemented by all Gir Nodes that have a
+ * `string name` property. Note that in some Node classes, specifically
+ * TypeRef, Array, Parameter, Union and Namespace, the name is optional (i.e.
+ * a `string? name` property) and for that reason do not implement `Named`.
+ */
 public interface Gir.Named : Node {
     public abstract string name { owned get; set; }
 }

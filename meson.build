@@ -82,6 +82,8 @@ sources = files(
         'src/gir/virtual-method.vala',
         'src/gir/visitor.vala',
         'src/gir/metadata/parser.vala',
+        'src/gir/metadata/preprocessor.vala',
+        'src/gir/metadata/rule.vala',
         'src/gir/xml/report.vala',
         'src/gir/xml/source-location.vala',
         'src/gir/xml/reader.vala',

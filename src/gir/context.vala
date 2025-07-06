@@ -22,11 +22,13 @@ public class Gir.Context : Object {
     internal Gee.List<string> parser_queue { get; set; }
     public string[] gir_directories { get; set; }
     public Gir.Xml.Report report { get; set; }
+    private Gee.Set<string> defines;
 
     construct {
         this.repositories = new Gee.HashMap<string, Gir.Repository> ();
         this.parser_queue = new Gee.ArrayList<string> ();
         this.report = new Gir.Xml.Report ();
+        this.defines = new Gee.HashSet<string> ();
     }
 
     public Context (string[] gir_directories) {
@@ -38,6 +40,20 @@ public class Gir.Context : Object {
      */
     public void queue_repository (string name_and_version) {
         parser_queue.add (name_and_version);
+    }
+
+    /**
+     * Define a symbol for metadata preprocessor directives
+     */
+    public void add_define (string define) {
+        defines.add (define);
+    }
+
+    /**
+     * Return true when the symbol is defined
+     */
+    public bool is_defined (string define) {
+        return (define in defines);
     }
 
     /**

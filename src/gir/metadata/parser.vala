@@ -84,6 +84,14 @@ public class Gir.Metadata.Parser {
             .replace ("\r\n", "\n") // windows line endings
             .replace ("\r", "\n");  // mac line endings
 
+        /* Process preprocessor directives (#if, #elif, #else and #endif) */
+        var preprocessor = new Preprocessor (context, metadata_filename);
+        contents = preprocessor.process (contents);
+        if (contents == null) {
+            return;
+        }
+
+        /* Begin parsing */
         parse_metadata (repository);
     }
 
@@ -134,7 +142,8 @@ public class Gir.Metadata.Parser {
             next();
         }
 
-        var child_nodes = match_identifier (nodes, identifier, selector);
+        var rule = new Rule (identifier, selector);
+        var child_nodes = match_identifier (nodes, rule);
 
         /* Log unused entries */
         if (child_nodes.is_empty) {
@@ -273,10 +282,7 @@ public class Gir.Metadata.Parser {
     }
 
     /* Match a metadata pattern against the child nodes of the provided nodes */
-    private Gee.ArrayList<Gir.Node> match_identifier (Gee.List<Gir.Node> nodes,
-                                                      string pattern,
-                                                      string? selector = null) {
-        var pattern_spec = new PatternSpec (pattern);
+    private Gee.ArrayList<Gir.Node> match_identifier (Gee.List<Gir.Node> nodes, Rule rule) {
         var result = new Gee.ArrayList<Gir.Node> ();
         foreach (var node in nodes) {
             node.accept_children (new ForeachVisitor (child => {
@@ -285,27 +291,9 @@ public class Gir.Metadata.Parser {
                     return ForeachResult.CONTINUE;
                 }
 
-                /* match all nodes? */
-                bool matches_everything = (pattern == "*");
-
-                /* name matches pattern? */
-                bool matches_pattern = false;
-                string? name = null;
-                if (child is Named) {
-                    name = ((Named) child).name;
-                } else if (child is Parameter) {
-                    name = ((Parameter) child).name;
-                }
-
-                if (name != null) {
-                    matches_pattern = pattern_spec.match_string (name);
-                }
-
-                if (matches_everything || matches_pattern) {
-                    /* node type matches selector? */
-                    if (selector == null || selector == child.tag_name ()) {
-                        result.add (child);
-                    }
+                /* when this rule matches the gir element, add it to the list */
+                if (rule.matches (child)) {
+                    result.add (child);
                 }
 
                 return ForeachResult.SKIP;

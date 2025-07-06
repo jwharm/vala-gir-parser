@@ -31,7 +31,10 @@ using Vala;
  */
 public class GirParser2 : CodeVisitor {
 
-    public void parse (CodeContext context) {
+    public Gir.Context gir_context { get; set; }
+
+    public void parse (CodeContext context, Gir.Context gir_context) {
+        this.gir_context = gir_context;
         context.accept (this);
     }
 
@@ -49,7 +52,6 @@ public class GirParser2 : CodeVisitor {
         /* Repository name and version = filename without the ".gir" extension */
         string name_and_version = Path.get_basename (source_file.filename)[:-4];
 
-        var gir_context = new Gir.Context (code_context.gir_directories);
         gir_context.report.set_verbose_errors (true);
         gir_context.queue_repository (name_and_version);
         var parser = new Gir.Parser (gir_context);
