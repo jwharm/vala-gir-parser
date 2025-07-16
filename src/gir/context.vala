@@ -94,6 +94,23 @@ public class Gir.Context : Object {
     }
 
     /**
+     * Get all Gir namespaces from the context whose c:symbol-prefix matches
+     * the provided name.
+     */
+    public Gee.List<Gir.Namespace> get_namespaces_by_prefix (string name) {
+        var results = new Gee.ArrayList<Gir.Namespace> ();
+        foreach (var repo in repositories.values) {
+            foreach (var ns in repo.namespaces) {
+                if (name.has_prefix (ns.c_symbol_prefixes)) {
+                    results.add (ns);
+                }
+            }
+        }
+
+        return results;
+    }
+
+    /**
      * Check whether a Gir repository is in the context, by name (without
      * version), for example "Gtk".
      */

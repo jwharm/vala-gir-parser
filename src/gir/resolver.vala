@@ -124,10 +124,10 @@ public class Gir.Resolver : Gir.Visitor {
 
         /* Resolve class.glib_ref_func, glib_unref_func, set_value_func and
          * get_value_func to a method or function */
-        cls.glib_ref_func.node = resolve_c_identifier<Callable> (cls, cls.glib_ref_func.text);
-        cls.glib_unref_func.node = resolve_c_identifier<Callable> (cls, cls.glib_unref_func.text);
-        cls.glib_set_value_func.node = resolve_c_identifier<Callable> (cls, cls.glib_set_value_func.text);
-        cls.glib_get_value_func.node = resolve_c_identifier<Callable> (cls, cls.glib_get_value_func.text);
+        cls.glib_ref_func.node = resolve_c_identifier<Callable> (cls.glib_ref_func.text, cls.source);
+        cls.glib_unref_func.node = resolve_c_identifier<Callable> (cls.glib_unref_func.text, cls.source);
+        cls.glib_set_value_func.node = resolve_c_identifier<Callable> (cls.glib_set_value_func.text, cls.source);
+        cls.glib_get_value_func.node = resolve_c_identifier<Callable> (cls.glib_get_value_func.text, cls.source);
 
         cls.accept_children (this);
     }
@@ -268,8 +268,8 @@ public class Gir.Resolver : Gir.Visitor {
 
     public override void visit_record (Record record) {
         /* Resolve record.copy_function and free_function to a method or function */
-        record.copy_function.node = resolve_c_identifier<Callable> (record, record.copy_function.text);
-        record.free_function.node = resolve_c_identifier<Callable> (record, record.free_function.text);
+        record.copy_function.node = resolve_c_identifier<Callable> (record.copy_function.text, record.source);
+        record.free_function.node = resolve_c_identifier<Callable> (record.free_function.text, record.source);
         record.accept_children (this);
     }
 
@@ -314,8 +314,8 @@ public class Gir.Resolver : Gir.Visitor {
 
     public override void visit_union (Union union) {
         /* Resolve union.copy_function and free_function to a method or function */
-        union.copy_function.node = resolve_c_identifier<Callable> (union, union.copy_function.text);
-        union.free_function.node = resolve_c_identifier<Callable> (union, union.free_function.text);
+        union.copy_function.node = resolve_c_identifier<Callable> (union.copy_function.text, union.source);
+        union.free_function.node = resolve_c_identifier<Callable> (union.free_function.text, union.source);
 
         union.accept_children (this);
     }
@@ -409,25 +409,38 @@ public class Gir.Resolver : Gir.Visitor {
         return id;
     }
 
-    /* Resolve the requested C identifier in the immediate children of the
-     * requested node. Returns null if the C identifier is not found. */
-    private T? resolve_c_identifier<T> (Gir.Node node, string? c_identifier) {
+    /* Resolve the requested C identifier in all namespaces in the Gir context.
+     * Returns null if the C identifier is not found. */
+    private T? resolve_c_identifier<T> (string? c_identifier, Xml.Reference? source) {
         if (c_identifier == null) {
             return null;
         }
 
         T result = null;
-        node.accept_children (new ForeachVisitor (child => {
-            if (child is T && child is CallableAttrs && (c_identifier == ((CallableAttrs) child).c_identifier)) {
-                result = (T) child;
-                return ForeachResult.STOP;
-            }
 
-            return ForeachResult.SKIP;
-        }));
+        /* Lookup all namespaces with a c:symbol-prefix that matches the
+         * requested c-identifier. */
+        Gee.List<Namespace> namespaces = context.get_namespaces_by_prefix (c_identifier);
+
+        /* Visit all nodes in each of the returned namespaces, to find one with
+         * the requested type and c-identifier. */
+        foreach (Namespace ns in namespaces) {
+            ns.accept_children (new ForeachVisitor (child => {
+                if (child is T && child is CallableAttrs && (c_identifier == ((CallableAttrs) child).c_identifier)) {
+                    result = (T) child;
+                    return ForeachResult.STOP;
+                }
+
+                return ForeachResult.CONTINUE;
+            }));
+
+            if (result != null) {
+                return result;
+            }
+        }
 
         if (result == null) {
-            context.report.warning (node.source, "C identifier '%s' not found", c_identifier);
+            context.report.warning (source, "C identifier '%s' not found", c_identifier);
         }
 
         return result;
