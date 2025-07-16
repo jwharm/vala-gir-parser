@@ -18,8 +18,6 @@
  */
 
 using Gir;
-using Builders;
-using GirMetadata;
 using Vala;
 
 /**
@@ -33,7 +31,10 @@ using Vala;
  */
 public class GirParser2 : CodeVisitor {
 
-    public void parse(CodeContext context) {
+    public Gir.Context gir_context { get; set; }
+
+    public void parse (CodeContext context, Gir.Context gir_context) {
+        this.gir_context = gir_context;
         context.accept (this);
     }
 
@@ -42,87 +43,82 @@ public class GirParser2 : CodeVisitor {
             return;
         }
 
-        var context = CodeContext.get ();
-        var parser = new Gir.Parser (source_file);
-        var repository = parser.parse ();
+        if (! source_file.from_commandline) {
+            return;
+        }
+
+        var code_context = CodeContext.get ();
+
+        /* Repository name and version = filename without the ".gir" extension */
+        string name_and_version = Path.get_basename (source_file.filename)[:-4];
+
+        gir_context.report.set_verbose_errors (true);
+        gir_context.queue_repository (name_and_version);
+        var parser = new Gir.Parser (gir_context);
+        parser.parse ();
+        var repository = gir_context.get_repository (name_and_version);
 
         if (repository != null) {
             /* set package name */
-            string? pkg = repository.any_of ("package")?.get_string ("name");
-            source_file.package_name = pkg;
-            if (context.has_package (pkg)) {
-                /* package already provided elsewhere, stop parsing this GIR
-                 * if it was not passed explicitly */
-                if (! source_file.from_commandline) {
-                    return;
+            foreach (var pkg in repository.packages) {
+                source_file.package_name = pkg.name;
+                if (code_context.has_package (pkg.name)) {
+                    /* package already provided elsewhere, stop parsing this GIR
+                     * if it was not passed explicitly */
+                    if (! source_file.from_commandline) {
+                        return;
+                    }
+                } else {
+                    code_context.add_package (pkg.name);
                 }
-            } else {
-                context.add_package (pkg);
             }
 
             /* add dependency packages */
-            foreach (var include in repository.all_of ("include")) {
-                string dep = include.get_string ("name");
-                if (include.has_attr ("version")) {
-                    dep += "-" + include.get_string ("version");
+            foreach (var include in repository.includes) {
+                string dep = include.name;
+                if (include.version != null) {
+                    dep += "-" + include.version;
                 }
 
-                context.add_external_package (dep);
+                code_context.add_external_package (dep);
             }
 
-            /* apply transformations */
-            Transformation[] transformations = {
-                new FunctionToMethod (),
-                new OutArgToReturnValue (),
-                new RefInstanceParam (),
-                new RemoveFirstVararg ()
-            };
-            apply_transformations (repository, transformations);
-
-            /* apply metadata */
-            var metadata = load_metadata (context, source_file);
-            if (metadata != Metadata.empty) {
-                var metadata_processor = new MetadataProcessor (repository);
-                metadata_processor.apply (metadata);
+            /* add metadata */
+            string metadata_filename = get_metadata_path (code_context.metadata_directories,
+                                                          Path.get_dirname (source_file.filename),
+                                                          name_and_version);
+            if (metadata_filename != null) {
+                var metadata_parser = new Gir.Metadata.Parser (gir_context);
+                metadata_parser.parse (metadata_filename, name_and_version);
             }
 
-            /* build the namespace and everything in it */
-            var g_ns = repository.any_of ("namespace");
-            new NamespaceBuilder (context.root, g_ns).build ();
+            /* resolve Gir references */
+            repository.accept (new Gir.Resolver (gir_context));
+
+            /* build the namespace(s) and everything in it */
+            repository.accept (new VapiBuilder ());
         }
     }
 
-    /* Load metadata, first look into metadata directories then in the same
-     * directory of the .gir. */
-    private Metadata load_metadata (CodeContext context, SourceFile gir_file) {
-        string? filename = context.get_metadata_path (gir_file.filename);
-        if (filename != null && FileUtils.test (filename, EXISTS)) {
-            var parser = new MetadataParser ();
-            var file = new SourceFile (context, gir_file.file_type, filename);
-            context.add_source_file (file);
-            return parser.parse_metadata (file);
-        } else {
-            return Metadata.empty;
-        }
-    }
-
-    /* Loop through the gir tree (recursively) and apply the transformations
-     * on every node, replacing the existing nodes with the updated one. */
-    private void apply_transformations (Gir.Node node,
-                                        Transformation[] transformations) {
-        for (int i = 0; i < node.children.size; i++) {
-            var child = node.children[i];
-
-            /* transform child nodes */
-            apply_transformations (child, transformations);
-
-            /* transform the node itself */
-            foreach (var t in transformations) {
-                while (t.can_transform (child)) {
-                    t.apply (ref child);
-                    node.children[i] = child;
+    /* Find a metadata file for the gir file. */
+    private string? get_metadata_path (string[] metadata_directories, string base_dir, string name_and_version) {
+        /* Find the metadata file in one of the metadata directories */
+        foreach (string dir in metadata_directories) {
+            if (FileUtils.test (dir, IS_DIR)) {
+                string path = Path.build_filename (dir, name_and_version + ".metadata", null);
+                if (FileUtils.test (path, EXISTS)) {
+                    return path;
                 }
             }
         }
+
+        /* Find the metadata file in the directory of the gir file */
+        string path = Path.build_filename (base_dir, name_and_version + ".metadata", null);
+        if (FileUtils.test (path, EXISTS)) {
+            return path;
+        }
+
+        /* If the metadata file is not found anywhere, return null */
+        return null;
     }
 }

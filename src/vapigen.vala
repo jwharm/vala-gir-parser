@@ -41,6 +41,8 @@ class VAPIGen {
     static string library;
     [CCode (array_length = false, array_null_terminated = true)]
     static string[] packages;
+    [CCode (array_length = false, array_null_terminated = true)]
+	static string[] defines;
     static bool nostdpkg;
 
     CodeContext context;
@@ -52,6 +54,7 @@ class VAPIGen {
         { "nostdpkg", 0, 0, OptionArg.NONE, ref nostdpkg, "Do not include standard packages", null },
         { "pkg", 0, 0, OptionArg.STRING_ARRAY, ref packages, "Include binding for PACKAGE", "PACKAGE..." },
         { "library", 0, 0, OptionArg.STRING, ref library, "Library name", "NAME" },
+        { "define", 'D', 0, OptionArg.STRING_ARRAY, ref defines, "Define SYMBOL", "SYMBOL..." },
         { "directory", 'd', 0, OptionArg.FILENAME, ref directory, "Output directory", "DIRECTORY" },
         { "disable-warnings", 0, 0, OptionArg.NONE, ref disable_warnings, "Disable warnings", null },
         { "version", 0, 0, OptionArg.NONE, ref version, "Display version number", null },
@@ -59,7 +62,7 @@ class VAPIGen {
         { OPTION_REMAINING, 0, 0, OptionArg.FILENAME_ARRAY, ref sources, null, "FILE..." },
         { null }
     };
-    
+
     private int quit () {
         if (context.report.get_errors () == 0) {
             if (!quiet_mode) {
@@ -75,7 +78,7 @@ class VAPIGen {
             return 1;
         }
     }
-    
+
     private int run () {
         context = new CodeContext ();
         context.vapi_directories = vapi_directories;
@@ -122,7 +125,6 @@ class VAPIGen {
             }
             packages = null;
         }
-        
         if (context.report.get_errors () > 0) {
             return quit ();
         }
@@ -136,25 +138,32 @@ class VAPIGen {
                 Report.error (null, "%s not found", source);
             }
         }
-        
+
         if (context.report.get_errors () > 0) {
             return quit ();
         }
-        
+
         var parser = new Parser ();
         parser.parse (context);
-        
+
         if (context.report.get_errors () > 0) {
             return quit ();
         }
-        
+
+        var gir_context = new Gir.Context (context.gir_directories);
+        if (defines != null) {
+			foreach (string define in defines) {
+				gir_context.add_define (define);
+			}
+		}
+
         var girparser = new GirParser2 ();
-        girparser.parse (context);
-        
+        girparser.parse (context, gir_context);
+
         if (context.report.get_errors () > 0) {
             return quit ();
         }
-        
+
         context.check ();
 
         if (context.report.get_errors () > 0) {
@@ -199,12 +208,12 @@ class VAPIGen {
         }
 
         interface_writer.write_file (context, vapi_filename);
-            
+
         library = null;
-        
+
         return quit ();
     }
-    
+
     static int main (string[] args) {
         Intl.setlocale (LocaleCategory.ALL, "");
 
@@ -233,7 +242,7 @@ class VAPIGen {
             printerr ("No source file specified.\n");
             return 1;
         }
-        
+
         var vapigen = new VAPIGen ();
         return vapigen.run ();
     }
