@@ -47,10 +47,6 @@ public abstract class Gir.Node : Object {
             return "c:include";
         } else if (type == typeof (DocFormat)) {
             return "doc:format";
-        } else if (type == typeof (Boxed)) {
-            return "glib:boxed";
-        } else if (type == typeof (Signal)) {
-            return "glib:signal";
         }
 
         string name = type.name ();
