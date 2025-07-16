@@ -34,8 +34,13 @@ public class Gir.Metadata.Rule {
 
     public bool matches (Gir.Node node) {
         /* node type matches selector? */
-        if (selector != null && selector != node.tag_name ()) {
-            return false;
+        if (selector != null) {
+            /* vala metadata selectors match Gir element tags, except they
+             * use underscores instead of dashes */
+            string tag_name = node.tag_name ().replace ("-", "_");
+            if (selector != tag_name) {
+                return false;
+            }
         }
 
         /* match all nodes? */
