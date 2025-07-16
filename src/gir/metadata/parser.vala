@@ -84,13 +84,6 @@ public class Gir.Metadata.Parser {
             .replace ("\r\n", "\n") // windows line endings
             .replace ("\r", "\n");  // mac line endings
 
-        /* Process preprocessor directives (#if, #elif, #else and #endif) */
-        var preprocessor = new Preprocessor (context, metadata_filename);
-        contents = preprocessor.process (contents);
-        if (contents == null) {
-            return;
-        }
-
         /* Begin parsing */
         parse_metadata (repository);
     }
