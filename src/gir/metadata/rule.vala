@@ -33,11 +33,17 @@ public class Gir.Metadata.Rule {
     }
 
     public bool matches (Gir.Node node) {
-        /* match all nodes? */
-        bool matches_everything = (pattern == "*");
+        /* node type matches selector? */
+        if (selector != null && selector != node.tag_name ()) {
+            return false;
+        }
 
-        /* name matches pattern? */
-        bool matches_pattern = false;
+        /* match all nodes? */
+        if (pattern == "*") {
+            return true;
+        }
+
+        /* node name matches pattern? */
         string? name = null;
         if (node is Named) {
             name = ((Named) node).name;
@@ -45,17 +51,6 @@ public class Gir.Metadata.Rule {
             name = ((Parameter) node).name;
         }
 
-        if (name != null) {
-            matches_pattern = pattern_spec.match_string (name);
-        }
-
-        if (matches_everything || matches_pattern) {
-            /* node type matches selector? */
-            if (selector == null || selector == node.tag_name ()) {
-                return true;
-            }
-        }
-
-        return false;
+        return name != null && pattern_spec.match_string (name);
     }
 }
