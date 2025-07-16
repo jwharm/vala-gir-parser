@@ -209,6 +209,14 @@ public class Gir.Metadata.Parser {
         if (contents[pos] == '"') {
             int begin = ++pos;
             token = read_token ({'"', '\n'});
+
+            /* empty string */
+            if (token == "\"") {
+                pos++;
+                return "";
+            }
+
+            /* end of line */
             if (token == null || contents[pos + token.length] == '\n') {
                 context.report.error (get_source_reference (begin, pos), "Unclosed string literal");
                 return null;
