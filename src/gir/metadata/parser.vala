@@ -138,26 +138,29 @@ public class Gir.Metadata.Parser {
         var rule = new Rule (identifier, selector);
         var child_nodes = match_identifier (nodes, rule);
 
-        /* Log unused entries */
+        /* log unused entries */
         if (child_nodes.is_empty) {
             context.report.warn (get_source_reference (begin, end), "Rule does not match anything");
         }
 
-        switch (token) {
-        case ".":
-            /* parse sub-identifiers on the same line (recursively) */
-            next ();
-            parse_identifier (child_nodes, false);
-            break;
-        case "\n":
-            /* parse sub-identifiers on new lines (in a loop) */
-            do {
-                parse_identifier (child_nodes, true);
-            } while (token == "\n" && peek() == ".");
-            break;
-        default:
+        /* parse attributes */
+        if (token != "." && token != "\n") {
             parse_attributes (child_nodes);
-            break;
+            if (is_subidentifier) {
+                return;
+            }
+        }
+
+        /* parse identifiers on the same line (recursively) */
+        if (token == ".") {
+            next ();
+            parse_identifier (child_nodes, is_subidentifier);
+        }
+        /* parse sub-identifiers on new lines (in a loop) */
+        else {
+            while (token == "\n" && peek() == ".") {
+                parse_identifier (child_nodes, true);
+            }
         }
     }
 
