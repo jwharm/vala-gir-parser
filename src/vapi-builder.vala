@@ -138,7 +138,9 @@ public class VapiBuilder : Gir.Visitor {
             stack.push (v_struct);
 
             /* set type_id */
-            v_struct.set_attribute_string ("CCode", "type_id", target.get_attribute_string ("CCode", "type_id"));
+            if (target != null) {
+                v_struct.set_attribute_string ("CCode", "type_id", target.get_attribute_string ("CCode", "type_id"));
+            }
 
             /* set base_type and simple_type */
             var builder = new DataTypeBuilder (g_alias.anytype);
