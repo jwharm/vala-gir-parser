@@ -20,6 +20,9 @@
 /**
  * Represents a metadata rule (a glob pattern + an optional selector) that can
  * be matched against a Gir node.
+ *
+ * Vala metadata globs and selectors match Gir element names and tags, except
+ * in metadata, underscores are used instead of dashes.
  */
 public class Gir.Metadata.Rule {
     private string pattern;
@@ -35,10 +38,7 @@ public class Gir.Metadata.Rule {
     public bool matches (Gir.Node node) {
         /* node type matches selector? */
         if (selector != null) {
-            /* vala metadata selectors match Gir element tags, except they
-             * use underscores instead of dashes */
-            string tag_name = node.tag_name ().replace ("-", "_");
-            if (selector != tag_name) {
+            if (selector != node.tag_name ().replace ("-", "_")) {
                 return false;
             }
         }
@@ -56,6 +56,6 @@ public class Gir.Metadata.Rule {
             name = ((Parameter) node).name;
         }
 
-        return name != null && pattern_spec.match_string (name);
+        return name != null && pattern_spec.match_string (name.replace ("-", "_"));
     }
 }
