@@ -18,21 +18,30 @@
  */
 
 /**
- * Represents a metadata rule (a glob pattern + an optional selector) that can
- * be matched against a Gir node.
+ * Represents a metadata rule: a glob pattern, an optional selector, zero or
+ * more arguments, and zero or more nested (relative) rules. A rule can be
+ * matched against a Gir node.
  *
  * Vala metadata globs and selectors match Gir element names and tags, except
  * in metadata, underscores are used instead of dashes.
  */
 public class Gir.Metadata.Rule {
-    private string pattern;
-    private PatternSpec pattern_spec;
-    private string? selector;
+    public string glob;
+    public PatternSpec pattern_spec;
+    public string? selector;
+    public Gee.Map<string, string?> args;
+    public Gee.List<Rule> children;
+    public Gir.Xml.Reference source_reference;
 
-    public Rule (string pattern, string? selector) {
-        this.pattern = pattern;
+    public Rule (string pattern, string? selector,
+            Gee.Map<string, string?> args, Gee.List<Rule> children,
+            Gir.Xml.Reference source_reference) {
+        this.glob = pattern;
         this.pattern_spec = new PatternSpec (pattern);
         this.selector = selector;
+        this.args = args;
+        this.children = children;
+        this.source_reference = source_reference;
     }
 
     public bool matches (Gir.Node node) {
@@ -44,7 +53,7 @@ public class Gir.Metadata.Rule {
         }
 
         /* match all nodes? */
-        if (pattern == "*") {
+        if (glob == "*") {
             return true;
         }
 
@@ -57,5 +66,46 @@ public class Gir.Metadata.Rule {
         }
 
         return name != null && pattern_spec.match_string (name.replace ("-", "_"));
+    }
+
+    /**
+     * Return a string representation of this metadata rule and all relative rules.
+     */
+    public string to_string () {
+        return to_string_indented (0);
+    }
+
+    private string to_string_indented (int indent) {
+        var sb = new StringBuilder (glob);
+
+        if (selector != null) {
+            sb.append ("#").append (selector);
+        }
+
+        // Only one relative rule: Append it on the same line
+        if (args.is_empty && children.size == 1) {
+            return sb.append (".")
+                     .append (children[0].to_string ())
+                     .str;
+        }
+
+        // Append arguments
+        foreach (var arg in args) {
+            sb.append (" ").append (arg.key);
+            if (arg.value != null) {
+                sb.append ("=").append (arg.value);
+            }
+        }
+
+        sb.append ("\n");
+
+        // Recursively add the relative rules on new lines
+        foreach (var rule in children) {
+            sb.append (string.nfill (indent, ' '))
+              .append (".")
+              .append (rule.to_string_indented (indent + 2));
+        }
+
+        return sb.str;
     }
 }

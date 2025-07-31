@@ -89,7 +89,9 @@ public class GirParser2 : CodeVisitor {
                                                           name_and_version);
             if (metadata_filename != null) {
                 var metadata_parser = new Gir.Metadata.Parser (gir_context);
-                metadata_parser.parse (metadata_filename, name_and_version);
+                var metadata_rules = metadata_parser.parse (metadata_filename);
+                var metadata_matcher = new Gir.Metadata.Matcher (gir_context);
+                metadata_matcher.create_gir_attributes (metadata_rules, repository);
             }
 
             /* resolve Gir references */
