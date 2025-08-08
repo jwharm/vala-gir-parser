@@ -1,24 +1,21 @@
 project('vala-gir-parser', 'vala', 'c',
         version: '0.0.1',
+        meson_version: '>= 1.4.0',
         license: 'LGPL')
 
 add_project_arguments('-Wno-discarded-qualifiers', language: 'c')
 add_project_arguments('-Wno-unused-variable', language: 'c')
 add_project_arguments('-Wno-unused-but-set-variable', language: 'c')
 
-dependencies = [
+root_build_dir = meson.current_build_dir()
+
+gir_deps = [
     dependency('glib-2.0', version: '>=2.70'),
     dependency('gobject-2.0'),
-    dependency('gio-2.0'),
     dependency('gee-0.8'),
-    dependency('libvala-0.56'),
 ]
 
-sources = files(
-        'src/datatype-builder.vala',
-        'src/gir-parser.vala',
-        'src/vapigen.vala',
-        'src/vapi-builder.vala',
+gir_sources = files(
         'src/gir/anonymous-record.vala',
         'src/gir/alias.vala',
         'src/gir/any-type.vala',
@@ -90,4 +87,31 @@ sources = files(
         'src/gir/xml/writer.vala',
 )
 
-executable('vapigen', sources, dependencies: dependencies)
+libvalagir = shared_library('valagir', gir_sources,
+                  vala_header: 'valagir.h',
+                  vala_vapi: 'valagir-1.0.vapi',
+                  vala_gir: 'Valagir-1.0.gir',
+                  dependencies: gir_deps,
+                  install: true,
+                  install_dir: [true, true, true, true])
+
+subdir('docs')
+
+vapigen_sources = [
+        'src/datatype-builder.vala',
+        'src/gir-parser.vala',
+        'src/vapigen.vala',
+        'src/vapi-builder.vala',
+]
+
+
+dependencies = [
+    dependency('glib-2.0', version: '>=2.70'),
+    dependency('gobject-2.0'),
+    dependency('gio-2.0'),
+    dependency('gee-0.8'),
+    dependency('libvala-0.56'),
+]
+
+
+executable('vapigen', vapigen_sources, dependencies: dependencies, link_with: libvalagir)
