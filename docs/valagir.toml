@@ -5,9 +5,10 @@
 description = "Vala GIR parser"
 authors = "Jan-Willem Harmannij"
 license = "LGPL-2.1"
-browse_url = "https://gitlab.gnome.org/GNOME/gtk/"
-repository_url = "https://gitlab.gnome.org/GNOME/gtk.git"
-website_url = "https://www.gtk.org"
+browse_url = "https://github.com/jwharm/vala-gir-parser/"
+repository_url = "https://github.com/jwharm/vala-gir-parser.git"
+website_url = "https://jwharm.github.io/vala-gir-parser/"
+docs_url = "https://jwharm.github.io/vala-gir-parser/"
 
 # List the dependencies using their GIR namespace
 dependencies = [
@@ -22,11 +23,11 @@ docs_url = "https://developer.gnome.org/gobject/stable"
 
 [dependencies."Gee-0.8"]
 name = "Libgee"
-description = "The base type system library"
-docs_url = "https://developer.gnome.org/gobject/stable"
+description = "Libgee is a collection library providing GObject-based interfaces and classes for commonly used data structures."
+docs_url = "https://valadoc.org/gee-0.8"
 
 [source-location]
 # The base URL for the web UI
-base_url = "https://gitlab.gnome.org/GNOME/gtk/-/blob/master/"
+base_url = "https://github.com/jwharm/vala-gir-parser/tree/main/"
 # The format for links, using "filename" and "line" for the format
 file_format = "{filename}#L{line}"
