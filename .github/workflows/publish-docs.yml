@@ -17,7 +17,7 @@ jobs:
       - name: Checkout vala-gir-parser repository
         uses: actions/checkout@v4
         with:
-          repository: 'vala-gir-parser'
+          repository: 'jwharm/vala-gir-parser'
           path: 'vala-gir-parser'
 
       - name: Setup Python
