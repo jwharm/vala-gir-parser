@@ -60,9 +60,9 @@ public class Gir.Metadata.Matcher {
         }
 
         // Create gir <attribute> elements for the metadata arguments.
-        // When the argument has no value, default to "1" (i.e. boolean "true").
+        // When the argument has no value, default to "true".
         foreach (var arg in rule.args) {
-            create_attributes (matching_gir_nodes, arg.key, arg.value ?? "1");
+            create_attributes (matching_gir_nodes, arg.key, arg.value ?? "true");
         }
 
         // Match relative rules against the matching gir nodes
@@ -102,6 +102,9 @@ public class Gir.Metadata.Matcher {
             } else if (node is Parameter) {
                 var parameter = (Parameter) node;
                 parameter.attributes.add (new Attribute (key, val, null));
+            } else if (node is Namespace) {
+                var ns = (Namespace) node;
+                ns.attributes.add (new Attribute (key, val, null));
             }
         }
     }
