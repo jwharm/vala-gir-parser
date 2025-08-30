@@ -35,6 +35,17 @@ public class DataTypeBuilder {
             return new VoidType ();
         }
 
+        /* Get parent node (for metadata) */
+        Gir.Node? parent_node = g_anytype.parent_node;
+        if (parent_node is Gir.ReturnValue) {
+            parent_node = parent_node.parent_node;
+        }
+
+        /* Get type from metadata */
+        if (parent_node != null && parent_node.has_attribute ("type")) {
+            return from_expression (parent_node.get_attribute ("type"));
+        }
+
         var v_source = VapiBuilder.to_source_reference (g_anytype.source);
         
         /* <type> */
@@ -65,9 +76,27 @@ public class DataTypeBuilder {
 
         var v_type = from_name (name, source);
 
-        foreach (var g_type_arg in g_inner_type) {
-            var v_type_arg = new DataTypeBuilder (g_type_arg).build ();
-            v_type.add_type_argument (v_type_arg);
+        /* Get parent node (for metadata) */
+        Gir.Node? parent_node = g_anytype.parent_node;
+        if (parent_node is Gir.ReturnValue) {
+            parent_node = parent_node.parent_node;
+        }
+
+        /* Type arguments */
+        if (parent_node != null && parent_node.has_attribute ("type_arguments")) {
+            /* From metadata */
+            string type_args = parent_node.get_attribute ("type_arguments");
+            foreach (string g_type_arg in type_args.split (",")) {
+                DataType v_type_arg = from_expression (g_type_arg);
+                v_type_arg.source_reference = source;
+                v_type.add_type_argument (v_type_arg);
+            }
+        } else {
+            /* From inner <type> nodes */
+            foreach (var g_type_arg in g_inner_type) {
+                var v_type_arg = new DataTypeBuilder (g_type_arg).build ();
+                v_type.add_type_argument (v_type_arg);
+            }
         }
 
         return v_type;
