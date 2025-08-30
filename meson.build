@@ -4,8 +4,10 @@ project('vala-gir-parser', 'vala', 'c',
         license: 'LGPL')
 
 add_project_arguments('-Wno-discarded-qualifiers', language: 'c')
-add_project_arguments('-Wno-unused-variable', language: 'c')
+add_project_arguments('-Wno-duplicate-decl-specifier', language: 'c')
 add_project_arguments('-Wno-unused-but-set-variable', language: 'c')
+add_project_arguments('-Wno-unused-function', language: 'c')
+add_project_arguments('-Wno-unused-variable', language: 'c')
 
 root_build_dir = meson.current_build_dir()
 
