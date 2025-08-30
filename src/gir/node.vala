@@ -60,4 +60,49 @@ public abstract class Gir.Node : Object {
 
         return sb.str;
     }
+
+    /**
+     * Return true when this node contains an `<attribute>` element with the
+     * requested name, otherwise return false
+     */
+    public bool has_attribute (string name) {
+        foreach (Attribute attr in get_attributes ()) {
+            if (attr.name == name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Return the value of the `<attribute>` element with the requested name.
+     * Return `null` when the value is equal to `()`, or the attribute value is
+     * `null`, or the requested attribute is not found.
+     */
+    public string? get_attribute (string name) {
+        foreach (Attribute attr in get_attributes ()) {
+            if (attr.name == name) {
+                return attr.value == "()" ? null : attr.value;
+            }
+        }
+
+        return null;
+    }
+
+    /* Get all `<attribute>` elements of this Gir node. When there are none, an
+     * empty list is returned. */
+    private Gee.List<Attribute> get_attributes () {
+        if (this is InfoElements) {
+            return ((InfoElements) this).attributes;
+        } else if (this is Namespace) {
+            return ((Namespace) this).attributes;
+        } else if (this is Parameter) {
+            return ((Parameter) this).attributes;
+        } else if (this is ReturnValue) {
+            return ((ReturnValue) this).attributes;
+        } else {
+            return new Gee.ArrayList<Attribute> ();
+        }
+    }
 }
