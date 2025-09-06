@@ -66,8 +66,11 @@ public abstract class Gir.Node : Object {
      * requested name, otherwise return false
      */
     public bool has_attribute (string name) {
+        // prefix the attribute name with the qualifier used for vala attributes
+        string qualified_name = Gir.Metadata.Matcher.ATTRIBUTE_PREFIX + name;
+
         foreach (Attribute attr in get_attributes ()) {
-            if (attr.name == name) {
+            if (attr.name == qualified_name) {
                 return true;
             }
         }
@@ -81,8 +84,11 @@ public abstract class Gir.Node : Object {
      * `null`, or the requested attribute is not found.
      */
     public string? get_attribute (string name) {
+        // prefix the attribute name with the qualifier used for vala attributes
+        string qualified_name = Gir.Metadata.Matcher.ATTRIBUTE_PREFIX + name;
+
         foreach (Attribute attr in get_attributes ()) {
-            if (attr.name == name) {
+            if (attr.name == qualified_name) {
                 return attr.value == "()" ? null : attr.value;
             }
         }
