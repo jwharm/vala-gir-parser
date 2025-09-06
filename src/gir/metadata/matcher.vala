@@ -22,6 +22,9 @@
  * that match the metadata rules.
  */
 public class Gir.Metadata.Matcher {
+
+    public const string ATTRIBUTE_PREFIX = "dev.vala.";
+    
     /**
      * The Gir Context
      */
@@ -95,16 +98,19 @@ public class Gir.Metadata.Matcher {
 
     // Create a gir <attribute> element in the provided gir nodes
     private void create_attributes (Gee.List<Gir.Node> nodes, string key, string? val) {
+        // prefix the attribute name with a qualifier
+        string name = ATTRIBUTE_PREFIX + key;
+        
         foreach (var node in nodes) {
             if (node is InfoElements) {
                 var info_elements = (InfoElements) node;
-                info_elements.attributes.add (new Attribute (key, val, null));
+                info_elements.attributes.add (new Attribute (name, val, null));
             } else if (node is Parameter) {
                 var parameter = (Parameter) node;
-                parameter.attributes.add (new Attribute (key, val, null));
+                parameter.attributes.add (new Attribute (name, val, null));
             } else if (node is Namespace) {
                 var ns = (Namespace) node;
-                ns.attributes.add (new Attribute (key, val, null));
+                ns.attributes.add (new Attribute (name, val, null));
             }
         }
     }
