@@ -48,7 +48,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_alias (Gir.Alias g_alias) {
-        if (!g_alias.introspectable) {
+        if (skip (g_alias)) {
             return;
         }
 
@@ -169,7 +169,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_bitfield (Gir.Bitfield g_bitfield) {
-        if (!g_bitfield.introspectable) {
+        if (skip (g_bitfield)) {
             return;
         }
 
@@ -207,7 +207,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_callback (Gir.Callback g_callback) {
-        if (! g_callback.introspectable) {
+        if (skip (g_callback)) {
             return;
         }
 
@@ -258,7 +258,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_class (Gir.Class g_class) {
-        if (!g_class.introspectable) {
+        if (skip (g_class)) {
             return;
         }
 
@@ -325,7 +325,7 @@ public class VapiBuilder : Gir.Visitor {
          * to indicate that implicit Object () chainup is allowed */
         bool no_introspectable_constructors = true;
         foreach (var ctor in g_class.constructors) {
-            if (ctor.introspectable) {
+            if (! skip (ctor)) {
                 no_introspectable_constructors = false;
                 break;
             }
@@ -344,7 +344,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_constant (Gir.Constant g_constant) {
-        if (! g_constant.introspectable) {
+        if (skip (g_constant)) {
             return;
         }
 
@@ -368,7 +368,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_constructor (Gir.Constructor g_constructor) {
-        if (! g_constructor.introspectable || is_constructor_for_abstract_class (g_constructor)) {
+        if (skip (g_constructor) || is_constructor_for_abstract_class (g_constructor)) {
             return;
         }
 
@@ -415,7 +415,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_enumeration (Gir.Enumeration g_enum) {
-        if (!g_enum.introspectable) {
+        if (skip (g_enum)) {
             return;
         }
 
@@ -461,7 +461,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_field (Gir.Field g_field) {
-        if (!g_field.introspectable
+        if (skip (g_field)
                 || g_field.private
                 || g_field.name == "priv"
                 || g_field.anytype == null) {
@@ -543,7 +543,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_function (Gir.Function g_function) {
-        if (! g_function.introspectable
+        if (skip (g_function)
                 || is_invoker_method (g_function)
                 || is_signal_emitter_method (g_function)
                 || is_property_accessor (g_function)) {
@@ -602,7 +602,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_interface (Gir.Interface g_iface) {
-        if (!g_iface.introspectable) {
+        if (skip (g_iface)) {
             return;
         }
 
@@ -669,7 +669,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_method (Gir.Method g_method) {
-        if (! g_method.introspectable
+        if (skip (g_method)
                 || is_invoker_method (g_method)
                 || is_signal_emitter_method (g_method)
                 || is_async_finish_method (g_method)
@@ -742,13 +742,19 @@ public class VapiBuilder : Gir.Visitor {
         }
 
         /* cheader_filename attribute */
-        var c_includes = ((Gir.Repository) g_ns.parent_node).c_includes;
-        var names = new string[c_includes.size];
-        for (int i = 0; i < c_includes.size; i++) {
-            names[i] = c_includes[i].name;
+        if (g_ns.has_attribute ("cheader_filename")) {
+            string cheader_filename = g_ns.get_attribute ("cheader_filename");
+            v_ns.set_attribute_string ("CCode", "cheader_filename", cheader_filename);
+        } else {
+            var c_includes = ((Gir.Repository) g_ns.parent_node).c_includes;
+            var names = new string[c_includes.size];
+            for (int i = 0; i < c_includes.size; i++) {
+                names[i] = c_includes[i].name;
+            }
+
+            var cheader_filename = string.joinv (",", names);
+            v_ns.set_attribute_string ("CCode", "cheader_filename", cheader_filename);
         }
-        var cheader_filename = string.joinv (",", names);
-        v_ns.set_attribute_string ("CCode", "cheader_filename", cheader_filename);
 
         /* Generate members */
         g_ns.accept_children (this);
@@ -842,7 +848,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_property (Gir.Property g_property) {
-        if (!g_property.introspectable) {
+        if (skip (g_property)) {
             return;
         }
 
@@ -952,7 +958,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_record (Gir.Record g_record) {
-        if (!g_record.introspectable || g_record.glib_is_gtype_struct_for != null) {
+        if (skip (g_record) || g_record.glib_is_gtype_struct_for != null) {
             return;
         }
 
@@ -965,7 +971,12 @@ public class VapiBuilder : Gir.Visitor {
         Symbol v_sym;
         if (is_boxed_type) {
             v_sym = new Class (g_record.name, v_source);
-            v_sym.set_attribute ("Compact", true);
+            if (g_record.has_attribute ("compact")) {
+                v_sym.set_attribute ("Compact", g_record.get_attribute ("compact") == "true");
+            } else {
+                v_sym.set_attribute ("Compact", true);
+            }
+            
             stack.peek ().add_class ((Class) v_sym);
         } else {
             v_sym = new Struct (g_record.name, v_source);
@@ -1025,7 +1036,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_signal (Gir.Signal g_signal) {
-        if (! g_signal.introspectable) {
+        if (skip (g_signal)) {
             return;
         }
 
@@ -1071,7 +1082,7 @@ public class VapiBuilder : Gir.Visitor {
     }
 
     public override void visit_virtual_method (Gir.VirtualMethod g_virtual_method) {
-        if (! g_virtual_method.introspectable
+        if (skip (g_virtual_method)
                 || is_signal_emitter_method (g_virtual_method)
                 || is_property_accessor (g_virtual_method)) {
             return;
@@ -1392,7 +1403,7 @@ public class VapiBuilder : Gir.Visitor {
         }
     }
 
-    /* Set version, deprecated and deprecated_since attributes */
+    /* Set version, deprecated, deprecated_since and cheader_filename */
     private void add_info_attrs (Gir.InfoAttrs g_info_attrs) {
         var v_sym = stack.peek ();
 
@@ -1408,6 +1419,12 @@ public class VapiBuilder : Gir.Visitor {
                 v_sym.version.deprecated_since = g_info_attrs.deprecated_version;
             }
         }
+
+        /* cheader_filename from metadata */
+        if (g_info_attrs.has_attribute ("cheader_filename")) {
+            string cheader_filename = g_info_attrs.get_attribute ("cheader_filename");
+            v_sym.set_attribute_string ("CCode", "cheader_filename", cheader_filename);
+        }
     }
 
     /* Set replacement and finish-func attributes */
@@ -1417,6 +1434,11 @@ public class VapiBuilder : Gir.Visitor {
         /* replacement */
         if (g_callable_attrs.moved_to != null) {
             v_sym.version.replacement = g_callable_attrs.moved_to;
+        }
+
+        /* hides */
+        if (g_callable_attrs.has_attribute ("new")) {
+            v_sym.hides = (g_callable_attrs.get_attribute ("new") == "true");
         }
 
         /* finish-func */
@@ -1430,6 +1452,11 @@ public class VapiBuilder : Gir.Visitor {
             if (g_callable_attrs.glib_finish_func.text != expected) {
                 v_sym.set_attribute_string ("CCode", "finish_name", g_callable_attrs.glib_finish_func.text);
             }
+        }
+
+        /* printf_format */
+        if (g_callable_attrs.has_attribute ("printf_format")) {
+            v_sym.set_attribute ("PrintfFormat", g_callable_attrs.get_attribute ("printf_format") == "true");
         }
     }
 
@@ -1626,6 +1653,26 @@ public class VapiBuilder : Gir.Visitor {
         } else {
             return new Gee.ArrayList<Gir.Property> ();
         }
+    }
+
+    private static bool skip (Gir.Node node) {
+        if (node.has_attribute ("skip")) {
+            return node.get_attribute ("skip") == "true";
+        }
+
+        if (node.has_attribute ("introspectable")) {
+            return node.get_attribute ("introspectable") == "false";
+        }
+
+        if (node.has_attribute ("hidden")) {
+            return node.get_attribute ("hidden") == "true";
+        }
+
+        if (node is Gir.InfoAttrs) {
+            return !((Gir.InfoAttrs) node).introspectable;
+        }
+
+        return false;
     }
 
     /** Convert a Gir source reference to a Vala source reference */
