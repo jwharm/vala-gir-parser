@@ -1403,9 +1403,19 @@ public class VapiBuilder : Gir.Visitor {
         }
     }
 
-    /* Set version, deprecated, deprecated_since and cheader_filename */
+    /* Set name, version, deprecated, deprecated_since and cheader_filename */
     private void add_info_attrs (Gir.InfoAttrs g_info_attrs) {
         var v_sym = stack.peek ();
+
+        /* name */
+        if (g_info_attrs.has_attribute ("name")) {
+            string pattern = g_info_attrs.get_attribute ("name");
+            string name = v_sym.name;
+            if (pattern != null) {
+                replace_name_with_pattern(ref name, pattern);
+                v_sym.name = name;
+            }
+        }
 
         /* version */
         v_sym.version.since = g_info_attrs.version;
@@ -1681,6 +1691,28 @@ public class VapiBuilder : Gir.Visitor {
         var begin = SourceLocation (xml_ref.begin.pos, xml_ref.begin.line, xml_ref.begin.column);
         var end = SourceLocation (xml_ref.end.pos, xml_ref.end.line, xml_ref.end.column);
         return new SourceReference (source_file, begin, end);
+    }
+
+    /* Process the NAME metadata attribute */
+    private static void replace_name_with_pattern (ref string name, string pattern) {
+        if (pattern.index_of_char ('(') < 0) {
+            /* shortcut for "(.+)/replacement" */
+            name = pattern;
+        } else {
+            try {
+                /* replace the whole name with the match by default */
+                string replacement = "\\1";
+                var split = pattern.split ("/");
+                if (split.length > 1) {
+                    pattern = split[0];
+                    replacement = split[1];
+                }
+                var regex = new Regex (pattern, ANCHORED, ANCHORED);
+                name = regex.replace (name, -1, 0, replacement);
+            } catch (Error e) {
+                name = pattern;
+            }
+        }
     }
 
     /* Avoids a dependency on GLib.Math */
